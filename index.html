@@ -11,16 +11,16 @@
     
     <style>
         :root {
-            --bg: #070b14;
-            --glass: rgba(30, 41, 59, 0.7);
-            --glass-border: rgba(255, 255, 255, 0.12);
-            --text: #f1f5f9;
+            --bg: #050810;
+            --glass: rgba(30, 41, 59, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text: #f8fafc;
             --text-dim: #94a3b8;
-            --income: #22c55e;
-            --expense: #ef4444;
-            --fixed: #f59e0b;
-            --balance: #38bdf8;
-            --accent: #38bdf8;
+            --income: #34d399; /* Emerald Green */
+            --expense: #f87171;
+            --fixed: #fbbf24;
+            --balance: #22d3ee; /* Cyan */
+            --accent: #22d3ee;
             --edit: #f59e0b;
         }
 
@@ -28,68 +28,82 @@
         * { box-sizing: border-box; font-family: 'Heebo', sans-serif; }
         
         body { 
-            background: radial-gradient(circle at top right, #1e293b, #070b14);
+            background: radial-gradient(circle at 20% 10%, #1e293b, #050810);
             background-attachment: fixed;
             color: var(--text); padding: 15px; direction: rtl; min-height: 100vh;
         }
 
         .container { max-width: 600px; margin: 0 auto; padding-bottom: 60px; }
 
-        header { display: flex; align-items: center; justify-content: center; gap: 12px; margin: 20px 0; }
-        .header-icon { width: 42px; height: 42px; filter: drop-shadow(0 0 8px var(--accent)); }
-        .coin-svg { fill: var(--accent); animation: coinSpin 4s infinite linear; }
-        @keyframes coinSpin { 0%, 100% { transform: rotateY(0deg); } 50% { transform: rotateY(180deg); } }
+        header { display: flex; align-items: center; justify-content: center; gap: 18px; margin: 30px 0; }
+        
+        /* עיצוב לוגו "מגן הנתונים הזוהר" */
+        .logo-container {
+            width: 60px;
+            height: 60px;
+            position: relative;
+            filter: drop-shadow(0 0 15px rgba(34, 211, 238, 0.4));
+        }
+        .shield-base { fill: rgba(34, 211, 238, 0.1); stroke: var(--accent); stroke-width: 1.2; }
+        .data-bar { fill: var(--income); animation: pulseData 2s infinite ease-in-out; }
+        @keyframes pulseData {
+            0%, 100% { opacity: 0.6; transform: scaleY(1); }
+            50% { opacity: 1; transform: scaleY(1.1); }
+        }
 
-        h1 { font-size: 1.8rem; font-weight: 900; margin: 0; }
+        h1 { font-size: 2rem; font-weight: 900; margin: 0; letter-spacing: -1px; text-shadow: 0 0 20px rgba(255,255,255,0.1); }
         h1 span { color: var(--accent); }
 
-        .month-nav { display: flex; justify-content: center; align-items: center; gap: 15px; margin-bottom: 20px; background: var(--glass); padding: 8px; border-radius: 50px; border: 1px solid var(--glass-border); }
-        .nav-btn { background: var(--accent); color: var(--bg); border: none; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-weight: bold; }
+        .month-nav { display: flex; justify-content: center; align-items: center; gap: 15px; margin-bottom: 25px; background: var(--glass); padding: 10px; border-radius: 50px; border: 1px solid var(--glass-border); backdrop-filter: blur(10px); }
+        .nav-btn { background: var(--accent); color: var(--bg); border: none; width: 35px; height: 35px; border-radius: 50%; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .nav-btn:active { transform: scale(0.9); }
 
-        .summary-mini { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 15px; }
-        .mini-card { background: var(--glass); backdrop-filter: blur(12px); padding: 12px 2px; border-radius: 14px; text-align: center; border: 1px solid var(--glass-border); }
-        .mini-card span { display: block; font-size: 0.7rem; color: var(--text-dim); margin-bottom: 4px; }
-        .mini-card b { font-size: 0.85rem; white-space: nowrap; }
-        .mini-card highlight { border: 1px solid var(--balance); background: rgba(56, 189, 248, 0.1); }
+        .summary-mini { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
+        .mini-card { background: var(--glass); backdrop-filter: blur(15px); padding: 14px 2px; border-radius: 18px; text-align: center; border: 1px solid var(--glass-border); }
+        .mini-card span { display: block; font-size: 0.75rem; color: var(--text-dim); margin-bottom: 5px; }
+        .mini-card b { font-size: 0.9rem; font-weight: 700; }
+        .mini-card.highlight { border: 1px solid var(--balance); background: rgba(34, 211, 238, 0.05); }
 
-        .budget-progress-container { background: var(--glass); padding: 12px; border-radius: 15px; margin-bottom: 20px; border: 1px solid var(--glass-border); }
-        .progress-label { display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 8px; }
-        .progress-bar { height: 8px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; }
-        .progress-fill { height: 100%; width: 0%; background: var(--accent); transition: width 0.6s ease; }
+        .budget-progress-container { background: var(--glass); padding: 15px; border-radius: 20px; margin-bottom: 25px; border: 1px solid var(--glass-border); }
+        .progress-label { display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 10px; }
+        .progress-bar { height: 10px; background: rgba(255,255,255,0.05); border-radius: 20px; overflow: hidden; }
+        .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent), var(--income)); transition: width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1); }
 
-        .chart-section { background: var(--glass); padding: 20px; border-radius: 20px; margin-bottom: 25px; border: 1px solid var(--glass-border); display: flex; flex-direction: column; align-items: center; }
-        .chart-container { height: 130px; width: 130px; position: relative; }
+        .chart-section { background: var(--glass); padding: 25px; border-radius: 24px; margin-bottom: 30px; border: 1px solid var(--glass-border); display: flex; flex-direction: column; align-items: center; backdrop-filter: blur(10px); }
+        .chart-container { height: 140px; width: 140px; position: relative; }
 
-        .form-card { background: var(--glass); padding: 15px; border-radius: 18px; margin-bottom: 25px; border: 1px solid var(--glass-border); }
-        .input-group { display: flex; gap: 8px; flex-wrap: wrap; }
-        input, select, .btn-main { padding: 10px; border-radius: 10px; border: 1px solid var(--glass-border); background: rgba(15, 23, 42, 0.6); color: white; outline: none; font-size: 0.9rem; }
-        input { flex: 2; min-width: 100px; }
-        .btn-main { background: var(--accent); color: var(--bg); font-weight: 900; cursor: pointer; border: none; flex: 1; transition: 0.3s; }
+        .form-card { background: var(--glass); padding: 20px; border-radius: 22px; margin-bottom: 30px; border: 1px solid var(--glass-border); }
+        .input-group { display: flex; gap: 10px; flex-wrap: wrap; }
+        input, select, .btn-main { padding: 12px; border-radius: 12px; border: 1px solid var(--glass-border); background: rgba(15, 23, 42, 0.8); color: white; outline: none; font-size: 1rem; transition: 0.3s; }
+        input:focus { border-color: var(--accent); background: rgba(30, 41, 59, 0.9); }
+        input { flex: 2; min-width: 120px; }
+        .btn-main { background: var(--accent); color: var(--bg); font-weight: 900; cursor: pointer; border: none; flex: 1; }
+        .btn-main:hover { filter: brightness(1.1); }
 
-        .filter-bar { display: flex; justify-content: center; gap: 8px; margin-bottom: 15px; }
-        .filter-btn { background: var(--glass); border: 1px solid var(--glass-border); color: var(--text-dim); padding: 6px 14px; border-radius: 20px; cursor: pointer; font-size: 0.8rem; }
-        .filter-btn.active { background: var(--accent); color: var(--bg); font-weight: 700; }
+        .filter-bar { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; }
+        .filter-btn { background: var(--glass); border: 1px solid var(--glass-border); color: var(--text-dim); padding: 8px 18px; border-radius: 25px; cursor: pointer; font-size: 0.85rem; transition: 0.3s; }
+        .filter-btn.active { background: var(--accent); color: var(--bg); font-weight: 800; border-color: var(--accent); }
 
-        #list { min-height: 50px; margin-bottom: 30px; }
-        .item { background: var(--glass); margin-bottom: 10px; display: flex; justify-content: space-between; padding: 14px; border-radius: 12px; border: 1px solid var(--glass-border); align-items: center; animation: fadeIn 0.3s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        #list { margin-bottom: 40px; }
+        .item { background: var(--glass); margin-bottom: 12px; display: flex; justify-content: space-between; padding: 16px; border-radius: 16px; border: 1px solid var(--glass-border); align-items: center; animation: slideIn 0.4s ease-out; }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
         
-        .item.income { border-right: 4px solid var(--income); }
-        .item.expense { border-right: 4px solid var(--expense); }
-        .item.fixed { border-right: 4px solid var(--fixed); }
+        .item.income { border-right: 5px solid var(--income); }
+        .item.expense { border-right: 5px solid var(--expense); }
+        .item.fixed { border-right: 5px solid var(--fixed); }
 
-        /* סגנון חדש לתאריך הקטן */
-        .item-info { display: flex; flex-direction: column; gap: 2px; }
-        .item-date { font-size: 0.65rem; color: var(--text-dim); opacity: 0.8; }
+        .item-info { display: flex; flex-direction: column; gap: 4px; }
+        .item-date { font-size: 0.7rem; color: var(--text-dim); font-weight: 300; }
 
-        .actions-bottom { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 20px; }
-        .action-btn { background: var(--glass); border: 1px solid var(--glass-border); color: var(--text-dim); padding: 8px 15px; border-radius: 10px; cursor: pointer; font-size: 0.8rem; }
+        .actions-bottom { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; margin-top: 30px; }
+        .action-btn { background: var(--glass); border: 1px solid var(--glass-border); color: var(--text-dim); padding: 10px 20px; border-radius: 14px; cursor: pointer; font-size: 0.85rem; transition: 0.2s; }
+        .action-btn:hover { background: rgba(255,255,255,0.05); color: white; }
 
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 9999; backdrop-filter: blur(5px); }
-        .modal { background: #1e293b; padding: 25px; border-radius: 24px; width: 90%; max-width: 320px; text-align: center; border: 1px solid var(--glass-border); }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: none; justify-content: center; align-items: center; z-index: 9999; backdrop-filter: blur(8px); }
+        .modal { background: #111827; padding: 30px; border-radius: 28px; width: 90%; max-width: 340px; text-align: center; border: 1px solid var(--glass-border); }
         
-        #toast { position: fixed; top: -100px; left: 50%; transform: translateX(-50%); background: var(--expense); color: white; padding: 12px 25px; border-radius: 12px; z-index: 10000; transition: 0.5s; opacity: 0; font-weight: bold; pointer-events: none; }
-        #toast.show { top: 20px; opacity: 1; }
+        #toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: var(--expense); color: white; padding: 14px 30px; border-radius: 50px; z-index: 10000; transition: 0.5s; opacity: 0; font-weight: bold; box-shadow: 0 10px 30px rgba(239, 68, 68, 0.3); }
+        #toast.show { opacity: 1; bottom: 50px; }
     </style>
 </head>
 <body>
@@ -99,28 +113,37 @@
 <div class="modal-overlay" id="deleteModal">
     <div class="modal">
         <h3>למחוק פעולה זו?</h3>
-        <div style="display:flex; gap:10px; margin-top:20px;">
-            <button onclick="confirmDeleteAction()" style="flex:1; padding:12px; border-radius:10px; background:var(--expense); color:white; border:none; font-weight:700;">מחק</button>
-            <button onclick="closeModal('deleteModal')" style="flex:1; padding:12px; border-radius:10px; background:var(--glass-border); color:var(--text); border:none;">ביטול</button>
+        <p style="color:var(--text-dim); font-size:0.9rem;">לא ניתן לבטל פעולה זו.</p>
+        <div style="display:flex; gap:12px; margin-top:25px;">
+            <button onclick="confirmDeleteAction()" style="flex:1; padding:14px; border-radius:12px; background:var(--expense); color:white; border:none; font-weight:700;">מחק</button>
+            <button onclick="closeModal('deleteModal')" style="flex:1; padding:14px; border-radius:12px; background:rgba(255,255,255,0.05); color:var(--text); border:none;">ביטול</button>
         </div>
     </div>
 </div>
 
 <div class="modal-overlay" id="refreshModal">
     <div class="modal">
-        <div style="font-size: 2rem; margin-bottom: 10px;">🔄</div>
-        <h3>עדכון גרסה</h3>
-        <p style="color:var(--text-dim)">הנתונים שמורים. הדף יתרענן כעת.</p>
-        <button onclick="location.reload(true)" style="width:100%; padding:12px; border-radius:10px; background:var(--accent); color:var(--bg); border:none; font-weight:700;">רענן כעת</button>
+        <div style="font-size: 3rem; margin-bottom: 15px;">🚀</div>
+        <h3>גרסה v1.3.6 מוכנה</h3>
+        <p style="color:var(--text-dim)">המערכת עודכנה למראה "מגן הנתונים הזוהר".</p>
+        <button onclick="location.reload(true)" style="width:100%; padding:14px; border-radius:12px; background:var(--accent); color:var(--bg); border:none; font-weight:900; margin-top:15px;">רענן כעת</button>
     </div>
 </div>
 
 <div class="container">
     <header>
-        <div class="header-icon">
-            <svg viewBox="0 0 24 24" class="coin-svg" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/>
-                <path d="M12 7v10M9 9h6M9 15h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <div class="logo-container">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="shieldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:var(--accent);stop-opacity:0.2" />
+                        <stop offset="100%" style="stop-color:var(--accent);stop-opacity:0.05" />
+                    </linearGradient>
+                </defs>
+                <path class="shield-base" d="M12 2L4 5v6.09c0 5.05 3.41 9.76 8 10.91 4.59-1.15 8-5.86 8-10.91V5l-8-3z" fill="url(#shieldGrad)" />
+                <rect class="data-bar" x="8" y="14" width="1.5" height="3" rx="0.3" transform-origin="center bottom" />
+                <rect class="data-bar" x="11.2" y="11" width="1.5" height="6" rx="0.3" style="animation-delay: 0.2s" />
+                <rect class="data-bar" x="14.4" y="8" width="1.5" height="9" rx="0.3" style="animation-delay: 0.4s" />
             </svg>
         </div>
         <h1>Manager<span>Money</span></h1>
@@ -128,19 +151,19 @@
 
     <div class="month-nav">
         <button class="nav-btn" onclick="changeMonth(-1)">◀</button>
-        <h3 id="monthLabel" style="margin:0;"></h3>
+        <h3 id="monthLabel" style="margin:0; font-weight:900; font-size:1.1rem;"></h3>
         <button class="nav-btn" onclick="changeMonth(1)">▶</button>
     </div>
 
     <div class="summary-mini">
         <div class="mini-card"><span>הכנסות</span><b id="sumIncome" style="color:var(--income)">₪0</b></div>
         <div class="mini-card"><span>הוצאות</span><b id="sumExpense" style="color:var(--expense)">₪0</b></div>
-        <div class="mini-card"><span>קבוע</span><b id="sumFixed" style="color:var(--fixed)">₪0</b></div>
+        <div class="mini-card"><span>קבועות</span><b id="sumFixed" style="color:var(--fixed)">₪0</b></div>
         <div class="mini-card highlight"><span>יתרה</span><b id="sumBalance" style="color:var(--balance)">₪0</b></div>
     </div>
 
     <div class="budget-progress-container">
-        <div class="progress-label"><span>ניצול תקציב חודשי</span><span id="usagePercent">0%</span></div>
+        <div class="progress-label"><span>ניצול תקציב חודשי</span><span id="usagePercent" style="font-weight:900;">0%</span></div>
         <div class="progress-bar"><div id="progressFill" class="progress-fill"></div></div>
     </div>
 
@@ -150,7 +173,7 @@
 
     <div class="form-card">
         <div class="input-group">
-            <input type="text" id="desc" placeholder="תיאור">
+            <input type="text" id="desc" placeholder="תיאור הפעולה">
             <input type="number" id="amount" placeholder="סכום">
             <select id="type">
                 <option value="income">💰 הכנסה</option>
@@ -170,15 +193,15 @@
     <div id="list"></div>
 
     <div class="actions-bottom">
-        <button class="action-btn" style="color:var(--accent); font-weight:bold" onclick="document.getElementById('refreshModal').style.display='flex'">🔄 עדכון</button>
+        <button class="action-btn" style="color:var(--accent); font-weight:bold" onclick="document.getElementById('refreshModal').style.display='flex'">🚀 גרסה</button>
         <button class="action-btn" onclick="exportJSON()">💾 גיבוי</button>
         <button class="action-btn" onclick="exportCSV()">📊 אקסל</button>
         <button class="action-btn" onclick="document.getElementById('importFile').click()">🔄 מיזוג</button>
         <input type="file" id="importFile" style="display:none" onchange="smartMerge(event)">
     </div>
 
-    <footer style="text-align:center; padding: 20px; color: var(--text-dim); font-size: 0.7rem;">
-        Manager-Money v1.3.4 | אלכסנדר זבודיסקר 2026
+    <footer style="text-align:center; padding: 30px; color: var(--text-dim); font-size: 0.75rem; letter-spacing: 1px;">
+        MANAGER-MONEY v1.3.6 | אלכסנדר זבודיסקר 2026
     </footer>
 </div>
 
@@ -291,13 +314,13 @@
             listHTML += `
                 <div class="item ${e.type}">
                     <div class="item-info">
-                        <div>${icons[e.type]} ${e.desc}</div>
+                        <div style="font-weight:700;">${icons[e.type]} ${e.desc}</div>
                         <div class="item-date">${dateStr}</div>
                     </div>
                     <div style="display:flex; align-items:center; gap:12px;">
-                        <b>₪${e.amount.toLocaleString()}</b>
-                        <button onclick="editEntry(${e.id})" style="background:none; border:none; cursor:pointer; font-size:1.1rem;">✏️</button>
-                        <button onclick="openDeleteModal(${e.id})" style="background:none; border:none; cursor:pointer; font-size:1.1rem;">🗑️</button>
+                        <b style="font-size:1.1rem;">₪${e.amount.toLocaleString()}</b>
+                        <button onclick="editEntry(${e.id})" style="background:none; border:none; cursor:pointer; font-size:1.1rem; filter:grayscale(1);">✏️</button>
+                        <button onclick="openDeleteModal(${e.id})" style="background:none; border:none; cursor:pointer; font-size:1.1rem; filter:grayscale(1);">🗑️</button>
                     </div>
                 </div>`;
         });
@@ -309,7 +332,7 @@
     function updateChart(inc, exp, fix) {
         const ctx = document.getElementById('budgetChart').getContext('2d');
         const newData = (inc||exp||fix) ? [inc, exp, fix] : [1];
-        const newColors = (inc||exp||fix) ? ['#22c55e', '#ef4444', '#f59e0b'] : ['#1e293b'];
+        const newColors = (inc||exp||fix) ? ['#34d399', '#f87171', '#fbbf24'] : ['#1e293b'];
 
         if (myChart) {
             myChart.data.datasets[0].data = newData;
@@ -323,9 +346,9 @@
                     datasets: [{ data: newData, backgroundColor: newColors, borderWidth: 0 }]
                 },
                 options: { 
-                    cutout: '75%', 
+                    cutout: '78%', 
                     plugins: { legend: { display: false } },
-                    animation: { duration: 600 }
+                    animation: { duration: 800, easing: 'easeOutQuart' }
                 }
             });
         }
@@ -354,7 +377,7 @@
                     save(); 
                     alert("המיזוג הושלם בהצלחה!");
                 } else { throw new Error(); }
-            } catch(err) { alert("שגיאה: הקובץ אינו בפורמט תקין של גיבוי."); }
+            } catch(err) { alert("שגיאה בפורמט הקובץ."); }
         };
         reader.readAsText(ev.target.files[0]);
     }
