@@ -15,7 +15,7 @@
     <link rel="icon" type="image/png" href="icon.png">
     <link rel="apple-touch-icon" href="icon.png">
 
-    <link rel="manifest" href='data:application/manifest+json,{"name":"Manager Money 2026","short_name":"MoneyMgr","start_url":"index.html","display":"standalone","background_color":"#050810","theme_color":"#22d3ee","icons":[{"src":"icon.png","sizes":"192x192","type":"image/png"},{"src":"icon.png","sizes":"512x512","type":"image/png"}]}'>
+    <link rel="manifest" href='data:application/manifest+json,{"name":"Manager Money 2026","short_name":"MoneyMgr","start_url":"./index.html","display":"standalone","background_color":"#050810","theme_color":"#22d3ee","icons":[{"src":"icon.png","sizes":"192x192","type":"image/png","purpose":"any maskable"},{"src":"icon.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}]}'>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&display=swap" rel="stylesheet">
@@ -107,8 +107,8 @@
 <div class="modal-overlay" id="refreshModal">
     <div class="modal">
         <div style="font-size: 3rem; margin-bottom: 15px;">🚀</div>
-        <h3>גרסה v1.4.1 מוכנה</h3>
-        <p style="color:var(--text-dim)">המערכת מעודכנת. אם האייקון לא השתנה, נסה למחוק מטמון בדפדפן.</p>
+        <h3>גרסה v1.4.2 מוכנה</h3>
+        <p style="color:var(--text-dim)">אם האייקון לא התעדכן, יש למחוק את האפליקציה הקודמת ולהתקין מחדש.</p>
         <button onclick="location.reload(true)" style="width:100%; padding:14px; border-radius:12px; background:var(--accent); color:var(--bg); border:none; font-weight:900; margin-top:15px;">רענן כעת</button>
         <button onclick="closeModal('refreshModal')" style="margin-top:10px; background:none; border:none; color:var(--text-dim)">סגור</button>
     </div>
@@ -149,21 +149,6 @@
         <div class="chart-container"><canvas id="budgetChart"></canvas></div>
     </div>
 
-    <div class="form-card">
-        <div class="input-group">
-            <input type="text" id="desc" placeholder="תיאור הפעולה" autocomplete="off">
-            <div class="row-inputs">
-                <input type="number" id="amount" placeholder="סכום (₪)" inputmode="decimal">
-                <select id="type">
-                    <option value="income">💰 הכנסה</option>
-                    <option value="expense" selected>💸 הוצאה</option>
-                    <option value="fixed">📅 קבוע</option>
-                </select>
-            </div>
-            <button class="btn-main" id="saveBtn" onclick="addEntry()">שמור פעולה</button>
-        </div>
-    </div>
-
     <div id="list"></div>
 
     <div class="actions-bottom">
@@ -175,62 +160,36 @@
     </div>
 
     <footer style="text-align:center; padding: 30px; color: var(--text-dim); font-size: 0.7rem;">
-        MANAGER-MONEY v1.4.1 | 2026
+        MANAGER-MONEY v1.4.2 | 2026
     </footer>
 </div>
 
 <script>
+    // Service Worker חזק יותר שעומד בדרישות של Google Chrome
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-            const swCode = 'self.addEventListener("install",e=>e.waitUntil(self.skipWaiting()));self.addEventListener("activate",e=>e.waitUntil(self.clients.claim()));self.addEventListener("fetch",e=>e.respondWith(fetch(e.request)));';
+            const swCode = `
+                const CACHE_NAME = 'money-mgr-v1';
+                self.addEventListener('install', (e) => self.skipWaiting());
+                self.addEventListener('activate', (e) => e.waitUntil(self.clients.claim()));
+                self.addEventListener('fetch', (e) => {
+                    e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
+                });
+            `;
             const blob = new Blob([swCode], {type: 'text/javascript'});
-            navigator.serviceWorker.register(URL.createObjectURL(blob));
+            navigator.serviceWorker.register(URL.createObjectURL(blob))
+                .then(() => console.log('SW Registered'))
+                .catch(err => console.log('SW Failed', err));
         });
     }
 
     let entries = JSON.parse(localStorage.getItem('budget_alex_2026')) || [];
     let viewDate = new Date();
-    let editId = null;
-    let pendingDeleteId = null;
     let myChart = null;
-
-    function showToast() {
-        const t = document.getElementById('toast');
-        t.classList.add('show');
-        setTimeout(() => t.classList.remove('show'), 3000);
-    }
-
-    function openDeleteModal(id) { pendingDeleteId = id; document.getElementById('deleteModal').style.display = 'flex'; }
-    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-    function confirmDeleteAction() { entries = entries.filter(e => e.id !== pendingDeleteId); save(); closeModal('deleteModal'); }
 
     function save() { localStorage.setItem('budget_alex_2026', JSON.stringify(entries)); render(); }
     function changeMonth(n) { viewDate.setMonth(viewDate.getMonth() + n); render(); }
-
-    function addEntry() {
-        const d = document.getElementById('desc'), a = document.getElementById('amount'), t = document.getElementById('type'), btn = document.getElementById('saveBtn');
-        if(!d.value || !a.value) { showToast(); return; }
-        if(editId) {
-            const i = entries.findIndex(e => e.id === editId);
-            if(i !== -1) entries[i] = {...entries[i], desc: d.value, amount: parseFloat(a.value), type: t.value};
-            editId = null; btn.innerText = "שמור פעולה";
-        } else {
-            const isCurrentMonth = new Date().getMonth() === viewDate.getMonth() && new Date().getFullYear() === viewDate.getFullYear();
-            const dateToSave = isCurrentMonth ? new Date().toISOString() : new Date(viewDate.getFullYear(), viewDate.getMonth(), 15).toISOString();
-            entries.push({id: Date.now(), desc: d.value, amount: parseFloat(a.value), type: t.value, date: dateToSave});
-        }
-        d.value = ''; a.value = ''; save();
-    }
-
-    function editEntry(id) {
-        const e = entries.find(x => x.id === id);
-        if(!e) return;
-        document.getElementById('desc').value = e.desc;
-        document.getElementById('amount').value = e.amount;
-        document.getElementById('type').value = e.type;
-        editId = id; document.getElementById('saveBtn').innerText = "עדכן שינויים";
-        window.scrollTo({ top: 100, behavior: 'smooth' });
-    }
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
     function render() {
         const mNames = ["ינואר","פברואר","מרץ","אפריל","מאי","יוני","יולי","אוגוסט","ספטמבר","אוקטובר","נובמבר","דצמבר"];
@@ -258,7 +217,7 @@
         let listHTML = '';
         monthEntries.sort((a,b) => b.id - a.id).forEach(e => {
             const d = new Date(e.date);
-            listHTML += `<div class="item ${e.type}"><div><b>${icons[e.type]} ${e.desc}</b><br><small>${d.getDate()}/${d.getMonth()+1}</small></div><div style="display:flex; align-items:center; gap:10px;"><b>₪${e.amount.toLocaleString()}</b><button onclick="editEntry(${e.id})" style="background:none; border:none;">✏️</button><button onclick="openDeleteModal(${e.id})" style="background:none; border:none;">🗑️</button></div></div>`;
+            listHTML += `<div class="item ${e.type}"><div><b>${icons[e.type]} ${e.desc}</b><br><small>${d.getDate()}/${d.getMonth()+1}</small></div><div><b>₪${e.amount.toLocaleString()}</b></div></div>`;
         });
         document.getElementById('list').innerHTML = listHTML;
         updateChart(inc, exp, fix);
