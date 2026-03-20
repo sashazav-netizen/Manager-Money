@@ -12,10 +12,10 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="MoneyMgr">
     
-    <link rel="icon" type="image/png" href="https://img.icons8.com/fluency/512/safe-ok.png">
-    <link rel="apple-touch-icon" href="https://img.icons8.com/fluency/512/safe-ok.png">
+    <link rel="icon" type="image/png" href="icon.png">
+    <link rel="apple-touch-icon" href="icon.png">
 
-    <link rel="manifest" href='data:application/manifest+json,{"name":"Manager Money 2026","short_name":"MoneyMgr","start_url":".","display":"standalone","background_color":"#050810","theme_color":"#22d3ee","icons":[{"src":"https://img.icons8.com/fluency/512/safe-ok.png","sizes":"512x512","type":"image/png"}]}'>
+    <link rel="manifest" href='data:application/manifest+json,{"name":"Manager Money 2026","short_name":"MoneyMgr","start_url":".","display":"standalone","background_color":"#050810","theme_color":"#22d3ee","icons":[{"src":"icon.png","sizes":"192x192","type":"image/png"},{"src":"icon.png","sizes":"512x512","type":"image/png"}]}'>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&display=swap" rel="stylesheet">
@@ -112,8 +112,8 @@
 <div class="modal-overlay" id="refreshModal">
     <div class="modal">
         <div style="font-size: 3rem; margin-bottom: 15px;">🚀</div>
-        <h3>גרסה v1.3.8 מוכנה</h3>
-        <p style="color:var(--text-dim)">מערכת מעודכנת להתקנה כאפליקציה.</p>
+        <h3>גרסה v1.3.9 מוכנה</h3>
+        <p style="color:var(--text-dim)">מערכת מעודכנת עם תמיכה באייקון ייחודי.</p>
         <button onclick="location.reload(true)" style="width:100%; padding:14px; border-radius:12px; background:var(--accent); color:var(--bg); border:none; font-weight:900; margin-top:15px;">רענן כעת</button>
     </div>
 </div>
@@ -179,11 +179,12 @@
     </div>
 
     <footer style="text-align:center; padding: 30px; color: var(--text-dim); font-size: 0.7rem;">
-        MANAGER-MONEY v1.3.8 | אלכסנדר זבודיסקר 2026
+        MANAGER-MONEY v1.3.9 | אלכסנדר זבודיסקר 2026
     </footer>
 </div>
 
 <script>
+    // רישום Service Worker פיקטיבי לצורך PWA
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('data:text/javascript;base64,' + btoa('self.addEventListener("fetch", (e) => { e.respondWith(fetch(e.request)); });'));
     }
