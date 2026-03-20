@@ -4,113 +4,142 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <title>Manager-Money | 2026</title>
+    <title>Manager-Money | אלכסנדר 2026</title>
     
-    <meta name="theme-color" content="#050810">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="MoneyMgr">
-    
-    <link rel="icon" type="image/png" href="icon.png">
-    <link rel="apple-touch-icon" href="icon.png">
-
-    <link rel="manifest" href='data:application/manifest+json,{"name":"Manager Money 2026","short_name":"MoneyMgr","start_url":"./index.html","display":"standalone","background_color":"#050810","theme_color":"#22d3ee","icons":[{"src":"icon.png","sizes":"192x192","type":"image/png","purpose":"any maskable"},{"src":"icon.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}]}'>
-
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            --bg: #050810;
-            --glass: rgba(30, 41, 59, 0.6);
-            --glass-border: rgba(255, 255, 255, 0.1);
-            --text: #f8fafc;
+            --bg: #070b14;
+            --glass: rgba(30, 41, 59, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.12);
+            --text: #f1f5f9;
             --text-dim: #94a3b8;
-            --income: #34d399;
-            --expense: #f87171;
-            --fixed: #fbbf24;
-            --balance: #22d3ee;
-            --accent: #22d3ee;
-            --edit: #f59e0b;
+            --income: #22c55e;
+            --expense: #ef4444;
+            --fixed: #f59e0b;
+            --balance: #38bdf8;
+            --accent: #38bdf8;
         }
 
         html, body { max-width: 100%; overflow-x: hidden; margin: 0; padding: 0; background: var(--bg); }
-        * { box-sizing: border-box; font-family: 'Heebo', sans-serif; -webkit-tap-highlight-color: transparent; }
+        * { box-sizing: border-box; font-family: 'Heebo', sans-serif; }
         
         body { 
-            background: radial-gradient(circle at 20% 10%, #1e293b, #050810);
+            background: radial-gradient(circle at top right, #1e293b, #070b14);
             background-attachment: fixed;
             color: var(--text); padding: 15px; direction: rtl; min-height: 100vh;
         }
 
-        .container { max-width: 600px; margin: 0 auto; padding-bottom: 60px; }
+        .container { max-width: 600px; margin: 0 auto; padding-bottom: 40px; }
+
         header { display: flex; align-items: center; justify-content: center; gap: 18px; margin: 30px 0; }
-        .logo-container { width: 60px; height: 60px; filter: drop-shadow(0 0 15px rgba(34, 211, 238, 0.4)); }
-        .shield-base { fill: rgba(34, 211, 238, 0.1); stroke: var(--accent); stroke-width: 1.2; }
-        .data-bar { fill: var(--income); animation: pulseData 2s infinite ease-in-out; }
-        @keyframes pulseData { 0%, 100% { opacity: 0.6; transform: scaleY(1); } 50% { opacity: 1; transform: scaleY(1.1); } }
+        
+        /* עיצוב לוגו יצירתי ומושך עין (SVG) */
+        .logo-container {
+            width: 60px;
+            height: 60px;
+            filter: drop-shadow(0 0 15px rgba(56, 189, 248, 0.6)); /* אפקט הילה כחולה */
+        }
+
+        /* המגן (בסיס הלוגו) - אפקט דופק */
+        .shield-base {
+            fill: rgba(56, 189, 248, 0.1);
+            stroke: var(--accent);
+            stroke-width: 1.5;
+            animation: shieldPulse 3s infinite ease-in-out;
+            transform-origin: center;
+        }
+
+        /* עמודי הנתונים/צמיחה - אנימציה מחזורית */
+        .data-bar {
+            fill: var(--income); /* צבע ירוק לצמיחה */
+            animation: barFlow 2s infinite ease-in-out;
+            transform-origin: center bottom;
+        }
+
+        /* הגדרת האנימציות */
+        @keyframes shieldPulse {
+            0%, 100% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.05); opacity: 1; }
+        }
+
+        @keyframes barFlow {
+            0%, 100% { transform: scaleY(0.7); opacity: 0.5; }
+            50% { transform: scaleY(1); opacity: 1; }
+        }
+
+        /* יצירת השהייה בין העמודים לאפקט זרימה */
+        .bar-1 { animation-delay: 0s; }
+        .bar-2 { animation-delay: 0.3s; }
+        .bar-3 { animation-delay: 0.6s; }
+
         h1 { font-size: 2rem; font-weight: 900; margin: 0; letter-spacing: -1px; }
         h1 span { color: var(--accent); }
 
-        .month-nav { display: flex; justify-content: center; align-items: center; gap: 15px; margin-bottom: 25px; background: var(--glass); padding: 10px; border-radius: 50px; border: 1px solid var(--glass-border); backdrop-filter: blur(10px); }
+        .month-nav { display: flex; justify-content: center; align-items: center; gap: 15px; margin-bottom: 25px; background: var(--glass); padding: 10px; border-radius: 50px; border: 1px solid var(--glass-border); }
         .nav-btn { background: var(--accent); color: var(--bg); border: none; width: 35px; height: 35px; border-radius: 50%; cursor: pointer; font-weight: bold; }
 
-        .summary-mini { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 20px; }
-        .mini-card { background: var(--glass); backdrop-filter: blur(15px); padding: 12px 2px; border-radius: 18px; text-align: center; border: 1px solid var(--glass-border); }
+        .summary-mini { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 15px; }
+        .mini-card { background: var(--glass); backdrop-filter: blur(12px); padding: 12px 2px; border-radius: 14px; text-align: center; border: 1px solid var(--glass-border); }
         .mini-card span { display: block; font-size: 0.7rem; color: var(--text-dim); margin-bottom: 4px; }
-        .mini-card b { font-size: 0.85rem; font-weight: 700; }
-        .mini-card.highlight { border: 1px solid var(--balance); background: rgba(34, 211, 238, 0.05); }
+        .mini-card b { font-size: 0.85rem; white-space: nowrap; }
+        .mini-card.highlight { border: 1px solid var(--balance); background: rgba(56, 189, 248, 0.1); }
 
-        .budget-progress-container { background: var(--glass); padding: 15px; border-radius: 20px; margin-bottom: 25px; border: 1px solid var(--glass-border); }
-        .progress-label { display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 10px; }
-        .progress-bar { height: 10px; background: rgba(255,255,255,0.05); border-radius: 20px; overflow: hidden; }
-        .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent), var(--income)); transition: width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .budget-progress-container { background: var(--glass); padding: 12px; border-radius: 15px; margin-bottom: 20px; border: 1px solid var(--glass-border); }
+        .progress-label { display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 8px; }
+        .progress-bar { height: 8px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; }
+        .progress-fill { height: 100%; width: 0%; background: var(--accent); transition: width 0.6s ease; }
 
-        .chart-section { background: var(--glass); padding: 20px; border-radius: 24px; margin-bottom: 30px; border: 1px solid var(--glass-border); display: flex; flex-direction: column; align-items: center; }
-        .chart-container { height: 130px; width: 130px; }
+        .chart-section { background: var(--glass); padding: 20px; border-radius: 20px; margin-bottom: 25px; border: 1px solid var(--glass-border); display: flex; flex-direction: column; align-items: center; }
+        .chart-container { height: 130px; width: 130px; position: relative; }
 
-        .form-card { background: var(--glass); padding: 18px; border-radius: 22px; margin-bottom: 30px; border: 1px solid var(--glass-border); }
-        .input-group { display: flex; flex-direction: column; gap: 10px; }
-        .row-inputs { display: flex; gap: 8px; }
-        input, select, .btn-main { padding: 12px; border-radius: 12px; border: 1px solid var(--glass-border); background: rgba(15, 23, 42, 0.8); color: white; outline: none; font-size: 1rem; width: 100%; }
-        .btn-main { background: var(--accent); color: var(--bg); font-weight: 900; cursor: pointer; border: none; }
+        .form-card { background: var(--glass); padding: 15px; border-radius: 18px; margin-bottom: 25px; border: 1px solid var(--glass-border); }
+        .input-group { display: flex; gap: 8px; flex-wrap: wrap; }
+        input, select, .btn-main { padding: 10px; border-radius: 10px; border: 1px solid var(--glass-border); background: rgba(15, 23, 42, 0.6); color: white; outline: none; font-size: 0.9rem; }
+        input { flex: 2; min-width: 100px; }
+        .btn-main { background: var(--accent); color: var(--bg); font-weight: 900; cursor: pointer; border: none; flex: 1; }
 
-        .item { background: var(--glass); margin-bottom: 12px; display: flex; justify-content: space-between; padding: 16px; border-radius: 16px; border: 1px solid var(--glass-border); align-items: center; }
-        .item.income { border-right: 5px solid var(--income); }
-        .item.expense { border-right: 5px solid var(--expense); }
-        .item.fixed { border-right: 5px solid var(--fixed); }
+        .filter-bar { display: flex; justify-content: center; gap: 8px; margin-bottom: 15px; }
+        .filter-btn { background: var(--glass); border: 1px solid var(--glass-border); color: var(--text-dim); padding: 6px 14px; border-radius: 20px; cursor: pointer; font-size: 0.8rem; }
+        .filter-btn.active { background: var(--accent); color: var(--bg); font-weight: 700; }
 
-        .actions-bottom { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 30px; }
-        .action-btn { background: var(--glass); border: 1px solid var(--glass-border); color: var(--text-dim); padding: 10px 15px; border-radius: 12px; cursor: pointer; font-size: 0.8rem; }
+        #list { min-height: 50px; margin-bottom: 30px; }
+        .item { background: var(--glass); margin-bottom: 10px; display: flex; justify-content: space-between; padding: 14px; border-radius: 12px; border: 1px solid var(--glass-border); align-items: center; }
+        .item.income { border-right: 4px solid var(--income); }
+        .item.expense { border-right: 4px solid var(--expense); }
+        .item.fixed { border-right: 4px solid var(--fixed); }
+
+        .actions-bottom { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 20px; }
+        .action-btn { background: var(--glass); border: 1px solid var(--glass-border); color: var(--text-dim); padding: 8px 15px; border-radius: 10px; cursor: pointer; font-size: 0.8rem; }
 
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 9999; backdrop-filter: blur(5px); }
-        .modal { background: #111827; padding: 25px; border-radius: 24px; width: 90%; max-width: 320px; text-align: center; border: 1px solid var(--glass-border); }
-        #toast { position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%); background: var(--expense); color: white; padding: 14px 25px; border-radius: 50px; z-index: 10000; transition: 0.4s; font-weight: bold; }
-        #toast.show { bottom: 30px; }
+        .modal { background: #1e293b; padding: 25px; border-radius: 24px; width: 90%; max-width: 320px; text-align: center; border: 1px solid var(--glass-border); }
+        
+        #toast { position: fixed; top: -100px; left: 50%; transform: translateX(-50%); background: var(--expense); color: white; padding: 12px 25px; border-radius: 12px; z-index: 10000; transition: 0.5s; opacity: 0; }
+        #toast.show { top: 20px; opacity: 1; }
     </style>
 </head>
 <body>
 
-<div id="toast">⚠️ נא למלא תיאור וסכום</div>
+<div id="toast">⚠️ חסרים נתונים</div>
 
 <div class="modal-overlay" id="deleteModal">
     <div class="modal">
         <h3>למחוק פעולה זו?</h3>
         <div style="display:flex; gap:10px; margin-top:20px;">
             <button onclick="confirmDeleteAction()" style="flex:1; padding:12px; border-radius:10px; background:var(--expense); color:white; border:none; font-weight:700;">מחק</button>
-            <button onclick="closeModal('deleteModal')" style="flex:1; padding:12px; border-radius:10px; background:rgba(255,255,255,0.05); color:var(--text); border:none;">ביטול</button>
+            <button onclick="closeModal('deleteModal')" style="flex:1; padding:12px; border-radius:10px; background:var(--glass-border); color:var(--text); border:none;">ביטול</button>
         </div>
     </div>
 </div>
 
 <div class="modal-overlay" id="refreshModal">
     <div class="modal">
-        <div style="font-size: 3rem; margin-bottom: 15px;">🚀</div>
-        <h3>גרסה v1.4.2 מוכנה</h3>
-        <p style="color:var(--text-dim)">אם האייקון לא התעדכן, יש למחוק את האפליקציה הקודמת ולהתקין מחדש.</p>
-        <button onclick="location.reload(true)" style="width:100%; padding:14px; border-radius:12px; background:var(--accent); color:var(--bg); border:none; font-weight:900; margin-top:15px;">רענן כעת</button>
-        <button onclick="closeModal('refreshModal')" style="margin-top:10px; background:none; border:none; color:var(--text-dim)">סגור</button>
+        <h3>🔄 עדכון גרסה</h3>
+        <p>הדף יתרענן לקבלת הגדרות חדשות.</p>
+        <button onclick="location.reload(true)" style="width:100%; padding:12px; border-radius:10px; background:var(--accent); color:var(--bg); border:none; font-weight:700;">רענן עכשיו</button>
     </div>
 </div>
 
@@ -118,10 +147,10 @@
     <header>
         <div class="logo-container">
             <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path class="shield-base" d="M12 2L4 5v6.09c0 5.05 3.41 9.76 8 10.91 4.59-1.15 8-5.86 8-10.91V5l-8-3z" fill="none" />
-                <rect class="data-bar" x="8" y="14" width="1.5" height="3" rx="0.3" transform-origin="center bottom" />
-                <rect class="data-bar" x="11.2" y="11" width="1.5" height="6" rx="0.3" style="animation-delay: 0.2s" />
-                <rect class="data-bar" x="14.4" y="8" width="1.5" height="9" rx="0.3" style="animation-delay: 0.4s" />
+                <path class="shield-base" d="M12 2L4 5v6.09c0 5.05 3.41 9.76 8 10.91 4.59-1.15 8-5.86 8-10.91V5l-8-3z"/>
+                <rect class="data-bar bar-1" x="7" y="14" width="2.5" height="4" rx="1"/>
+                <rect class="data-bar bar-2" x="10.75" y="11" width="2.5" height="7" rx="1"/>
+                <rect class="data-bar bar-3" x="14.5" y="8" width="2.5" height="10" rx="1"/>
             </svg>
         </div>
         <h1>Manager<span>Money</span></h1>
@@ -136,7 +165,7 @@
     <div class="summary-mini">
         <div class="mini-card"><span>הכנסות</span><b id="sumIncome" style="color:var(--income)">₪0</b></div>
         <div class="mini-card"><span>הוצאות</span><b id="sumExpense" style="color:var(--expense)">₪0</b></div>
-        <div class="mini-card"><span>קבועות</span><b id="sumFixed" style="color:var(--fixed)">₪0</b></div>
+        <div class="mini-card"><span>קבוע</span><b id="sumFixed" style="color:var(--fixed)">₪0</b></div>
         <div class="mini-card highlight"><span>יתרה</span><b id="sumBalance" style="color:var(--balance)">₪0</b></div>
     </div>
 
@@ -149,120 +178,180 @@
         <div class="chart-container"><canvas id="budgetChart"></canvas></div>
     </div>
 
+    <div class="form-card">
+        <div class="input-group">
+            <input type="text" id="desc" placeholder="תיאור">
+            <input type="number" id="amount" placeholder="סכום">
+            <select id="type">
+                <option value="income">💰 הכנסה</option>
+                <option value="expense">💸 הוצאה</option>
+                <option value="fixed">📅 קבוע</option>
+            </select>
+            <button class="btn-main" id="saveBtn" onclick="addEntry()">שמור</button>
+        </div>
+    </div>
+
+    <div class="filter-bar">
+        <button class="filter-btn active" onclick="setFilter('all', this)">הכל</button>
+        <button class="filter-btn" onclick="setFilter('income', this)">הכנסות</button>
+        <button class="filter-btn" onclick="setFilter('expense', this)">הוצאות</button>
+    </div>
+
     <div id="list"></div>
 
     <div class="actions-bottom">
-        <button class="action-btn" style="color:var(--accent); font-weight:bold" onclick="document.getElementById('refreshModal').style.display='flex'">🚀 גרסה</button>
+        <button class="action-btn" style="color:var(--accent)" onclick="document.getElementById('refreshModal').style.display='flex'">🔄 עדכון</button>
         <button class="action-btn" onclick="exportJSON()">💾 גיבוי</button>
         <button class="action-btn" onclick="exportCSV()">📊 אקסל</button>
         <button class="action-btn" onclick="document.getElementById('importFile').click()">🔄 מיזוג</button>
         <input type="file" id="importFile" style="display:none" onchange="smartMerge(event)">
     </div>
 
-    <footer style="text-align:center; padding: 30px; color: var(--text-dim); font-size: 0.7rem;">
-        MANAGER-MONEY v1.4.2 | 2026
+    <footer style="text-align:center; padding: 20px; color: var(--text-dim); font-size: 0.7rem;">
+        Manager-Money v1.5.2 | אלכסנדר 2026
     </footer>
 </div>
 
 <script>
-    // Service Worker חזק יותר שעומד בדרישות של Google Chrome
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            const swCode = `
-                const CACHE_NAME = 'money-mgr-v1';
-                self.addEventListener('install', (e) => self.skipWaiting());
-                self.addEventListener('activate', (e) => e.waitUntil(self.clients.claim()));
-                self.addEventListener('fetch', (e) => {
-                    e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
-                });
-            `;
-            const blob = new Blob([swCode], {type: 'text/javascript'});
-            navigator.serviceWorker.register(URL.createObjectURL(blob))
-                .then(() => console.log('SW Registered'))
-                .catch(err => console.log('SW Failed', err));
-        });
-    }
-
     let entries = JSON.parse(localStorage.getItem('budget_alex_2026')) || [];
     let viewDate = new Date();
+    let editId = null;
+    let pendingDeleteId = null;
+    let currentFilter = 'all';
     let myChart = null;
 
-    function save() { localStorage.setItem('budget_alex_2026', JSON.stringify(entries)); render(); }
-    function changeMonth(n) { viewDate.setMonth(viewDate.getMonth() + n); render(); }
+    function openDeleteModal(id) { pendingDeleteId = id; document.getElementById('deleteModal').style.display = 'flex'; }
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+    function confirmDeleteAction() { entries = entries.filter(e => e.id !== pendingDeleteId); save(); closeModal('deleteModal'); }
+
+    function save() { 
+        localStorage.setItem('budget_alex_2026', JSON.stringify(entries)); 
+        render(); 
+    }
+
+    function changeMonth(n) { viewDate.setMonth(viewDate.getMonth() + n); render(); }
+    
+    function setFilter(type, btn) { 
+        currentFilter = type; 
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active'); 
+        render(); 
+    }
+
+    function addEntry() {
+        const d = document.getElementById('desc'), a = document.getElementById('amount'), t = document.getElementById('type');
+        if(!d.value || !a.value) {
+            const toast = document.getElementById('toast');
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+            return;
+        }
+        
+        if(editId) {
+            const i = entries.findIndex(e => e.id === editId);
+            entries[i] = {...entries[i], desc: d.value, amount: parseFloat(a.value), type: t.value};
+            editId = null; document.getElementById('saveBtn').innerText = "שמור";
+        } else {
+            entries.push({
+                id: Date.now(), 
+                desc: d.value, 
+                amount: parseFloat(a.value), 
+                type: t.value, 
+                date: new Date(viewDate.getFullYear(), viewDate.getMonth(), 15).toISOString()
+            });
+        }
+        d.value = ''; a.value = ''; save();
+    }
+
+    function editEntry(id) {
+        const e = entries.find(x => x.id === id);
+        document.getElementById('desc').value = e.desc;
+        document.getElementById('amount').value = e.amount;
+        document.getElementById('type').value = e.type;
+        editId = id; document.getElementById('saveBtn').innerText = "עדכן";
+        window.scrollTo({ top: 100, behavior: 'smooth' });
+    }
 
     function render() {
         const mNames = ["ינואר","פברואר","מרץ","אפריל","מאי","יוני","יולי","אוגוסט","ספטמבר","אוקטובר","נובמבר","דצמבר"];
         const m = viewDate.getMonth(), y = viewDate.getFullYear();
         document.getElementById('monthLabel').innerText = `${mNames[m]} ${y}`;
-        const monthEntries = entries.filter(e => { const d = new Date(e.date); return d.getMonth() === m && d.getFullYear() === y; });
-        
+
+        const monthEntries = entries.filter(e => {
+            const d = new Date(e.date);
+            return d.getMonth() === m && d.getFullYear() === y;
+        });
+
         let inc = 0, exp = 0, fix = 0;
-        monthEntries.forEach(e => { if(e.type==='income') inc+=e.amount; else if(e.type==='expense') exp+=e.amount; else fix+=e.amount; });
-        
+        monthEntries.forEach(e => {
+            if(e.type==='income') inc+=e.amount; else if(e.type==='expense') exp+=e.amount; else fix+=e.amount;
+        });
+
         document.getElementById('sumIncome').innerText = `₪${inc.toLocaleString()}`;
         document.getElementById('sumExpense').innerText = `₪${exp.toLocaleString()}`;
         document.getElementById('sumFixed').innerText = `₪${fix.toLocaleString()}`;
-        
         const bal = inc - (exp + fix);
-        const balEl = document.getElementById('sumBalance');
-        balEl.innerText = `₪${bal.toLocaleString()}`;
-        balEl.style.color = bal >= 0 ? 'var(--balance)' : 'var(--expense)';
-        
+        document.getElementById('sumBalance').innerText = `₪${bal.toLocaleString()}`;
+        document.getElementById('sumBalance').style.color = bal >= 0 ? 'var(--balance)' : 'var(--expense)';
+
         const usage = inc > 0 ? Math.min(Math.round(((exp+fix) / inc) * 100), 100) : 0;
         document.getElementById('usagePercent').innerText = usage + '%';
         document.getElementById('progressFill').style.width = usage + '%';
-        
+
+        const filtered = currentFilter === 'all' ? monthEntries : monthEntries.filter(x => x.type === currentFilter);
         const icons = {income:'💰', expense:'💸', fixed:'📅'};
+        
         let listHTML = '';
-        monthEntries.sort((a,b) => b.id - a.id).forEach(e => {
-            const d = new Date(e.date);
-            listHTML += `<div class="item ${e.type}"><div><b>${icons[e.type]} ${e.desc}</b><br><small>${d.getDate()}/${d.getMonth()+1}</small></div><div><b>₪${e.amount.toLocaleString()}</b></div></div>`;
+        filtered.sort((a,b) => b.id - a.id).forEach(e => {
+            listHTML += `
+                <div class="item ${e.type}">
+                    <div>${icons[e.type]} ${e.desc}</div>
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <b>₪${e.amount.toLocaleString()}</b>
+                        <button onclick="editEntry(${e.id})" style="background:none; border:none; cursor:pointer;">✏️</button>
+                        <button onclick="openDeleteModal(${e.id})" style="background:none; border:none; cursor:pointer;">🗑️</button>
+                    </div>
+                </div>`;
         });
         document.getElementById('list').innerHTML = listHTML;
-        updateChart(inc, exp, fix);
-    }
 
-    function updateChart(inc, exp, fix) {
+        if(myChart) myChart.destroy();
         const ctx = document.getElementById('budgetChart').getContext('2d');
-        const newData = (inc||exp||fix) ? [inc, exp, fix] : [1];
-        if (myChart) { 
-            myChart.data.datasets[0].data = newData; 
-            myChart.update(); 
-        } else { 
-            myChart = new Chart(ctx, { 
-                type: 'doughnut', 
-                data: { datasets: [{ data: newData, backgroundColor: ['#34d399', '#f87171', '#fbbf24'], borderWidth: 0 }] }, 
-                options: { cutout: '78%', plugins: { legend: { display: false } } } 
-            }); 
-        }
+        myChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                datasets: [{
+                    data: (inc||exp||fix) ? [inc, exp, fix] : [1],
+                    backgroundColor: (inc||exp||fix) ? ['#22c55e', '#ef4444', '#f59e0b'] : ['#1e293b'],
+                    borderWidth: 0
+                }]
+            },
+            options: { cutout: '75%', plugins: { legend: { display: false } } }
+        });
     }
 
     function exportJSON() {
         const blob = new Blob([JSON.stringify(entries)], {type:'application/json'});
-        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `budget_backup.json`; a.click();
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'budget_bak.json'; a.click();
     }
     
     function exportCSV() {
         let csv = "\uFEFFתאריך,תיאור,סוג,סכום\n";
         entries.forEach(e => csv += `${new Date(e.date).toLocaleDateString()},${e.desc},${e.type},${e.amount}\n`);
         const blob = new Blob([csv], {type:'text/csv'});
-        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'budget_export.csv'; a.click();
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'budget.csv'; a.click();
     }
 
     function smartMerge(ev) {
         const reader = new FileReader();
         reader.onload = (e) => {
-            try {
-                const data = JSON.parse(e.target.result);
-                if (Array.isArray(data)) {
-                    data.forEach(ne => { if(!entries.find(old => old.id === ne.id)) entries.push(ne); });
-                    save(); 
-                }
-            } catch(err) { alert("שגיאה בפורמט."); }
+            const data = JSON.parse(e.target.result);
+            data.forEach(ne => { if(!entries.find(old => old.id === ne.id)) entries.push(ne); });
+            save(); alert("המיזוג הושלם!");
         };
         reader.readAsText(ev.target.files[0]);
     }
+
     render();
 </script>
 </body>
