@@ -72,19 +72,18 @@
         .chart-section { background: var(--glass); padding: 25px; border-radius: 24px; margin-bottom: 30px; border: 1px solid var(--glass-border); display: flex; flex-direction: column; align-items: center; }
         .chart-container { height: 140px; width: 140px; position: relative; }
 
-        /* עיצוב שדות קלט מוקטנים ועדינים */
         .form-card { background: var(--glass); padding: 18px; border-radius: 22px; margin-bottom: 30px; border: 1px solid var(--glass-border); }
         .input-group { display: flex; flex-direction: column; gap: 10px; }
         .row-inputs { display: flex; gap: 8px; }
         
         input, select, .btn-main { 
-            padding: 10px 14px; /* הקטנת ה-padding מ-14 ל-10 */
+            padding: 10px 14px; 
             border-radius: 12px; 
             border: 1px solid var(--glass-border); 
             background: rgba(15, 23, 42, 0.8); 
             color: white; 
             outline: none; 
-            font-size: 0.95rem; /* הקטנת הפונט מ-1rem ל-0.95rem */
+            font-size: 0.95rem; 
             width: 100%; 
         }
         
@@ -97,8 +96,10 @@
             cursor: pointer; 
             border: none; 
             margin-top: 4px;
-            padding: 12px; /* כפתור נשאר מעט יותר גדול ללחיצה נוחה */
+            padding: 12px; 
+            transition: 0.2s ease;
         }
+        .btn-main:active { transform: scale(0.98); }
 
         .filter-bar { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; }
         .filter-btn { background: var(--glass); border: 1px solid var(--glass-border); color: var(--text-dim); padding: 8px 18px; border-radius: 25px; cursor: pointer; font-size: 0.85rem; }
@@ -117,7 +118,7 @@
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: none; justify-content: center; align-items: center; z-index: 9999; backdrop-filter: blur(8px); }
         .modal { background: #111827; padding: 30px; border-radius: 28px; width: 90%; max-width: 340px; text-align: center; border: 1px solid var(--glass-border); }
 
-        #toast { position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%); background: var(--expense); color: white; padding: 14px 30px; border-radius: 50px; z-index: 10000; transition: 0.5s; font-weight: bold; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        #toast { position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%); background: var(--expense); color: white; padding: 14px 30px; border-radius: 50px; z-index: 10000; transition: 0.5s cubic-bezier(0.18, 0.89, 0.32, 1.28); font-weight: bold; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         #toast.show { bottom: 50px; }
     </style>
 </head>
@@ -138,8 +139,8 @@
 <div class="modal-overlay" id="refreshModal">
     <div class="modal">
         <div style="font-size: 3rem; margin-bottom: 15px;">🚀</div>
-        <h3>גרסה v1.3.6 מוכנה</h3>
-        <p style="color:var(--text-dim)">המערכת עודכנה למראה "מגן הנתונים הזוהר".</p>
+        <h3>גרסה v1.3.7 מוכנה</h3>
+        <p style="color:var(--text-dim)">מערכת מעודכנת עם שיפורי UX ועיצוב קומפקטי.</p>
         <button onclick="location.reload(true)" style="width:100%; padding:14px; border-radius:12px; background:var(--accent); color:var(--bg); border:none; font-weight:900; margin-top:15px;">רענן כעת</button>
     </div>
 </div>
@@ -187,12 +188,12 @@
 
     <div class="form-card">
         <div class="input-group">
-            <input type="text" id="desc" placeholder="תיאור הפעולה">
+            <input type="text" id="desc" placeholder="תיאור הפעולה" autocomplete="off">
             <div class="row-inputs">
-                <input type="number" id="amount" placeholder="סכום (₪)">
+                <input type="number" id="amount" placeholder="סכום (₪)" inputmode="decimal">
                 <select id="type">
                     <option value="income">💰 הכנסה</option>
-                    <option value="expense">💸 הוצאה</option>
+                    <option value="expense" selected>💸 הוצאה</option>
                     <option value="fixed">📅 קבוע</option>
                 </select>
             </div>
@@ -217,7 +218,7 @@
     </div>
 
     <footer style="text-align:center; padding: 30px; color: var(--text-dim); font-size: 0.75rem;">
-        MANAGER-MONEY v1.3.6 | אלכסנדר זבודיסקר 2026
+        MANAGER-MONEY v1.3.7 | אלכסנדר זבודיסקר 2026
     </footer>
 </div>
 
@@ -250,6 +251,7 @@
     function addEntry() {
         const d = document.getElementById('desc'), a = document.getElementById('amount'), t = document.getElementById('type'), btn = document.getElementById('saveBtn');
         if(!d.value || !a.value) { showToast(); return; }
+        
         if(editId) {
             const i = entries.findIndex(e => e.id === editId);
             if(i !== -1) entries[i] = {...entries[i], desc: d.value, amount: parseFloat(a.value), type: t.value};
@@ -259,7 +261,9 @@
             const dateToSave = isCurrentMonth ? new Date().toISOString() : new Date(viewDate.getFullYear(), viewDate.getMonth(), 15).toISOString();
             entries.push({id: Date.now(), desc: d.value, amount: parseFloat(a.value), type: t.value, date: dateToSave});
         }
-        d.value = ''; a.value = ''; save();
+        d.value = ''; a.value = ''; 
+        save();
+        d.focus(); 
     }
 
     function editEntry(id) {
@@ -271,6 +275,7 @@
         editId = id; const btn = document.getElementById('saveBtn');
         btn.innerText = "עדכן שינויים"; btn.style.background = "var(--edit)";
         window.scrollTo({ top: 100, behavior: 'smooth' });
+        document.getElementById('desc').focus();
     }
 
     function render() {
@@ -278,20 +283,25 @@
         const m = viewDate.getMonth(), y = viewDate.getFullYear();
         document.getElementById('monthLabel').innerText = `${mNames[m]} ${y}`;
         const monthEntries = entries.filter(e => { const d = new Date(e.date); return d.getMonth() === m && d.getFullYear() === y; });
+        
         let inc = 0, exp = 0, fix = 0;
         monthEntries.forEach(e => { if(e.type==='income') inc+=e.amount; else if(e.type==='expense') exp+=e.amount; else fix+=e.amount; });
+        
         document.getElementById('sumIncome').innerText = `₪${inc.toLocaleString()}`;
         document.getElementById('sumExpense').innerText = `₪${exp.toLocaleString()}`;
         document.getElementById('sumFixed').innerText = `₪${fix.toLocaleString()}`;
+        
         const bal = inc - (exp + fix);
         const balEl = document.getElementById('sumBalance');
         balEl.innerText = `₪${bal.toLocaleString()}`;
         balEl.style.color = bal >= 0 ? 'var(--balance)' : 'var(--expense)';
+        
         const usage = inc > 0 ? Math.min(Math.round(((exp+fix) / inc) * 100), 100) : 0;
         document.getElementById('usagePercent').innerText = usage + '%';
         const fill = document.getElementById('progressFill');
         fill.style.width = usage + '%';
         fill.style.background = usage > 90 ? 'var(--expense)' : (usage > 75 ? 'var(--fixed)' : 'var(--income)');
+        
         const filtered = currentFilter === 'all' ? monthEntries : monthEntries.filter(x => x.type === currentFilter);
         const icons = {income:'💰', expense:'💸', fixed:'📅'};
         let listHTML = '';
@@ -307,8 +317,17 @@
         const ctx = document.getElementById('budgetChart').getContext('2d');
         const newData = (inc||exp||fix) ? [inc, exp, fix] : [1];
         const newColors = (inc||exp||fix) ? ['#34d399', '#f87171', '#fbbf24'] : ['#1e293b'];
-        if (myChart) { myChart.data.datasets[0].data = newData; myChart.data.datasets[0].backgroundColor = newColors; myChart.update(); }
-        else { myChart = new Chart(ctx, { type: 'doughnut', data: { labels: ['הכנסה', 'הוצאה', 'קבוע'], datasets: [{ data: newData, backgroundColor: newColors, borderWidth: 0 }] }, options: { cutout: '78%', plugins: { legend: { display: false } }, animation: { duration: 800 } } }); }
+        if (myChart) { 
+            myChart.data.datasets[0].data = newData; 
+            myChart.data.datasets[0].backgroundColor = newColors; 
+            myChart.update(); 
+        } else { 
+            myChart = new Chart(ctx, { 
+                type: 'doughnut', 
+                data: { labels: ['הכנסה', 'הוצאה', 'קבוע'], datasets: [{ data: newData, backgroundColor: newColors, borderWidth: 0 }] }, 
+                options: { cutout: '78%', plugins: { legend: { display: false } }, animation: { duration: 800 } } 
+            }); 
+        }
     }
 
     function exportJSON() {
