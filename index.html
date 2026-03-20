@@ -13,7 +13,7 @@
         :root {
             --bg: #070b14;
             --glass: rgba(30, 41, 59, 0.7);
-            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-border: rgba(255, 255, 255, 0.12);
             --text: #f1f5f9;
             --text-dim: #94a3b8;
             --income: #22c55e;
@@ -21,7 +21,6 @@
             --fixed: #f59e0b;
             --balance: #38bdf8;
             --accent: #38bdf8;
-            --warning: #facc15;
         }
 
         html, body { max-width: 100%; overflow-x: hidden; margin: 0; padding: 0; background: var(--bg); }
@@ -33,96 +32,79 @@
             color: var(--text); padding: 15px; direction: rtl; min-height: 100vh;
         }
 
-        .container { max-width: 600px; margin: 0 auto; }
+        .container { max-width: 600px; margin: 0 auto; padding-bottom: 40px; }
 
-        header { display: flex; align-items: center; justify-content: center; gap: 12px; margin: 20px 0 25px 0; }
-        .header-icon { width: 42px; height: 42px; filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.5)); }
+        header { display: flex; align-items: center; justify-content: center; gap: 12px; margin: 20px 0; }
+        .header-icon { width: 42px; height: 42px; filter: drop-shadow(0 0 8px var(--accent)); }
         .coin-svg { fill: var(--accent); animation: coinSpin 4s infinite linear; }
         @keyframes coinSpin { 0%, 100% { transform: rotateY(0deg); } 50% { transform: rotateY(180deg); } }
 
-        h1 { font-size: 1.8rem; font-weight: 900; color: var(--text); margin: 0; }
+        h1 { font-size: 1.8rem; font-weight: 900; margin: 0; }
         h1 span { color: var(--accent); }
 
         .month-nav { display: flex; justify-content: center; align-items: center; gap: 15px; margin-bottom: 20px; background: var(--glass); padding: 8px; border-radius: 50px; border: 1px solid var(--glass-border); }
         .nav-btn { background: var(--accent); color: var(--bg); border: none; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-weight: bold; }
 
         .summary-mini { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 15px; }
-        .mini-card { background: var(--glass); backdrop-filter: blur(12px); padding: 12px 2px; border-radius: 14px; text-align: center; border: 1px solid var(--glass-border); transition: 0.3s; }
+        .mini-card { background: var(--glass); backdrop-filter: blur(12px); padding: 12px 2px; border-radius: 14px; text-align: center; border: 1px solid var(--glass-border); }
         .mini-card span { display: block; font-size: 0.7rem; color: var(--text-dim); margin-bottom: 4px; }
-        .mini-card b { font-size: 0.9rem; white-space: nowrap; }
+        .mini-card b { font-size: 0.85rem; white-space: nowrap; }
         .mini-card.highlight { border: 1px solid var(--balance); background: rgba(56, 189, 248, 0.1); }
 
         .budget-progress-container { background: var(--glass); padding: 12px; border-radius: 15px; margin-bottom: 20px; border: 1px solid var(--glass-border); }
-        .progress-label { display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 8px; color: var(--text-dim); }
+        .progress-label { display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 8px; }
         .progress-bar { height: 8px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; }
-        .progress-fill { height: 100%; width: 0%; background: var(--accent); transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+        .progress-fill { height: 100%; width: 0%; background: var(--accent); transition: width 0.6s ease; }
 
-        .chart-section { 
-            background: var(--glass); 
-            backdrop-filter: blur(12px); 
-            padding: 20px; 
-            border-radius: 20px; 
-            margin: 0 auto 25px auto; 
-            border: 1px solid var(--glass-border); 
-            display: flex; 
-            flex-direction: column;
-            align-items: center;
-            max-width: 250px;
-        }
-        .chart-container { height: 120px; width: 120px; position: relative; }
+        .chart-section { background: var(--glass); padding: 20px; border-radius: 20px; margin-bottom: 25px; border: 1px solid var(--glass-border); display: flex; flex-direction: column; align-items: center; }
+        .chart-container { height: 130px; width: 130px; position: relative; }
 
-        .form-card { background: var(--glass); backdrop-filter: blur(12px); padding: 15px; border-radius: 18px; margin-bottom: 25px; border: 1px solid var(--glass-border); }
+        .form-card { background: var(--glass); padding: 15px; border-radius: 18px; margin-bottom: 25px; border: 1px solid var(--glass-border); }
         .input-group { display: flex; gap: 8px; flex-wrap: wrap; }
         input, select, .btn-main { padding: 10px; border-radius: 10px; border: 1px solid var(--glass-border); background: rgba(15, 23, 42, 0.6); color: white; outline: none; font-size: 0.9rem; }
-        input { flex: 2; min-width: 120px; }
-        .btn-main { background: var(--accent); color: var(--bg); font-weight: 900; cursor: pointer; border: none; flex: 1; transition: 0.2s; }
-        .btn-main:active { transform: scale(0.95); }
+        input { flex: 2; min-width: 100px; }
+        .btn-main { background: var(--accent); color: var(--bg); font-weight: 900; cursor: pointer; border: none; flex: 1; }
 
         .filter-bar { display: flex; justify-content: center; gap: 8px; margin-bottom: 15px; }
         .filter-btn { background: var(--glass); border: 1px solid var(--glass-border); color: var(--text-dim); padding: 6px 14px; border-radius: 20px; cursor: pointer; font-size: 0.8rem; }
         .filter-btn.active { background: var(--accent); color: var(--bg); font-weight: 700; }
 
-        .item { background: var(--glass); margin-bottom: 8px; display: flex; justify-content: space-between; padding: 12px 15px; border-radius: 12px; border: 1px solid var(--glass-border); align-items: center; animation: slideIn 0.3s ease-out; }
-        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
+        /* רשימת הפריטים - לוודא שהיא נראית היטב */
+        #list { min-height: 50px; margin-bottom: 30px; }
+        .item { background: var(--glass); margin-bottom: 10px; display: flex; justify-content: space-between; padding: 14px; border-radius: 12px; border: 1px solid var(--glass-border); align-items: center; }
         .item.income { border-right: 4px solid var(--income); }
         .item.expense { border-right: 4px solid var(--expense); }
         .item.fixed { border-right: 4px solid var(--fixed); }
 
-        .actions-bottom { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; padding-bottom: 20px; }
-        .action-btn { background: var(--glass); border: 1px solid var(--glass-border); color: var(--text-dim); padding: 8px 14px; border-radius: 10px; cursor: pointer; font-size: 0.8rem; }
+        .actions-bottom { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 20px; }
+        .action-btn { background: var(--glass); border: 1px solid var(--glass-border); color: var(--text-dim); padding: 8px 15px; border-radius: 10px; cursor: pointer; font-size: 0.8rem; }
 
-        #toast { position: fixed; top: -100px; left: 50%; transform: translateX(-50%); background: var(--expense); color: white; padding: 12px 25px; border-radius: 12px; z-index: 10000; transition: 0.5s; opacity: 0; font-weight: 700; pointer-events: none; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 9999; backdrop-filter: blur(5px); }
+        .modal { background: #1e293b; padding: 25px; border-radius: 24px; width: 90%; max-width: 320px; text-align: center; border: 1px solid var(--glass-border); }
+        
+        #toast { position: fixed; top: -100px; left: 50%; transform: translateX(-50%); background: var(--expense); color: white; padding: 12px 25px; border-radius: 12px; z-index: 10000; transition: 0.5s; opacity: 0; }
         #toast.show { top: 20px; opacity: 1; }
-
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 10001; }
-        .modal { background: #1e293b; border: 1px solid var(--glass-border); padding: 25px; border-radius: 24px; width: 90%; max-width: 320px; text-align: center; }
     </style>
 </head>
 <body>
 
-<div id="toast">⚠️ פרטים חסרים</div>
+<div id="toast">⚠️ חסרים נתונים</div>
 
 <div class="modal-overlay" id="deleteModal">
     <div class="modal">
-        <h3>למחוק את הפעולה?</h3>
-        <p style="color:var(--text-dim)">הפעולה תימחק לצמיתות.</p>
+        <h3>למחוק פעולה זו?</h3>
         <div style="display:flex; gap:10px; margin-top:20px;">
-            <button onclick="confirmDeleteAction()" style="flex:1; padding:12px; border-radius:10px; background:var(--expense); color:white; border:none; cursor:pointer; font-weight:700;">מחק</button>
-            <button onclick="closeModal('deleteModal')" style="flex:1; padding:12px; border-radius:10px; background:var(--glass-border); color:var(--text); border:none; cursor:pointer;">ביטול</button>
+            <button onclick="confirmDeleteAction()" style="flex:1; padding:12px; border-radius:10px; background:var(--expense); color:white; border:none; font-weight:700;">מחק</button>
+            <button onclick="closeModal('deleteModal')" style="flex:1; padding:12px; border-radius:10px; background:var(--glass-border); color:var(--text); border:none;">ביטול</button>
         </div>
     </div>
 </div>
 
 <div class="modal-overlay" id="refreshModal">
     <div class="modal">
-        <div style="font-size: 2.5rem; margin-bottom: 10px;">🔄</div>
-        <h3>גרסה חדשה?</h3>
-        <p style="color:var(--text-dim)">הדף יתרענן לקבלת העדכונים האחרונים. הנתונים שלך שמורים.</p>
-        <div style="display:flex; gap:10px; margin-top:20px;">
-            <button onclick="confirmRefreshAction()" style="flex:1; padding:12px; border-radius:10px; background:var(--accent); color:var(--bg); border:none; cursor:pointer; font-weight:700;">רענן עכשיו</button>
-            <button onclick="closeModal('refreshModal')" style="flex:1; padding:12px; border-radius:10px; background:var(--glass-border); color:var(--text); border:none; cursor:pointer;">ביטול</button>
-        </div>
+        <h3>🔄 עדכון גרסה</h3>
+        <p>הדף יתרענן לקבלת הגדרות חדשות.</p>
+        <button onclick="location.reload(true)" style="width:100%; padding:12px; border-radius:10px; background:var(--accent); color:var(--bg); border:none; font-weight:700;">רענן עכשיו</button>
     </div>
 </div>
 
@@ -147,17 +129,12 @@
         <div class="mini-card"><span>הכנסות</span><b id="sumIncome" style="color:var(--income)">₪0</b></div>
         <div class="mini-card"><span>הוצאות</span><b id="sumExpense" style="color:var(--expense)">₪0</b></div>
         <div class="mini-card"><span>קבוע</span><b id="sumFixed" style="color:var(--fixed)">₪0</b></div>
-        <div class="mini-card highlight" id="balanceCard"><span>יתרה</span><b id="sumBalance" style="color:var(--balance)">₪0</b></div>
+        <div class="mini-card highlight"><span>יתרה</span><b id="sumBalance" style="color:var(--balance)">₪0</b></div>
     </div>
 
     <div class="budget-progress-container">
-        <div class="progress-label">
-            <span>ניצול תקציב חודשי</span>
-            <span id="usagePercent">0%</span>
-        </div>
-        <div class="progress-bar">
-            <div id="progressFill" class="progress-fill"></div>
-        </div>
+        <div class="progress-label"><span>ניצול תקציב</span><span id="usagePercent">0%</span></div>
+        <div class="progress-bar"><div id="progressFill" class="progress-fill"></div></div>
     </div>
 
     <div class="chart-section">
@@ -166,7 +143,7 @@
 
     <div class="form-card">
         <div class="input-group">
-            <input type="text" id="desc" placeholder="תיאור (למשל: סופר)">
+            <input type="text" id="desc" placeholder="תיאור">
             <input type="number" id="amount" placeholder="סכום">
             <select id="type">
                 <option value="income">💰 הכנסה</option>
@@ -186,7 +163,7 @@
     <div id="list"></div>
 
     <div class="actions-bottom">
-        <button class="action-btn" style="color:var(--accent); font-weight: bold;" onclick="openRefreshModal()">🔄 עדכון גרסה</button>
+        <button class="action-btn" style="color:var(--accent)" onclick="document.getElementById('refreshModal').style.display='flex'">🔄 עדכון</button>
         <button class="action-btn" onclick="exportJSON()">💾 גיבוי</button>
         <button class="action-btn" onclick="exportCSV()">📊 אקסל</button>
         <button class="action-btn" onclick="document.getElementById('importFile').click()">🔄 מיזוג</button>
@@ -194,17 +171,11 @@
     </div>
 
     <footer style="text-align:center; padding: 20px; color: var(--text-dim); font-size: 0.7rem;">
-        Manager-Money v1.3.2 | אלכסנדר זבודיסקר 2026
+        Manager-Money v1.3.2 | אלכסנדר 2026
     </footer>
 </div>
 
 <script>
-    // הגנת Cache - מוודא שהדפדפן לא נתקע על גרסה ישנה
-    const CURRENT_VERSION = '132';
-    if (!window.location.search.includes('v=' + CURRENT_VERSION)) {
-        window.location.replace(window.location.pathname + '?v=' + CURRENT_VERSION);
-    }
-
     let entries = JSON.parse(localStorage.getItem('budget_alex_2026')) || [];
     let viewDate = new Date();
     let editId = null;
@@ -212,18 +183,9 @@
     let currentFilter = 'all';
     let myChart = null;
 
-    // פונקציות מודאלים
-    function openRefreshModal() { document.getElementById('refreshModal').style.display = 'flex'; }
-    function confirmRefreshAction() { location.reload(true); }
     function openDeleteModal(id) { pendingDeleteId = id; document.getElementById('deleteModal').style.display = 'flex'; }
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
     function confirmDeleteAction() { entries = entries.filter(e => e.id !== pendingDeleteId); save(); closeModal('deleteModal'); }
-
-    function showToast(msg) {
-        const t = document.getElementById('toast');
-        t.innerText = msg; t.classList.add('show');
-        setTimeout(() => t.classList.remove('show'), 3000);
-    }
 
     function save() { 
         localStorage.setItem('budget_alex_2026', JSON.stringify(entries)); 
@@ -231,22 +193,27 @@
     }
 
     function changeMonth(n) { viewDate.setMonth(viewDate.getMonth() + n); render(); }
-
+    
     function setFilter(type, btn) { 
         currentFilter = type; 
         document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active'); render(); 
+        btn.classList.add('active'); 
+        render(); 
     }
 
     function addEntry() {
         const d = document.getElementById('desc'), a = document.getElementById('amount'), t = document.getElementById('type');
-        if(!d.value || !a.value) return showToast("⚠️ נא למלא הכל");
+        if(!d.value || !a.value) {
+            const toast = document.getElementById('toast');
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+            return;
+        }
         
         if(editId) {
             const i = entries.findIndex(e => e.id === editId);
-            if(i !== -1) entries[i] = {...entries[i], desc: d.value, amount: parseFloat(a.value), type: t.value};
-            editId = null; 
-            document.getElementById('saveBtn').innerText = "שמור";
+            entries[i] = {...entries[i], desc: d.value, amount: parseFloat(a.value), type: t.value};
+            editId = null; document.getElementById('saveBtn').innerText = "שמור";
         } else {
             entries.push({
                 id: Date.now(), 
@@ -261,13 +228,11 @@
 
     function editEntry(id) {
         const e = entries.find(x => x.id === id);
-        if(!e) return;
         document.getElementById('desc').value = e.desc;
         document.getElementById('amount').value = e.amount;
         document.getElementById('type').value = e.type;
-        editId = id; 
-        document.getElementById('saveBtn').innerText = "עדכן";
-        window.scrollTo({ top: 200, behavior: 'smooth' });
+        editId = id; document.getElementById('saveBtn').innerText = "עדכן";
+        window.scrollTo({ top: 100, behavior: 'smooth' });
     }
 
     function render() {
@@ -288,92 +253,66 @@
         document.getElementById('sumIncome').innerText = `₪${inc.toLocaleString()}`;
         document.getElementById('sumExpense').innerText = `₪${exp.toLocaleString()}`;
         document.getElementById('sumFixed').innerText = `₪${fix.toLocaleString()}`;
-        const totalOut = exp + fix;
-        const bal = inc - totalOut;
-        const balEl = document.getElementById('sumBalance');
-        balEl.innerText = `₪${bal.toLocaleString()}`;
-        balEl.style.color = bal >= 0 ? 'var(--balance)' : 'var(--expense)';
+        const bal = inc - (exp + fix);
+        document.getElementById('sumBalance').innerText = `₪${bal.toLocaleString()}`;
+        document.getElementById('sumBalance').style.color = bal >= 0 ? 'var(--balance)' : 'var(--expense)';
 
-        const usage = inc > 0 ? Math.min(Math.round((totalOut / inc) * 100), 100) : 0;
-        document.getElementById('usagePercent').innerText = `${usage}%`;
-        const fill = document.getElementById('progressFill');
-        fill.style.width = `${usage}%`;
-        fill.style.background = usage > 90 ? 'var(--expense)' : (usage > 70 ? 'var(--warning)' : 'var(--income)');
+        const usage = inc > 0 ? Math.min(Math.round(((exp+fix) / inc) * 100), 100) : 0;
+        document.getElementById('usagePercent').innerText = usage + '%';
+        document.getElementById('progressFill').style.width = usage + '%';
 
         const filtered = currentFilter === 'all' ? monthEntries : monthEntries.filter(x => x.type === currentFilter);
         const icons = {income:'💰', expense:'💸', fixed:'📅'};
+        
         let listHTML = '';
         filtered.sort((a,b) => b.id - a.id).forEach(e => {
             listHTML += `
                 <div class="item ${e.type}">
-                    <div style="display:flex; align-items:center; gap:8px;">${icons[e.type]} ${e.desc}</div>
-                    <div style="display:flex; align-items:center; gap:12px;">
+                    <div>${icons[e.type]} ${e.desc}</div>
+                    <div style="display:flex; align-items:center; gap:10px;">
                         <b>₪${e.amount.toLocaleString()}</b>
-                        <button onclick="editEntry(${e.id})" style="background:none; border:none; cursor:pointer; font-size:1.1rem;">✏️</button>
-                        <button onclick="openDeleteModal(${e.id})" style="background:none; border:none; cursor:pointer; font-size:1.1rem;">🗑️</button>
+                        <button onclick="editEntry(${e.id})" style="background:none; border:none; cursor:pointer;">✏️</button>
+                        <button onclick="openDeleteModal(${e.id})" style="background:none; border:none; cursor:pointer;">🗑️</button>
                     </div>
                 </div>`;
         });
         document.getElementById('list').innerHTML = listHTML;
 
-        // אופטימיזציה לכרום: requestAnimationFrame
         window.requestAnimationFrame(() => {
-            updateChart(inc, exp, fix);
-        });
-    }
-
-    function updateChart(inc, exp, fix) {
-        const ctx = document.getElementById('budgetChart').getContext('2d');
-        if(myChart) myChart.destroy();
-        myChart = new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: ['הכנסה', 'הוצאה', 'קבוע'],
-                datasets: [{
-                    data: (inc||exp||fix) ? [inc, exp, fix] : [1],
-                    backgroundColor: (inc||exp||fix) ? ['#22c55e', '#ef4444', '#f59e0b'] : ['#1e293b'],
-                    borderWidth: 0,
-                    hoverOffset: 4
-                }]
-            },
-            options: { 
-                cutout: '70%', 
-                responsive: true,
-                maintainAspectRatio: true,
-                plugins: { legend: { display: false } },
-                animation: { duration: 800 }
-            }
+            const ctx = document.getElementById('budgetChart').getContext('2d');
+            if(myChart) myChart.destroy();
+            myChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    datasets: [{
+                        data: (inc||exp||fix) ? [inc, exp, fix] : [1],
+                        backgroundColor: (inc||exp||fix) ? ['#22c55e', '#ef4444', '#f59e0b'] : ['#1e293b'],
+                        borderWidth: 0
+                    }]
+                },
+                options: { cutout: '75%', plugins: { legend: { display: false } } }
+            });
         });
     }
 
     function exportJSON() {
         const blob = new Blob([JSON.stringify(entries)], {type:'application/json'});
-        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); 
-        a.download = `money_manager_${new Date().toLocaleDateString()}.json`; a.click();
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'budget_bak.json'; a.click();
     }
     
     function exportCSV() {
         let csv = "\uFEFFתאריך,תיאור,סוג,סכום\n";
         entries.forEach(e => csv += `${new Date(e.date).toLocaleDateString()},${e.desc},${e.type},${e.amount}\n`);
         const blob = new Blob([csv], {type:'text/csv'});
-        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'manager_money_export.csv'; a.click();
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'budget.csv'; a.click();
     }
 
     function smartMerge(ev) {
         const reader = new FileReader();
         reader.onload = (e) => {
-            try {
-                const data = JSON.parse(e.target.result);
-                let added = 0;
-                data.forEach(ne => { 
-                    if(!entries.find(old => old.id === ne.id)) {
-                        entries.push(ne);
-                        added++;
-                    }
-                });
-                save(); 
-                alert(`בוצע! נוספו ${added} פעולות חדשות.`);
-            } catch(err) { alert("שגיאה במיזוג הקובץ"); }
+            const data = JSON.parse(e.target.result);
+            data.forEach(ne => { if(!entries.find(old => old.id === ne.id)) entries.push(ne); });
+            save(); alert("המיזוג הושלם!");
         };
         reader.readAsText(ev.target.files[0]);
     }
