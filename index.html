@@ -122,23 +122,41 @@
         .progress-fill.warn { background: var(--fixed); }
         .progress-fill.danger { background: var(--expense); }
 
-        /* ===== FORM ===== */
-        .form-card { background: var(--glass); padding: 12px; border-radius: 15px; margin-bottom: 20px; border: 1px solid var(--glass-border); }
+        /* ===== FORM (מעודכן לפי הטבלה שרצית) ===== */
+        .form-card { background: var(--glass); padding: 16px; border-radius: 20px; margin-bottom: 20px; border: 1px solid var(--glass-border); }
         .form-card.edit-mode { border-color: var(--fixed); background: rgba(245,158,11,0.08); }
-        .edit-banner { display: none; background: rgba(245,158,11,0.15); border: 1px solid rgba(245,158,11,0.4); color: var(--fixed); font-size: 0.75rem; font-weight: 700; padding: 6px 12px; border-radius: 8px; margin-bottom: 10px; text-align: center; }
-        .edit-banner.show { display: block; }
-
-        .input-group { display: flex; gap: 6px; flex-wrap: wrap; }
-        .input-row2 { display: flex; gap: 6px; margin-top: 6px; }
+        
+        .input-row-top {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr 1.2fr;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .input-row-bottom {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 10px;
+        }
 
         input, select, .btn-main {
-            padding: 9px 10px; border-radius: 8px; border: 1px solid var(--glass-border);
-            background: rgba(15,23,42,0.6); color: white; outline: none; font-size: 0.85rem;
+            height: 55px;
+            border-radius: 14px; border: 1px solid var(--glass-border);
+            background: rgba(15,23,42,0.8); color: white; outline: none; font-size: 1rem;
+            text-align: center; width: 100%;
         }
-        .btn-main { background: var(--accent); color: var(--bg); font-weight: 900; cursor: pointer; border: none; flex: 1; }
+        
+        select { appearance: none; cursor: pointer; }
+
+        .btn-main { background: var(--accent); color: var(--bg); font-weight: 900; cursor: pointer; border: none; font-size: 1.1rem; }
         .btn-main.editing { background: var(--fixed); }
-        .btn-cancel-edit { background: rgba(239,68,68,0.15); color: var(--expense); border: 1px solid rgba(239,68,68,0.3); padding: 9px 14px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 700; display: none; }
-        .btn-cancel-edit.show { display: block; }
+        
+        .btn-cancel-edit { 
+            background: rgba(239,68,68,0.15); color: var(--expense); 
+            border: 1px solid rgba(239,68,68,0.3); padding: 0 14px; 
+            border-radius: 14px; cursor: pointer; font-size: 0.85rem; font-weight: 700; 
+            display: none; height: 55px; align-items: center; justify-content: center;
+        }
+        .btn-cancel-edit.show { display: flex; }
 
         /* ===== LIST & ACTIONS ===== */
         .filter-bar { display: flex; justify-content: center; gap: 6px; margin-bottom: 12px; }
@@ -203,7 +221,7 @@
             </div>
             <div>
                 <h1>Manager<span>Money</span></h1>
-                <span class="version-badge">v1.8.2</span>
+                <span class="version-badge">v1.8.9</span>
             </div>
         </div>
         <div class="user-avatar">
@@ -237,20 +255,21 @@
     </div>
 
     <div class="form-card" id="formCard">
-        <div class="edit-banner" id="editBanner">&#9998; מצב עריכה - משנה רשומה קיימת</div>
-        <div class="input-group">
-            <input type="text" id="desc" placeholder="תיאור" maxlength="60">
-            <input type="number" id="amount" placeholder="סכום" step="0.01">
+        <div class="input-row-top">
             <select id="type">
                 <option value="income">&#128176; הכנסה</option>
                 <option value="expense">&#128184; הוצאה</option>
                 <option value="fixed">&#128197; קבוע</option>
             </select>
+            <input type="number" id="amount" placeholder="סכום">
+            <input type="text" id="desc" placeholder="תיאור">
         </div>
-        <div class="input-row2">
-            <input type="date" id="entryDate">
+        <div class="input-row-bottom">
             <button class="btn-main" id="saveBtn" onclick="addEntry()">שמור</button>
-            <button class="btn-cancel-edit" id="cancelEditBtn" onclick="cancelEdit()">&#10005; בטל</button>
+            <div style="display:flex; gap:10px; width:100%;">
+                <input type="date" id="entryDate">
+                <button class="btn-cancel-edit" id="cancelEditBtn" onclick="cancelEdit()">&#10005;</button>
+            </div>
         </div>
     </div>
 
@@ -271,7 +290,7 @@
         <input type="file" id="importFile" accept=".json" style="display:none" onchange="smartMerge(event)">
     </div>
 
-    <footer>Manager-Money v1.8.2 | אלכסנדר 2026</footer>
+    <footer>Manager-Money v1.8.9 | אלכסנדר זבודיסקר 2026</footer>
 </div>
 
 <script>
@@ -370,7 +389,6 @@ function editEntry(id) {
     document.getElementById('saveBtn').textContent = 'עדכן';
     document.getElementById('saveBtn').classList.add('editing');
     document.getElementById('cancelEditBtn').classList.add('show');
-    document.getElementById('editBanner').classList.add('show');
     document.getElementById('formCard').classList.add('edit-mode');
     window.scrollTo({top: 0, behavior: 'smooth'});
 }
@@ -381,7 +399,7 @@ function cancelEdit() {
     document.getElementById('amount').value = '';
     document.getElementById('saveBtn').textContent = 'שמור';
     document.getElementById('saveBtn').classList.remove('editing');
-    ['cancelEditBtn', 'editBanner'].forEach(id => document.getElementById(id).classList.remove('show'));
+    document.getElementById('cancelEditBtn').classList.remove('show');
     document.getElementById('formCard').classList.remove('edit-mode');
     setDateToToday();
 }
@@ -401,13 +419,10 @@ function importFixedEntries() {
     if (added > 0) { saveAndRender(); showToast('התווספו ' + added + ' קבועות', 'success'); }
 }
 
-// פונקציית עזר להורדה בטוחה
 function triggerDownload(blob, filename) {
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
-    a.style.display = 'none';
-    a.href = url;
-    a.download = filename;
+    a.style.display = 'none'; a.href = url; a.download = filename;
     document.body.appendChild(a);
     a.click();
     window.URL.revokeObjectURL(url);
@@ -447,7 +462,7 @@ function smartMerge(ev) {
         } catch(err) { showToast('קובץ לא תקין'); }
     };
     reader.readAsText(file);
-    ev.target.value = ''; // איפוס השדה
+    ev.target.value = '';
 }
 
 function render() {
