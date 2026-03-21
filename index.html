@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Manager-Money | אלכסנדר 2026</title>
     
+    <link rel="icon" type="image/png" href="icon.png">
+    <link rel="apple-touch-icon" href="icon.png">
+    <meta name="theme-color" content="#070b14">
+    <link rel="manifest" href="manifest.json">
+    
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&display=swap" rel="stylesheet">
     
@@ -23,7 +28,7 @@
         }
 
         html, body { max-width: 100%; overflow-x: hidden; margin: 0; padding: 0; background: var(--bg); }
-        * { box-sizing: border-box; font-family: 'Heebo', sans-serif; }
+        * { box-sizing: border-box; font-family: 'Heebo', sans-serif; -webkit-tap-highlight-color: transparent; }
         
         body { 
             background: radial-gradient(circle at top right, #1e293b, #070b14);
@@ -33,35 +38,16 @@
 
         .container { max-width: 600px; margin: 0 auto; padding-bottom: 40px; }
 
-        header { 
-            display: flex; 
-            align-items: center; 
-            justify-content: space-between; 
-            margin: 20px 0; 
-            padding: 0 10px;
-        }
-        
+        header { display: flex; align-items: center; justify-content: space-between; margin: 20px 0; padding: 0 10px; }
         .header-right { display: flex; align-items: center; gap: 12px; }
 
         .logo-container { width: 45px; height: 45px; filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.5)); }
-        .shield-base { fill: rgba(56, 189, 248, 0.1); stroke: var(--accent); stroke-width: 1.5; animation: shieldPulse 3s infinite ease-in-out; transform-origin: center; }
+        .shield-base { fill: rgba(56, 189, 248, 0.1); stroke: var(--accent); stroke-width: 1.5; animation: shieldPulse 3s infinite ease-in-out; }
         .data-bar { fill: var(--income); animation: barFlow 2s infinite ease-in-out; transform-origin: center bottom; }
         @keyframes shieldPulse { 0%, 100% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.05); opacity: 1; } }
-        @keyframes barFlow { 0%, 100% { transform: scaleY(0.7); opacity: 0.5; } 50% { transform: scaleY(1); opacity: 1; } }
+        @keyframes barFlow { 0%, 100% { transform: scaleY(0.7); } 50% { transform: scaleY(1); } }
         
-        /* אייקון משתמש חדש ומעודכן */
-        .user-avatar {
-            width: 42px;
-            height: 42px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(30, 41, 59, 0.8));
-            border: 1px solid var(--accent);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
-        }
-
+        .user-avatar { width: 42px; height: 42px; border-radius: 50%; background: linear-gradient(135deg, rgba(56, 189, 248, 0.15), rgba(30, 41, 59, 0.7)); border: 1px solid var(--accent); display: flex; align-items: center; justify-content: center; }
         .user-avatar svg { width: 22px; height: 22px; fill: var(--accent); }
 
         h1 { font-size: 1.6rem; font-weight: 900; margin: 0; letter-spacing: -1px; }
@@ -70,25 +56,19 @@
         .month-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; background: var(--glass); padding: 8px 15px; border-radius: 50px; border: 1px solid var(--glass-border); }
         .nav-btn { background: var(--accent); color: var(--bg); border: none; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-weight: bold; }
         
-        .load-fixed-btn { background: rgba(245, 158, 11, 0.15); color: var(--fixed); border: 1px solid var(--fixed); padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; cursor: pointer; font-weight: 700; transition: 0.3s; margin-top: 2px; }
+        .load-fixed-btn { background: rgba(245, 158, 11, 0.15); color: var(--fixed); border: 1px solid var(--fixed); padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; cursor: pointer; font-weight: 700; margin-top: 2px; }
 
         .summary-mini { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 12px; }
-        .mini-card { background: var(--glass); backdrop-filter: blur(12px); padding: 10px 2px; border-radius: 12px; text-align: center; border: 1px solid var(--glass-border); }
-        .mini-card span { display: block; font-size: 0.65rem; color: var(--text-dim); margin-bottom: 2px; }
-        .mini-card b { font-size: 0.8rem; white-space: nowrap; }
-        .mini-card.highlight { border: 1px solid var(--balance); background: rgba(56, 189, 248, 0.1); }
+        .mini-card { background: var(--glass); padding: 10px 2px; border-radius: 12px; text-align: center; border: 1px solid var(--glass-border); }
+        .mini-card span { display: block; font-size: 0.65rem; color: var(--text-dim); }
+        .mini-card b { font-size: 0.8rem; }
 
         .chart-section { background: var(--glass); padding: 12px; border-radius: 18px; margin-bottom: 20px; border: 1px solid var(--glass-border); display: flex; flex-direction: column; align-items: center; }
         .chart-container { height: 100px; width: 100px; position: relative; }
 
-        .budget-progress-container { background: var(--glass); padding: 12px; border-radius: 15px; margin-bottom: 15px; border: 1px solid var(--glass-border); }
-        .progress-label { display: flex; justify-content: space-between; font-size: 0.75rem; margin-bottom: 6px; }
-        .progress-bar { height: 6px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; }
-        .progress-fill { height: 100%; width: 0%; background: var(--accent); transition: width 0.6s ease; }
-
         .form-card { background: var(--glass); padding: 12px; border-radius: 15px; margin-bottom: 20px; border: 1px solid var(--glass-border); }
         .input-group { display: flex; gap: 6px; flex-wrap: wrap; }
-        input, select, .btn-main { padding: 8px; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(15, 23, 42, 0.6); color: white; outline: none; font-size: 0.85rem; }
+        input, select, .btn-main { padding: 10px; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(15, 23, 42, 0.6); color: white; outline: none; font-size: 0.9rem; }
         input { flex: 2; min-width: 90px; }
         .btn-main { background: var(--accent); color: var(--bg); font-weight: 900; cursor: pointer; border: none; flex: 1; }
 
@@ -96,24 +76,30 @@
         .filter-btn { background: var(--glass); border: 1px solid var(--glass-border); color: var(--text-dim); padding: 5px 12px; border-radius: 20px; cursor: pointer; font-size: 0.75rem; }
         .filter-btn.active { background: var(--accent); color: var(--bg); font-weight: 700; }
 
-        #list { min-height: 50px; margin-bottom: 25px; }
-        .item { background: var(--glass); margin-bottom: 8px; display: flex; justify-content: space-between; padding: 12px; border-radius: 10px; border: 1px solid var(--glass-border); align-items: center; font-size: 0.9rem; }
-        .item.income { border-right: 3px solid var(--income); }
-        .item.expense { border-right: 3px solid var(--expense); }
-        .item.fixed { border-right: 3px solid var(--fixed); }
+        /* פריט ברשימה */
+        .item { background: var(--glass); margin-bottom: 8px; display: flex; justify-content: space-between; padding: 12px; border-radius: 10px; border: 1px solid var(--glass-border); align-items: center; }
+        .item-info { display: flex; flex-direction: column; gap: 2px; text-align: right; }
+        .item-title { font-weight: 700; font-size: 0.95rem; }
+        .item-date { font-size: 0.75rem; color: var(--text-dim); font-weight: 400; }
+        
+        .item.income { border-right: 4px solid var(--income); }
+        .item.expense { border-right: 4px solid var(--expense); }
+        .item.fixed { border-right: 4px solid var(--fixed); }
+
+        .item-amount-area { display: flex; align-items: center; gap: 10px; }
+        .amount-val { font-weight: 900; font-size: 1rem; }
 
         .actions-bottom { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-top: 15px; }
         .action-btn { background: var(--glass); border: 1px solid var(--glass-border); color: var(--text-dim); padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 0.75rem; }
 
+        /* מודאל */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 9999; backdrop-filter: blur(5px); }
         .modal { background: #1e293b; padding: 20px; border-radius: 20px; width: 85%; max-width: 300px; text-align: center; border: 1px solid var(--glass-border); }
-        
-        /* התראות טוסט משופרות */
+
         #toast { 
             position: fixed; top: -100px; left: 50%; transform: translateX(-50%); 
-            padding: 12px 24px; border-radius: 12px; z-index: 10000; transition: 0.5s cubic-bezier(0.18, 0.89, 0.32, 1.28); 
-            opacity: 0; font-size: 0.9rem; font-weight: 700; color: white; box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-            display: flex; align-items: center; gap: 8px;
+            padding: 12px 24px; border-radius: 12px; z-index: 10000; transition: 0.5s; 
+            opacity: 0; font-size: 0.9rem; font-weight: 700; color: white;
         }
         #toast.show { top: 30px; opacity: 1; }
         .toast-info { background: var(--accent); color: var(--bg); }
@@ -124,21 +110,12 @@
 
 <div id="toast"></div>
 
-<div class="modal-overlay" id="deleteModal">
-    <div class="modal">
-        <h3>למחוק פעולה זו?</h3>
-        <div style="display:flex; gap:10px; margin-top:15px;">
-            <button onclick="confirmDeleteAction()" style="flex:1; padding:10px; border-radius:8px; background:var(--expense); color:white; border:none; font-weight:700;">מחק</button>
-            <button onclick="closeModal('deleteModal')" style="flex:1; padding:10px; border-radius:8px; background:var(--glass-border); color:var(--text); border:none;">ביטול</button>
-        </div>
-    </div>
-</div>
-
 <div class="modal-overlay" id="refreshModal">
     <div class="modal">
         <h3>🔄 עדכון גרסה</h3>
-        <p>הדף יתרענן לקבלת הגדרות חדשות.</p>
+        <p>הדף יתרענן לקבלת ההגדרות החדשות.</p>
         <button onclick="location.reload(true)" style="width:100%; padding:10px; border-radius:8px; background:var(--accent); color:var(--bg); border:none; font-weight:700;">רענן עכשיו</button>
+        <button onclick="document.getElementById('refreshModal').style.display='none'" style="width:100%; padding:10px; margin-top:10px; background:none; color:var(--text-dim); border:none;">סגור</button>
     </div>
 </div>
 
@@ -146,27 +123,17 @@
     <header>
         <div class="header-right">
             <div class="logo-container">
-                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path class="shield-base" d="M12 2L4 5v6.09c0 5.05 3.41 9.76 8 10.91 4.59-1.15 8-5.86 8-10.91V5l-8-3z"/>
-                    <rect class="data-bar bar-1" x="7" y="14" width="2.5" height="4" rx="1"/>
-                    <rect class="data-bar bar-2" x="10.75" y="11" width="2.5" height="7" rx="1"/>
-                    <rect class="data-bar bar-3" x="14.5" y="8" width="2.5" height="10" rx="1"/>
-                </svg>
+                <svg viewBox="0 0 24 24"><path class="shield-base" d="M12 2L4 5v6.09c0 5.05 3.41 9.76 8 10.91 4.59-1.15 8-5.86 8-10.91V5l-8-3z"/><rect class="data-bar" x="7" y="14" width="2.5" height="4" rx="1"/><rect class="data-bar" x="10.75" y="11" width="2.5" height="7" rx="1"/><rect class="data-bar" x="14.5" y="8" width="2.5" height="10" rx="1"/></svg>
             </div>
             <h1>Manager<span>Money</span></h1>
         </div>
-        
-        <div class="user-avatar">
-            <svg viewBox="0 0 24 24">
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
-            </svg>
-        </div>
+        <div class="user-avatar"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg></div>
     </header>
 
     <div class="month-nav">
         <button class="nav-btn" onclick="changeMonth(-1)">◀</button>
         <div style="text-align:center;">
-            <h3 id="monthLabel" style="margin:0; font-size: 1.1rem;"></h3>
+            <h3 id="monthLabel" style="margin:0;"></h3>
             <button id="loadFixedBtn" class="load-fixed-btn" onclick="importFixedEntries()" style="display:none;">📅 טען קבועות</button>
         </div>
         <button class="nav-btn" onclick="changeMonth(1)">▶</button>
@@ -175,26 +142,21 @@
     <div class="summary-mini">
         <div class="mini-card"><span>הכנסות</span><b id="sumIncome" style="color:var(--income)">₪0</b></div>
         <div class="mini-card"><span>הוצאות</span><b id="sumExpense" style="color:var(--expense)">₪0</b></div>
-        <div class="mini-card"><span>קבוע</span><b id="sumFixed" style="color:var(--fixed)">₪0</b></div>
-        <div class="mini-card highlight"><span>יתרה</span><b id="sumBalance" style="color:var(--balance)">₪0</b></div>
+        <div class="mini-card"><span>קבועות</span><b id="sumFixed" style="color:var(--fixed)">₪0</b></div>
+        <div class="mini-card"><span>יתרה</span><b id="sumBalance">₪0</b></div>
     </div>
 
     <div class="chart-section">
         <div class="chart-container"><canvas id="budgetChart"></canvas></div>
     </div>
 
-    <div class="budget-progress-container">
-        <div class="progress-label"><span>ניצול תקציב</span><span id="usagePercent">0%</span></div>
-        <div class="progress-bar"><div id="progressFill" class="progress-fill"></div></div>
-    </div>
-
     <div class="form-card">
         <div class="input-group">
-            <input type="text" id="desc" placeholder="תיאור">
-            <input type="number" id="amount" placeholder="סכום">
+            <input type="text" id="desc" placeholder="מה קנית/קיבלת?" autocomplete="off">
+            <input type="number" id="amount" placeholder="סכום" inputmode="decimal">
             <select id="type">
                 <option value="income">💰 הכנסה</option>
-                <option value="expense">💸 הוצאה</option>
+                <option value="expense" selected>💸 הוצאה</option>
                 <option value="fixed">📅 קבוע</option>
             </select>
             <button class="btn-main" id="saveBtn" onclick="addEntry()">שמור</button>
@@ -210,7 +172,7 @@
     <div id="list"></div>
 
     <div class="actions-bottom">
-        <button class="action-btn" style="color:var(--accent)" onclick="document.getElementById('refreshModal').style.display='flex'">🔄 עדכון</button>
+        <button class="action-btn" style="color:var(--accent)" onclick="document.getElementById('refreshModal').style.display='flex'">🔄 גרסה</button>
         <button class="action-btn" onclick="exportJSON()">💾 גיבוי</button>
         <button class="action-btn" onclick="exportCSV()">📊 אקסל</button>
         <button class="action-btn" onclick="document.getElementById('importFile').click()">🔄 מיזוג</button>
@@ -218,7 +180,7 @@
     </div>
 
     <footer style="text-align:center; padding: 20px; color: var(--text-dim); font-size: 0.65rem;">
-        Manager-Money v1.7.0 | אלכסנדר 2026
+        Manager-Money v1.8.1 | אלכסנדר זבודיסקר
     </footer>
 </div>
 
@@ -226,30 +188,57 @@
     let entries = JSON.parse(localStorage.getItem('budget_alex_2026')) || [];
     let viewDate = new Date();
     let editId = null;
-    let pendingDeleteId = null;
     let currentFilter = 'all';
     let myChart = null;
 
-    function showToast(msg, type = 'warn') {
-        const toast = document.getElementById('toast');
-        toast.innerText = msg;
-        toast.className = type === 'warn' ? 'toast-warn show' : 'toast-info show';
-        setTimeout(() => toast.classList.remove('show'), 3000);
+    function showToast(msg, type = 'info') {
+        const t = document.getElementById('toast');
+        t.innerText = msg;
+        t.className = type === 'warn' ? 'toast-warn show' : 'toast-info show';
+        setTimeout(() => t.classList.remove('show'), 3000);
     }
-
-    function openDeleteModal(id) { pendingDeleteId = id; document.getElementById('deleteModal').style.display = 'flex'; }
-    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-    function confirmDeleteAction() { entries = entries.filter(e => e.id !== pendingDeleteId); save(); closeModal('deleteModal'); }
 
     function save() { 
         localStorage.setItem('budget_alex_2026', JSON.stringify(entries)); 
         render(); 
     }
 
+    function addEntry() {
+        const d = document.getElementById('desc'), a = document.getElementById('amount'), t = document.getElementById('type');
+        if(!d.value || !a.value) return showToast("מלא תיאור וסכום", "warn");
+        
+        const now = new Date();
+        const entryDate = new Date(viewDate.getFullYear(), viewDate.getMonth(), now.getDate(), now.getHours(), now.getMinutes()).toISOString();
+
+        if(editId) {
+            const i = entries.findIndex(e => e.id === editId);
+            entries[i] = {...entries[i], desc: d.value, amount: parseFloat(a.value), type: t.value};
+            editId = null; document.getElementById('saveBtn').innerText = "שמור";
+        } else {
+            entries.push({ id: Date.now(), desc: d.value, amount: parseFloat(a.value), type: t.value, date: entryDate });
+        }
+        d.value = ''; a.value = ''; save();
+    }
+
+    function deleteEntry(id) {
+        if(confirm("למחוק תנועה זו?")) {
+            entries = entries.filter(e => e.id !== id);
+            save();
+        }
+    }
+
+    function editEntry(id) {
+        const e = entries.find(x => x.id === id);
+        document.getElementById('desc').value = e.desc;
+        document.getElementById('amount').value = e.amount;
+        document.getElementById('type').value = e.type;
+        editId = id; document.getElementById('saveBtn').innerText = "עדכן";
+        window.scrollTo({top: 0, behavior: 'smooth'});
+    }
+
     function changeMonth(n) { viewDate.setMonth(viewDate.getMonth() + n); render(); }
-    
-    function setFilter(type, btn) { 
-        currentFilter = type; 
+    function setFilter(f, btn) { 
+        currentFilter = f; 
         document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active'); 
         render(); 
@@ -282,103 +271,98 @@
         
         if (addedCount > 0) {
             save();
-            showToast(`✅ התווספו ${addedCount} קבועות בהצלחה`, 'info');
+            showToast(`✅ התווספו ${addedCount} קבועות`, 'info');
         } else {
-            showToast(`📅 כל הקבועות כבר קיימות בחודש זה`, 'info');
+            showToast(`📅 כבר קיימות קבועות`, 'info');
         }
-    }
-
-    // פונקציית עזר להורדה בטוחה
-    function downloadFile(content, fileName, contentType) {
-        const a = document.createElement("a");
-        const file = new Blob([content], { type: contentType });
-        a.href = URL.createObjectURL(file);
-        a.download = fileName;
-        a.click();
-        URL.revokeObjectURL(a.href);
-    }
-
-    function exportJSON() {
-        if(entries.length === 0) return showToast("אין נתונים לגיבוי");
-        downloadFile(JSON.stringify(entries), 'budget_backup_2026.json', 'application/json');
-    }
-    
-    function exportCSV() {
-        if(entries.length === 0) return showToast("אין נתונים לייצוא");
-        let csv = "\uFEFFתאריך,תיאור,סוג,סכום\n";
-        entries.forEach(e => csv += `${new Date(e.date).toLocaleDateString()},${e.desc},${e.type},${e.amount}\n`);
-        downloadFile(csv, 'budget_report.csv', 'text/csv;charset=utf-8');
-    }
-
-    // --- שאר הפונקציות (Add, Edit, Render) נשמרות כרגיל ---
-    function addEntry() {
-        const d = document.getElementById('desc'), a = document.getElementById('amount'), t = document.getElementById('type');
-        if(!d.value || !a.value) return showToast("⚠️ חסרים נתונים למילוי");
-        
-        if(editId) {
-            const i = entries.findIndex(e => e.id === editId);
-            entries[i] = {...entries[i], desc: d.value, amount: parseFloat(a.value), type: t.value};
-            editId = null; document.getElementById('saveBtn').innerText = "שמור";
-        } else {
-            entries.push({
-                id: Date.now(), desc: d.value, amount: parseFloat(a.value), type: t.value, 
-                date: new Date(viewDate.getFullYear(), viewDate.getMonth(), 15).toISOString()
-            });
-        }
-        d.value = ''; a.value = ''; save();
-    }
-
-    function editEntry(id) {
-        const e = entries.find(x => x.id === id);
-        document.getElementById('desc').value = e.desc;
-        document.getElementById('amount').value = e.amount;
-        document.getElementById('type').value = e.type;
-        editId = id; document.getElementById('saveBtn').innerText = "עדכן";
-        window.scrollTo({ top: 50, behavior: 'smooth' });
     }
 
     function render() {
         const mNames = ["ינואר","פברואר","מרץ","אפריל","מאי","יוני","יולי","אוגוסט","ספטמבר","אוקטובר","נובמבר","דצמבר"];
         const m = viewDate.getMonth(), y = viewDate.getFullYear();
         document.getElementById('monthLabel').innerText = `${mNames[m]} ${y}`;
+        
         const hasFixedInHistory = entries.some(e => e.type === 'fixed');
         document.getElementById('loadFixedBtn').style.display = hasFixedInHistory ? 'inline-block' : 'none';
-        const monthEntries = entries.filter(e => { const d = new Date(e.date); return d.getMonth() === m && d.getFullYear() === y; });
+
+        const monthEntries = entries.filter(e => {
+            const d = new Date(e.date);
+            return d.getMonth() === m && d.getFullYear() === y;
+        });
+
         let inc = 0, exp = 0, fix = 0;
-        monthEntries.forEach(e => { if(e.type==='income') inc+=e.amount; else if(e.type==='expense') exp+=e.amount; else fix+=e.amount; });
+        monthEntries.forEach(e => {
+            if(e.type==='income') inc+=e.amount;
+            else if(e.type==='expense') exp+=e.amount;
+            else fix+=e.amount;
+        });
+
         document.getElementById('sumIncome').innerText = `₪${inc.toLocaleString()}`;
         document.getElementById('sumExpense').innerText = `₪${exp.toLocaleString()}`;
         document.getElementById('sumFixed').innerText = `₪${fix.toLocaleString()}`;
         const bal = inc - (exp + fix);
         const balEl = document.getElementById('sumBalance');
         balEl.innerText = `₪${bal.toLocaleString()}`;
-        balEl.style.color = bal >= 0 ? 'var(--balance)' : 'var(--expense)';
-        const usage = inc > 0 ? Math.min(Math.round(((exp+fix) / inc) * 100), 100) : 0;
-        document.getElementById('usagePercent').innerText = usage + '%';
-        document.getElementById('progressFill').style.width = usage + '%';
+        balEl.style.color = bal >= 0 ? 'var(--income)' : 'var(--expense)';
+
         const filtered = currentFilter === 'all' ? monthEntries : monthEntries.filter(x => x.type === currentFilter);
         const icons = {income:'💰', expense:'💸', fixed:'📅'};
-        let listHTML = '';
-        filtered.sort((a,b) => b.id - a.id).forEach(e => {
-            listHTML += `<div class="item ${e.type}"><div>${icons[e.type]} ${e.desc}</div><div style="display:flex; align-items:center; gap:8px;"><b>₪${e.amount.toLocaleString()}</b><button onclick="editEntry(${e.id})" style="background:none; border:none; cursor:pointer;">✏️</button><button onclick="openDeleteModal(${e.id})" style="background:none; border:none; cursor:pointer;">🗑️</button></div></div>`;
+        
+        let html = '';
+        filtered.sort((a,b) => new Date(b.date) - new Date(a.date)).forEach(e => {
+            const d = new Date(e.date);
+            const dateStr = `${d.getDate()}/${d.getMonth()+1}/${d.getFullYear().toString().slice(-2)}`;
+            
+            html += `
+                <div class="item ${e.type}">
+                    <div class="item-info">
+                        <span class="item-title">${icons[e.type]} ${e.desc}</span>
+                        <span class="item-date">${dateStr}</span>
+                    </div>
+                    <div class="item-amount-area">
+                        <span class="amount-val">₪${e.amount.toLocaleString()}</span>
+                        <button onclick="editEntry(${e.id})" style="background:none; border:none; font-size:1.1rem; cursor:pointer;">✏️</button>
+                        <button onclick="deleteEntry(${e.id})" style="background:none; border:none; font-size:1.1rem; cursor:pointer;">🗑️</button>
+                    </div>
+                </div>`;
         });
-        document.getElementById('list').innerHTML = listHTML;
+        document.getElementById('list').innerHTML = html || '<p style="text-align:center; color:var(--text-dim);">אין תנועות לחודש זה</p>';
+        
+        updateChart(inc, exp, fix);
+    }
+
+    function updateChart(i, e, f) {
         if(myChart) myChart.destroy();
         const ctx = document.getElementById('budgetChart').getContext('2d');
-        myChart = new Chart(ctx, { type: 'doughnut', data: { datasets: [{ data: (inc||exp||fix) ? [inc, exp, fix] : [1], backgroundColor: (inc||exp||fix) ? ['#22c55e', '#ef4444', '#f59e0b'] : ['#1e293b'], borderWidth: 0 }] }, options: { cutout: '75%', plugins: { legend: { display: false } } } });
+        myChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: { datasets: [{ data: (i||e||f) ? [i, e, f] : [1], backgroundColor: (i||e||f) ? ['#22c55e', '#ef4444', '#f59e0b'] : ['#1e293b'], borderWidth: 0 }] },
+            options: { cutout: '80%', plugins: { legend: { display: false } } }
+        });
+    }
+
+    function exportJSON() {
+        const blob = new Blob([JSON.stringify(entries)], {type: 'application/json'});
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'budget_backup.json'; a.click();
+    }
+    
+    function exportCSV() {
+        let csv = "\uFEFFתאריך,תיאור,סוג,סכום\n";
+        entries.forEach(e => csv += `${new Date(e.date).toLocaleDateString()},${e.desc},${e.type},${e.amount}\n`);
+        const blob = new Blob([csv], {type: 'text/csv;charset=utf-8'});
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'budget_report.csv'; a.click();
     }
 
     function smartMerge(ev) {
         const reader = new FileReader();
         reader.onload = (e) => {
-            try {
-                const data = JSON.parse(e.target.result);
-                data.forEach(ne => { if(!entries.find(old => old.id === ne.id)) entries.push(ne); });
-                save(); showToast("✅ המיזוג הושלם בהצלחה", "info");
-            } catch(err) { showToast("❌ שגיאה בקריאת הקובץ"); }
+            const data = JSON.parse(e.target.result);
+            data.forEach(ne => { if(!entries.find(old => old.id === ne.id)) entries.push(ne); });
+            save(); showToast("הנתונים מוזגו!", "info");
         };
         reader.readAsText(ev.target.files[0]);
     }
+
     render();
 </script>
 </body>
