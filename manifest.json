@@ -1,12 +1,12 @@
 {
-  "name": "Manager Money 2026",
+  "name": "Manager Money",
   "short_name": "MoneyMgr",
-  "description": "אפליקציה לניהול תקציב אישי בעיצוב ניאון מודרני",
+  "description": "ניהול תקציב אישי חכם - אלכסנדר 2026",
   "start_url": "index.html",
   "display": "standalone",
-  "orientation": "portrait",
   "background_color": "#070b14",
-  "theme_color": "#38bdf8",
+  "theme_color": "#070b14",
+  "orientation": "portrait",
   "icons": [
     {
       "src": "icon.png",
