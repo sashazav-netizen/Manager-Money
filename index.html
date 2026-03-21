@@ -6,10 +6,16 @@
     <title>Manager-Money | אלכסנדר 2026</title>
     
     <link rel="icon" type="image/png" href="icon.png">
+    
     <link rel="apple-touch-icon" href="icon.png">
-    <meta name="theme-color" content="#070b14">
+    
     <link rel="manifest" href="manifest.json">
     
+    <meta name="theme-color" content="#070b14">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="MoneyMgr">
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&display=swap" rel="stylesheet">
     
@@ -76,7 +82,6 @@
         .filter-btn { background: var(--glass); border: 1px solid var(--glass-border); color: var(--text-dim); padding: 5px 12px; border-radius: 20px; cursor: pointer; font-size: 0.75rem; }
         .filter-btn.active { background: var(--accent); color: var(--bg); font-weight: 700; }
 
-        /* פריט ברשימה */
         .item { background: var(--glass); margin-bottom: 8px; display: flex; justify-content: space-between; padding: 12px; border-radius: 10px; border: 1px solid var(--glass-border); align-items: center; }
         .item-info { display: flex; flex-direction: column; gap: 2px; text-align: right; }
         .item-title { font-weight: 700; font-size: 0.95rem; }
@@ -92,7 +97,6 @@
         .actions-bottom { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-top: 15px; }
         .action-btn { background: var(--glass); border: 1px solid var(--glass-border); color: var(--text-dim); padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 0.75rem; }
 
-        /* מודאל */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 9999; backdrop-filter: blur(5px); }
         .modal { background: #1e293b; padding: 20px; border-radius: 20px; width: 85%; max-width: 300px; text-align: center; border: 1px solid var(--glass-border); }
 
@@ -180,7 +184,7 @@
     </div>
 
     <footer style="text-align:center; padding: 20px; color: var(--text-dim); font-size: 0.65rem;">
-        Manager-Money v1.8.1 | אלכסנדר זבודיסקר
+        Manager-Money v1.8.2 | אלכסנדר זבודיסקר
     </footer>
 </div>
 
