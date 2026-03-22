@@ -7,6 +7,9 @@
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&display=swap" rel="stylesheet">
+    
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 
     <style>
         :root {
@@ -139,10 +142,10 @@
             <div>
                 <h1>Manager<span>Money</span></h1>
                 <div class="status-bar">
-                    <span class="version-badge">v1.8.11</span>
+                    <span class="version-badge">v1.8.20 Cloud</span>
                     <div class="cloud-badge">
                         <svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"/></svg>
-                        קלאוד מחובר
+                        ענן מחובר
                     </div>
                 </div>
             </div>
@@ -198,17 +201,34 @@
     <div id="list"></div>
 
     <div class="actions-bottom">
-        <button class="action-btn" style="color:var(--accent); font-weight: 700;" onclick="refreshData()">🔄 עדכון</button>
+        <button class="action-btn" style="color:var(--accent); font-weight: 700;" onclick="pullFromCloud()">🔄 עדכון מהענן</button>
+        <button class="action-btn" onclick="syncToCloud()">☁️ סנכרון כפוי</button>
         <button class="action-btn" onclick="exportJSON()">💾 גיבוי</button>
         <button class="action-btn" onclick="exportCSV()">📊 אקסל</button>
-        <button class="action-btn" onclick="document.getElementById('importFile').click()">🔄 מיזוג</button>
-        <input type="file" id="importFile" accept=".json" style="display:none" onchange="smartMerge(event)">
     </div>
 
-    <footer>Manager-Money v1.8.11 | אלכסנדר זבודיסקר 2026</footer>
+    <footer>Manager-Money v1.8.20 | אלכסנדר זבודיסקר 2026</footer>
 </div>
 
 <script>
+// --- אתחול Firebase ---
+const firebaseConfig = {
+  apiKey: "AIzaSyAZ2-EJjvIbDvtKLwKg3LObkIAs8sNhyjU",
+  authDomain: "managermoney-49d0e.firebaseapp.com",
+  projectId: "managermoney-49d0e",
+  databaseURL: "https://managermoney-49d0e-default-rtdb.europe-west1.firebasedatabase.app",
+  storageBucket: "managermoney-49d0e.firebasestorage.app",
+  messagingSenderId: "289678997235",
+  appId: "1:289678997235:web:0a58a5a7a36d38e1152986"
+};
+
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
+const db = firebase.database();
+const dbRef = db.ref('users/alex/entries');
+
+// --- משתני אפליקציה ---
 const STORAGE_KEY = 'budget_alex_2026';
 let entries = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
 let viewDate = new Date();
@@ -218,12 +238,7 @@ let myChart = null;
 let pendingDeleteId = null;
 const MONTHS = ['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
 
-// פונקציית עדכון החדשה
-function refreshData() {
-    entries = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-    render();
-    showToast('נתונים רועננו בהצלחה', 'info');
-}
+// --- פונקציות ליבה ---
 
 function showToast(msg, type='success') {
     const t = document.getElementById('toast');
@@ -234,6 +249,75 @@ function showToast(msg, type='success') {
 
 function openModal(id) { document.getElementById(id).classList.add('open'); }
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+// 1. סנכרון כפוי (שולח הכל לענן)
+function syncToCloud() {
+    if(entries.length === 0) { showToast('אין נתונים לסנכרון', 'warn'); return; }
+    showToast('מסנכרן לענן...', 'info');
+    
+    const dataObj = {};
+    entries.forEach(e => dataObj[e.id] = e);
+    
+    dbRef.set(dataObj)
+        .then(() => showToast('סונכרן בהצלחה!', 'success'))
+        .catch(err => showToast('שגיאה בסנכרון', 'warn'));
+}
+
+// 2. משיכה מהענן (מעדכן את המכשיר)
+function pullFromCloud() {
+    showToast('מושך נתונים...', 'info');
+    dbRef.once('value').then((snapshot) => {
+        const val = snapshot.val();
+        if(val) {
+            entries = Object.values(val);
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+            render();
+            showToast('נתונים עודכנו!', 'success');
+        } else {
+            showToast('לא נמצאו נתונים בענן', 'warn');
+        }
+    }).catch(() => showToast('שגיאת תקשורת', 'warn'));
+}
+
+// 3. טעינת קבועות (תיקון הלוגיקה)
+function importFixedEntries() {
+    const m = viewDate.getMonth(), y = viewDate.getFullYear();
+    const allFixed = entries.filter(e => e.type === 'fixed');
+    
+    // רשימת תיאורים שכבר קיימים בחודש הנבחר
+    const existDescs = entries.filter(e => {
+        const d = new Date(e.date);
+        return d.getMonth() === m && d.getFullYear() === y;
+    }).map(e => e.desc);
+
+    // סינון קבועות ייחודיות
+    const uniqueFixed = allFixed.filter((v, i, a) => a.findIndex(t => t.desc === v.desc) === i);
+    
+    let added = 0;
+    uniqueFixed.forEach(f => {
+        if(!existDescs.includes(f.desc)) {
+            const newId = Date.now() + Math.random();
+            const newE = { 
+                id: newId, 
+                desc: f.desc, 
+                amount: f.amount, 
+                type: 'fixed', 
+                date: new Date(y, m, 2).toISOString().split('T')[0] 
+            };
+            entries.push(newE);
+            db.ref('users/alex/entries/' + newId).set(newE);
+            added++;
+        }
+    });
+
+    if(added > 0) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+        render();
+        showToast(`נוספו ${added} פעולות`, 'success');
+    } else {
+        showToast('הקבועות כבר קיימות בחודש זה', 'info');
+    }
+}
 
 function render() {
     const m = viewDate.getMonth(), y = viewDate.getFullYear();
@@ -306,20 +390,31 @@ function renderList() {
 }
 
 function addEntry() {
-    const d = document.getElementById('desc').value, a = parseFloat(document.getElementById('amount').value), t = document.getElementById('type').value, dt = document.getElementById('entryDate').value;
+    const d = document.getElementById('desc').value, 
+          a = parseFloat(document.getElementById('amount').value), 
+          t = document.getElementById('type').value, 
+          dt = document.getElementById('entryDate').value;
+          
     if(!d || !a || !dt) { showToast('מלא את כל השדות', 'warn'); return; }
 
+    let newE;
     if(editId) {
         const i = entries.findIndex(e => e.id === editId);
         entries[i] = { ...entries[i], desc: d, amount: a, type: t, date: dt };
+        newE = entries[i];
         cancelEdit();
-        showToast('עודכן בהצלחה');
     } else {
-        entries.push({ id: Date.now(), desc: d, amount: a, type: t, date: dt });
-        showToast('נשמר בהצלחה');
+        newE = { id: Date.now(), desc: d, amount: a, type: t, date: dt };
+        entries.push(newE);
     }
+
     localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
-    document.getElementById('desc').value = ''; document.getElementById('amount').value = '';
+    db.ref('users/alex/entries/' + newE.id).set(newE)
+        .then(() => showToast('נשמר וסונכרן'))
+        .catch(() => showToast('נשמר מקומית בלבד', 'info'));
+
+    document.getElementById('desc').value = ''; 
+    document.getElementById('amount').value = '';
     render();
 }
 
@@ -347,7 +442,9 @@ function cancelEdit() {
 }
 
 function askDelete(id) { pendingDeleteId = id; openModal('deleteModal'); }
+
 function confirmDeleteAction() {
+    db.ref('users/alex/entries/' + pendingDeleteId).remove();
     entries = entries.filter(e => e.id !== pendingDeleteId);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
     closeModal('deleteModal');
@@ -367,7 +464,6 @@ function changeMonth(n) { viewDate.setMonth(viewDate.getMonth() + n); render(); 
 function exportJSON() {
     const blob = new Blob([JSON.stringify(entries, null, 2)], {type:'application/json'});
     const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'budget_backup.json'; a.click();
-    showToast('גיבוי JSON ירד');
 }
 
 function exportCSV() {
@@ -375,43 +471,6 @@ function exportCSV() {
     entries.forEach(e => csv += `${e.date},${e.desc},${e.type},${e.amount}\n`);
     const blob = new Blob([csv], {type:'text/csv;charset=utf-8'});
     const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'report.csv'; a.click();
-    showToast('אקסל ירד');
-}
-
-function smartMerge(ev) {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-        try {
-            const data = JSON.parse(e.target.result);
-            data.forEach(ne => { if(!entries.some(ex => ex.id === ne.id)) entries.push(ne); });
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
-            render(); showToast('המיזוג הושלם');
-        } catch(err) { showToast('קובץ לא תקין', 'warn'); }
-    };
-    reader.readAsText(ev.target.files[0]);
-}
-
-function importFixedEntries() {
-    const m = viewDate.getMonth(), y = viewDate.getFullYear();
-    const fixed = entries.filter(e => e.type === 'fixed');
-    const currentDescs = entries.filter(e => {
-        const d = new Date(e.date);
-        return d.getMonth() === m && d.getFullYear() === y;
-    }).map(e => e.desc);
-
-    let added = 0;
-    const uniqueFixed = fixed.filter((v, i, a) => a.findIndex(t => t.desc === v.desc) === i);
-    
-    uniqueFixed.forEach(f => {
-        if(!currentDescs.includes(f.desc)) {
-            entries.push({ id: Date.now() + Math.random(), desc: f.desc, amount: f.amount, type: 'fixed', date: new Date(y, m, 1).toISOString().split('T')[0] });
-            added++;
-        }
-    });
-    if(added > 0) {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
-        render(); showToast(`נוספו ${added} קבועות`);
-    } else { showToast('כבר קיימות קבועות לחודש זה', 'info'); }
 }
 
 document.getElementById('entryDate').value = new Date().toISOString().split('T')[0];
