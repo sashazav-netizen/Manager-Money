@@ -38,76 +38,77 @@
 
         .container { max-width: 600px; margin: 0 auto; padding-bottom: 40px; }
 
-        /* ===== HEADER & LOGO ===== */
+        /* ===== HEADER - לוגו משמאל ===== */
         header { display: flex; align-items: center; justify-content: space-between; margin: 20px 0; padding: 0 10px; }
-        .header-right { display: flex; align-items: center; gap: 12px; }
-
+        .header-right { display: flex; flex-direction: column; } /* טקסט מימין */
+        
         .logo-container {
-            width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;
-            background: rgba(56,189,248,0.08); border-radius: 14px;
-            box-shadow: 0 0 20px rgba(56,189,248,0.25); border: 1px solid var(--glass-border);
-            position: relative; overflow: hidden;
+            width: 48px; height: 48px; display: flex; align-items: center; justify-content: center;
+            background: rgba(56,189,248,0.05); border-radius: 12px;
+            box-shadow: 0 0 16px rgba(56,189,248,0.3); border: 1px solid var(--glass-border);
         }
         
-        .shield-base { fill: rgba(56,189,248,0.1); stroke: var(--accent); stroke-width: 1.5; }
-        .data-bar { fill: var(--income); transform-origin: bottom; animation: barGrow 2s infinite ease-in-out; }
-        @keyframes barGrow { 0%, 100% { transform: scaleY(0.6); } 50% { transform: scaleY(1); } }
+        .shield-base { fill: rgba(56,189,248,0.1); stroke: var(--accent); stroke-width: 1.5; animation: shieldPulse 3s infinite ease-in-out; transform-origin: center; }
+        .data-bar { fill: var(--income); animation: barFlow 2s infinite ease-in-out; transform-origin: center bottom; }
+        @keyframes shieldPulse { 0%,100% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.05); opacity: 1; } }
+        @keyframes barFlow { 0%,100% { transform: scaleY(0.7); opacity: 0.5; } 50% { transform: scaleY(1); opacity: 1; } }
 
-        h1 { font-size: 1.65rem; font-weight: 900; margin: 0; letter-spacing: -1px; }
+        h1 { font-size: 1.6rem; font-weight: 900; margin: 0; letter-spacing: -1px; line-height: 1; }
         h1 span { color: var(--accent); }
 
-        .status-bar { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
-        .version-badge { background: rgba(56,189,248,0.15); border: 1px solid rgba(56,189,248,0.3); color: var(--accent); font-size: 0.6rem; font-weight: 800; padding: 1px 8px; border-radius: 20px; }
-
-        /* ===== MONTH NAV ===== */
-        .month-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; background: var(--glass); padding: 10px 15px; border-radius: 50px; border: 1px solid var(--glass-border); }
-        .nav-btn { background: var(--accent); color: var(--bg); border: none; width: 34px; height: 34px; border-radius: 50%; cursor: pointer; font-weight: bold; font-size: 1.1rem; }
-        .load-fixed-btn { background: rgba(245,158,11,0.12); color: var(--fixed); border: 1px solid rgba(245,158,11,0.4); padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; cursor: pointer; font-weight: 800; margin-top: 4px; }
+        .status-bar { display: flex; align-items: center; gap: 8px; margin-top: 5px; }
+        .version-badge { background: rgba(56,189,248,0.15); border: 1px solid rgba(56,189,248,0.3); color: var(--accent); font-size: 0.6rem; font-weight: 700; padding: 1px 7px; border-radius: 20px; }
+        .cloud-badge { display: flex; align-items: center; gap: 4px; color: var(--cloud); font-size: 0.65rem; font-weight: 700; }
 
         /* ===== SUMMARY MINI ===== */
-        .summary-mini { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 15px; }
-        .mini-card { background: var(--glass); backdrop-filter: blur(12px); padding: 12px 4px; border-radius: 14px; text-align: center; border: 1px solid var(--glass-border); display: flex; flex-direction: column; justify-content: center; min-height: 90px; }
-        .mini-card span { font-size: 0.65rem; color: var(--text-dim); margin-bottom: 4px; }
-        .mini-card b { font-size: 0.85rem; font-weight: 900; }
+        .summary-mini { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 12px; }
+        .mini-card { background: var(--glass); backdrop-filter: blur(12px); padding: 10px 2px; border-radius: 12px; text-align: center; border: 1px solid var(--glass-border); display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 85px; }
+        .mini-card span { display: block; font-size: 0.65rem; color: var(--text-dim); margin-bottom: 2px; }
+        .mini-card b { font-size: 0.8rem; white-space: nowrap; font-weight: 900; }
+
+        /* ===== NAV ===== */
+        .month-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; background: var(--glass); padding: 8px 15px; border-radius: 50px; border: 1px solid var(--glass-border); }
+        .nav-btn { background: var(--accent); color: var(--bg); border: none; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-weight: bold; }
+        .load-fixed-btn { background: rgba(245,158,11,0.15); color: var(--fixed); border: 1px solid var(--fixed); padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; cursor: pointer; font-weight: 700; margin-top: 2px; }
 
         /* ===== CHART ===== */
-        .chart-section { background: var(--glass); padding: 15px; border-radius: 20px; margin-bottom: 20px; border: 1px solid var(--glass-border); display: flex; justify-content: center; }
-        .chart-container { height: 110px; width: 110px; }
+        .chart-section { background: var(--glass); padding: 12px; border-radius: 18px; margin-bottom: 20px; border: 1px solid var(--glass-border); display: flex; flex-direction: column; align-items: center; }
+        .chart-container { height: 100px; width: 100px; position: relative; }
 
         /* ===== FORM ===== */
-        .form-card { background: var(--glass); padding: 18px; border-radius: 22px; margin-bottom: 20px; border: 1px solid var(--glass-border); transition: 0.3s ease; }
-        .form-card.edit-mode { border-color: var(--fixed); box-shadow: 0 0 15px rgba(245,158,11,0.2); }
-        .input-row-top { display: grid; grid-template-columns: 1.2fr 1fr 1.2fr; gap: 10px; margin-bottom: 12px; }
+        .form-card { background: var(--glass); padding: 16px; border-radius: 20px; margin-bottom: 20px; border: 1px solid var(--glass-border); transition: 0.3s; }
+        .form-card.edit-mode { border-color: var(--fixed); background: rgba(245,158,11,0.08); }
+        .input-row-top { display: grid; grid-template-columns: 1.2fr 1fr 1.2fr; gap: 10px; margin-bottom: 10px; }
         .input-row-bottom { display: grid; grid-template-columns: 1fr 2fr; gap: 10px; }
-        input, select, .btn-main { height: 52px; border-radius: 14px; border: 1px solid var(--glass-border); background: rgba(15,23,42,0.85); color: white; text-align: center; width: 100%; outline: none; font-size: 0.95rem; }
-        .btn-main { background: var(--accent); color: var(--bg); font-weight: 900; cursor: pointer; border: none; transition: 0.2s; }
+        input, select, .btn-main { height: 55px; border-radius: 14px; border: 1px solid var(--glass-border); background: rgba(15,23,42,0.8); color: white; outline: none; text-align: center; width: 100%; }
+        .btn-main { background: var(--accent); color: var(--bg); font-weight: 900; cursor: pointer; border: none; font-size: 1.1rem; }
         .btn-main.editing { background: var(--fixed); }
         
-        .cancel-edit-btn { background: rgba(239, 68, 68, 0.15); color: var(--expense); border: 1px solid var(--expense); margin-top: 10px; height: 40px; border-radius: 10px; cursor: pointer; width: 100%; font-weight: 700; display: none; }
-        .edit-mode .cancel-edit-btn { display: block; }
+        /* כפתור ביטול עריכה */
+        .btn-cancel-edit { background: rgba(239, 68, 68, 0.15); color: var(--expense); border: 1px solid var(--expense); margin-top: 10px; height: 40px; border-radius: 10px; cursor: pointer; width: 100%; font-weight: 700; display: none; }
+        .edit-mode .btn-cancel-edit { display: block; }
 
         /* ===== LIST ===== */
-        .item { background: var(--glass); margin-bottom: 8px; display: flex; justify-content: space-between; padding: 14px; border-radius: 14px; border: 1px solid var(--glass-border); align-items: center; }
-        .item.income { border-right: 5px solid var(--income); }
-        .item.expense { border-right: 5px solid var(--expense); }
-        .item.fixed { border-right: 5px solid var(--fixed); }
-        .icon-btn { background: none; border: none; cursor: pointer; font-size: 1.2rem; color: var(--text-dim); transition: 0.2s; }
-        .icon-btn:hover { color: white; transform: scale(1.1); }
+        .item { background: var(--glass); margin-bottom: 8px; display: flex; justify-content: space-between; padding: 12px; border-radius: 12px; border: 1px solid var(--glass-border); align-items: center; }
+        .item.income { border-right: 4px solid var(--income); }
+        .item.expense { border-right: 4px solid var(--expense); }
+        .item.fixed { border-right: 4px solid var(--fixed); }
+        .icon-btn { background: none; border: none; cursor: pointer; font-size: 1.1rem; padding: 4px; color: var(--text-dim); }
 
         /* ===== MODAL & TOAST ===== */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.88); display: none; justify-content: center; align-items: center; z-index: 9999; backdrop-filter: blur(4px); }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 9999; backdrop-filter: blur(5px); }
         .modal-overlay.open { display: flex; }
-        .modal { background: #1e293b; padding: 25px; border-radius: 22px; width: 85%; max-width: 320px; text-align: center; border: 1px solid var(--glass-border); }
+        .modal { background: #1e293b; padding: 20px; border-radius: 20px; width: 85%; max-width: 300px; text-align: center; border: 1px solid var(--glass-border); }
+        
+        #toast { position: fixed; top: -100px; left: 50%; transform: translateX(-50%); padding: 12px 24px; border-radius: 12px; z-index: 10000; transition: 0.4s; font-weight: 700; color: white; }
+        #toast.show { top: 25px; opacity: 1; }
+        .toast-success { background: var(--income); }
+        .toast-warn { background: var(--expense); }
 
-        #toast { position: fixed; top: -100px; left: 50%; transform: translateX(-50%); padding: 14px 28px; border-radius: 15px; z-index: 10000; transition: 0.5s cubic-bezier(0.18, 0.89, 0.32, 1.28); font-weight: 800; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        #toast.show { top: 30px; }
-        .toast-success { background: var(--income); color: white; }
-        .toast-warn { background: var(--expense); color: white; }
+        .actions-bottom { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 15px; }
+        .action-btn { background: var(--glass); border: 1px solid var(--glass-border); color: var(--text-dim); padding: 8px 4px; border-radius: 8px; cursor: pointer; font-size: 0.7rem; font-weight: 600; }
 
-        .actions-bottom { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 25px; }
-        .action-btn { background: var(--glass); border: 1px solid var(--glass-border); color: var(--text-dim); padding: 10px 5px; border-radius: 12px; font-size: 0.75rem; font-weight: 700; cursor: pointer; }
-
-        footer { text-align: center; padding: 40px 20px; color: var(--text-dim); font-size: 0.75rem; opacity: 0.8; }
+        footer { text-align: center; padding: 20px; color: var(--text-dim); font-size: 0.65rem; }
     </style>
 </head>
 <body>
@@ -116,11 +117,10 @@
 
 <div class="modal-overlay" id="deleteModal">
     <div class="modal">
-        <h3 style="margin-top:0; color:white;">מחיקת פעולה?</h3>
-        <p style="color:var(--text-dim); font-size:0.9rem;">הנתונים ימחקו לצמיתות מהמכשיר ומהענן.</p>
-        <div style="display:flex; gap:12px; margin-top:25px;">
-            <button onclick="confirmDeleteAction()" style="flex:1; padding:14px; background:var(--expense); color:white; border:none; border-radius:12px; font-weight:900; cursor:pointer;">מחק</button>
-            <button onclick="closeModal('deleteModal')" style="flex:1; padding:14px; background:rgba(255,255,255,0.1); color:white; border:none; border-radius:12px; cursor:pointer;">ביטול</button>
+        <h3 style="margin-top:0;">למחוק פעולה זו?</h3>
+        <div style="display:flex; gap:10px; margin-top:15px;">
+            <button style="flex:1; padding:10px; border-radius:8px; background:var(--expense); color:white; border:none; font-weight:700;" onclick="confirmDeleteAction()">מחק</button>
+            <button style="flex:1; padding:10px; border-radius:8px; background:rgba(255,255,255,0.1); color:var(--text); border:none;" onclick="closeModal('deleteModal')">ביטול</button>
         </div>
     </div>
 </div>
@@ -128,29 +128,29 @@
 <div class="container">
     <header>
         <div class="header-right">
-            <div class="logo-container">
-                <svg viewBox="0 0 24 24" width="34" height="34">
-                    <path class="shield-base" d="M12 2L4 5v6.09c0 5.05 3.41 9.76 8 10.91 4.59-1.15 8-5.86 8-10.91V5l-8-3z"/>
-                    <rect class="data-bar" x="7" y="14" width="2.2" height="4" rx="1"/>
-                    <rect class="data-bar" x="10.9" y="11" width="2.2" height="7" rx="1" style="animation-delay:0.3s"/>
-                    <rect class="data-bar" x="14.8" y="8" width="2.2" height="10" rx="1" style="animation-delay:0.6s"/>
-                </svg>
-            </div>
-            <div>
-                <h1>Manager<span>Money</span></h1>
-                <div class="status-bar">
-                    <span class="version-badge">v1.9.3</span>
-                    <span id="cloudStatus" style="color:var(--cloud); font-size:0.65rem; font-weight:800;">● ענן מחובר</span>
+            <h1>Manager<span>Money</span></h1>
+            <div class="status-bar">
+                <span class="version-badge">v1.9.5</span>
+                <div class="cloud-badge" id="cloudStatus">
+                    ● ענן פעיל
                 </div>
             </div>
+        </div>
+        <div class="logo-container">
+            <svg viewBox="0 0 24 24" width="32" height="32">
+                <path class="shield-base" d="M12 2L4 5v6.09c0 5.05 3.41 9.76 8 10.91 4.59-1.15 8-5.86 8-10.91V5l-8-3z"/>
+                <rect class="data-bar" x="7" y="14" width="2.5" height="4" rx="1"/>
+                <rect class="data-bar" x="10.75" y="11" width="2.5" height="7" rx="1" style="animation-delay:0.2s"/>
+                <rect class="data-bar" x="14.5" y="8" width="2.5" height="10" rx="1" style="animation-delay:0.4s"/>
+            </svg>
         </div>
     </header>
 
     <div class="month-nav">
         <button class="nav-btn" onclick="changeMonth(-1)">&#9664;</button>
         <div style="text-align:center;">
-            <h3 id="monthLabel" style="margin:0;"></h3>
-            <button class="load-fixed-btn" onclick="importFixedEntries()">📅 טען קבועות</button>
+            <h3 id="monthLabel" style="margin:0; font-size:1.1rem;"></h3>
+            <button id="loadFixedBtn" class="load-fixed-btn" onclick="importFixedEntries()">📅 טען קבועות</button>
         </div>
         <button class="nav-btn" onclick="changeMonth(1)">&#9654;</button>
     </div>
@@ -174,7 +174,7 @@
             <button class="btn-main" id="saveBtn" onclick="addEntry()">שמור</button>
             <input type="date" id="entryDate">
         </div>
-        <button class="cancel-edit-btn" onclick="cancelEdit()">ביטול עריכה</button>
+        <button class="btn-cancel-edit" onclick="cancelEdit()">ביטול עריכה</button>
     </div>
 
     <div id="list"></div>
@@ -182,7 +182,7 @@
     <div class="actions-bottom">
         <button class="action-btn" onclick="pullFromCloud()">🔄 רענן ענן</button>
         <button class="action-btn" onclick="syncToCloud()">☁️ סנכרון כפוי</button>
-        <button class="action-btn" onclick="mergeData()">🧬 מיזוג</button>
+        <button class="action-btn" onclick="mergeData()">🧬 מיזוג נתונים</button>
         <button class="action-btn" onclick="exportCSV()">📊 אקסל</button>
         <button class="action-btn" onclick="exportJSON()">💾 גיבוי</button>
         <button class="action-btn" style="color:var(--expense)" onclick="clearLocal()">🗑 נקה מקומי</button>
@@ -192,7 +192,7 @@
 </div>
 
 <script>
-// --- Firebase Config ---
+// --- אתחול Firebase ---
 const firebaseConfig = {
     apiKey: "AIzaSyAZ2-EJjvIbDvtKLwKg3LObkIAs8sNhyjU",
     authDomain: "managermoney-49d0e.firebaseapp.com",
@@ -209,7 +209,7 @@ const dbRef = db.ref('users/alex/entries');
 
 firebase.auth().signInAnonymously().then(() => pullFromCloud(true));
 
-// --- Global Vars ---
+// --- משתני אפליקציה ---
 const STORAGE_KEY = 'budget_alex_2026';
 let entries = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
 let viewDate = new Date();
@@ -218,10 +218,10 @@ let pendingDeleteId = null;
 let myChart = null;
 const MONTHS = ['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
 
-function showToast(m, t='success') {
-    const el = document.getElementById('toast');
-    el.textContent = m; el.className = 'show toast-' + t;
-    setTimeout(() => el.classList.remove('show'), 3000);
+function showToast(msg, type='success') {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.className = 'show toast-' + type;
+    setTimeout(() => t.classList.remove('show'), 3000);
 }
 
 function openModal(id) { document.getElementById(id).classList.add('open'); }
@@ -249,10 +249,10 @@ function render() {
             <div class="item ${e.type}">
                 <div>
                     <div style="font-size:0.65rem; color:var(--text-dim)">${new Date(e.date).toLocaleDateString('he-IL')}</div>
-                    <b style="font-size:0.95rem;">${e.desc}</b>
+                    <div style="font-weight:600">${e.desc}</div>
                 </div>
-                <div style="display:flex; align-items:center; gap:12px;">
-                    <b style="color:var(--${e.type}); font-size:1rem;">₪${e.amount.toLocaleString()}</b>
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <b style="color:var(--${e.type})">₪${e.amount.toLocaleString()}</b>
                     <button class="icon-btn" onclick="editEntry(${e.id})">✎</button>
                     <button class="icon-btn" onclick="askDelete(${e.id})">🗑</button>
                 </div>
@@ -262,57 +262,52 @@ function render() {
     document.getElementById('sumIncome').textContent = '₪' + inc.toLocaleString();
     document.getElementById('sumExpense').textContent = '₪' + exp.toLocaleString();
     document.getElementById('sumFixed').textContent = '₪' + fix.toLocaleString();
-    
-    const balance = inc - (exp + fix);
+    const bal = inc - (exp + fix);
     const balEl = document.getElementById('sumBalance');
-    balEl.textContent = '₪' + Math.abs(balance).toLocaleString();
-    balEl.style.color = balance >= 0 ? 'var(--balance)' : 'var(--expense)';
+    balEl.textContent = '₪' + Math.abs(bal).toLocaleString();
+    balEl.style.color = bal >= 0 ? 'var(--balance)' : 'var(--expense)';
 
     if(myChart) myChart.destroy();
     myChart = new Chart(document.getElementById('budgetChart'), {
         type: 'doughnut',
         data: { datasets: [{ data: (inc||exp||fix) ? [inc, exp, fix] : [1], backgroundColor: ['#22c55e', '#ef4444', '#f59e0b'], borderWidth: 0 }] },
-        options: { cutout: '82%', plugins: { legend: { display: false } } }
+        options: { cutout: '78%', plugins: { legend: { display: false } } }
     });
 }
 
 function addEntry() {
-    const desc = document.getElementById('desc').value;
-    const amount = parseFloat(document.getElementById('amount').value);
-    const type = document.getElementById('type').value;
-    const date = document.getElementById('entryDate').value;
+    const d = document.getElementById('desc').value;
+    const a = parseFloat(document.getElementById('amount').value);
+    const t = document.getElementById('type').value;
+    const dt = document.getElementById('entryDate').value;
 
-    if(!desc || isNaN(amount) || !date) { showToast('נא למלא את כל השדות', 'warn'); return; }
+    if(!d || isNaN(a) || !dt) { showToast('מלא את כל השדות', 'warn'); return; }
 
     if(editId) {
         const i = entries.findIndex(e => e.id === editId);
-        entries[i] = { ...entries[i], desc, amount, type, date };
+        entries[i] = { ...entries[i], desc: d, amount: a, type: t, date: dt };
         dbRef.child(editId).set(entries[i]);
         cancelEdit();
     } else {
-        const newEntry = { id: Date.now(), desc, amount, type, date };
-        entries.push(newEntry);
-        dbRef.child(newEntry.id).set(newEntry);
+        const newE = { id: Date.now(), desc: d, amount: a, type: t, date: dt };
+        entries.push(newE);
+        dbRef.child(newE.id).set(newE);
     }
 
     localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
-    document.getElementById('desc').value = '';
-    document.getElementById('amount').value = '';
     render();
-    showToast('הנתונים נשמרו!');
+    showToast('נשמר בהצלחה');
 }
 
 function editEntry(id) {
     const e = entries.find(x => x.id === id);
     if(!e) return;
-    
     document.getElementById('desc').value = e.desc;
     document.getElementById('amount').value = e.amount;
     document.getElementById('type').value = e.type;
     document.getElementById('entryDate').value = e.date;
-    
     editId = id;
-    document.getElementById('saveBtn').textContent = 'עדכן פעולה';
+    document.getElementById('saveBtn').textContent = 'עדכן';
     document.getElementById('saveBtn').classList.add('editing');
     document.getElementById('formCard').classList.add('edit-mode');
     window.scrollTo({top: 0, behavior: 'smooth'});
@@ -328,86 +323,73 @@ function cancelEdit() {
     document.getElementById('formCard').classList.remove('edit-mode');
 }
 
-function askDelete(id) {
-    pendingDeleteId = id;
-    openModal('deleteModal');
-}
+function askDelete(id) { pendingDeleteId = id; openModal('deleteModal'); }
 
 function confirmDeleteAction() {
     if(!pendingDeleteId) return;
-    entries = entries.filter(e => e.id !== pendingDeleteId);
     dbRef.child(pendingDeleteId).remove();
+    entries = entries.filter(e => e.id !== pendingDeleteId);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
     closeModal('deleteModal');
     render();
-    showToast('הפעולה נמחקה', 'warn');
+    showToast('נמחק', 'warn');
     pendingDeleteId = null;
 }
 
 function importFixedEntries() {
     const m = viewDate.getMonth(), y = viewDate.getFullYear();
     const allFixed = entries.filter(e => e.type === 'fixed');
-    
     const existingInMonth = entries.filter(e => {
         const d = new Date(e.date);
         return d.getMonth() === m && d.getFullYear() === y;
     }).map(e => e.desc);
 
-    const uniqueTemplates = [];
+    const uniqueFixed = [];
     const seen = new Set();
     allFixed.forEach(f => {
-        if(!seen.has(f.desc)) { uniqueTemplates.push(f); seen.add(f.desc); }
+        if(!seen.has(f.desc)) { uniqueFixed.push(f); seen.add(f.desc); }
     });
 
-    let addedCount = 0;
-    uniqueTemplates.forEach(f => {
+    let count = 0;
+    uniqueFixed.forEach(f => {
         if(!existingInMonth.includes(f.desc)) {
-            const newId = Date.now() + Math.floor(Math.random() * 1000);
-            const newE = { 
-                id: newId, 
-                desc: f.desc, 
-                amount: f.amount, 
-                type: 'fixed', 
-                date: new Date(y, m, 2).toISOString().split('T')[0] 
-            };
+            const newId = Date.now() + Math.floor(Math.random()*1000);
+            const newE = { id: newId, desc: f.desc, amount: f.amount, type: 'fixed', date: new Date(y, m, 2).toISOString().split('T')[0] };
             entries.push(newE);
             dbRef.child(newId).set(newE);
-            addedCount++;
+            count++;
         }
     });
 
-    if(addedCount > 0) {
+    if(count > 0) {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
-        render(); showToast(`נוספו ${addedCount} קבועות לחודש זה`);
-    } else {
-        showToast('לא נמצאו קבועות חדשות להוספה', 'warn');
-    }
+        render(); showToast(`נוספו ${count} קבועות`);
+    } else showToast('אין מה להוסיף', 'warn');
 }
 
-// --- Sync Functions ---
 function pullFromCloud(silent=false) {
     dbRef.once('value').then(snap => {
         if(snap.val()) {
             entries = Object.values(snap.val());
             localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
-            render(); if(!silent) showToast('סונכרן בהצלחה מהענן');
+            render(); if(!silent) showToast('סונכרן מהענן');
         }
     });
 }
 
 function syncToCloud() {
     const data = {}; entries.forEach(e => data[e.id] = e);
-    dbRef.set(data).then(() => showToast('הענן עודכן ידנית!'));
+    dbRef.set(data).then(() => showToast('ענן עודכן!'));
 }
 
 function mergeData() {
     dbRef.once('value').then(snap => {
         const cloud = snap.val() ? Object.values(snap.val()) : [];
         const localIds = entries.map(e => e.id);
-        let count = 0;
-        cloud.forEach(c => { if(!localIds.includes(c.id)) { entries.push(c); count++; } });
+        let added = 0;
+        cloud.forEach(c => { if(!localIds.includes(c.id)) { entries.push(c); added++; } });
         localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
-        render(); showToast(`מוזגו ${count} פעולות חדשות`);
+        render(); showToast(`מוזגו ${added} פעולות`);
     });
 }
 
@@ -415,26 +397,17 @@ function exportCSV() {
     let csv = '\uFEFFתאריך,תיאור,סוג,סכום\n';
     entries.forEach(e => csv += `${e.date},${e.desc},${e.type},${e.amount}\n`);
     const blob = new Blob([csv], {type: 'text/csv;charset=utf-8'});
-    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `report_${MONTHS[viewDate.getMonth()]}.csv`; a.click();
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'report.csv'; a.click();
 }
 
 function exportJSON() {
     const blob = new Blob([JSON.stringify(entries)], {type:'application/json'});
-    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'backup_manager_money.json'; a.click();
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'backup.json'; a.click();
 }
 
-function clearLocal() {
-    if(confirm('למחוק את כל הנתונים מהמכשיר? (זה לא ימחק מהענן)')) {
-        entries = [];
-        localStorage.removeItem(STORAGE_KEY);
-        render();
-        showToast('המכשיר נקי', 'warn');
-    }
-}
-
+function clearLocal() { if(confirm('לנקות את המכשיר? (לא מוחק מהענן)')) { entries = []; localStorage.removeItem(STORAGE_KEY); render(); showToast('המכשיר נוקה', 'warn'); } }
 function changeMonth(n) { viewDate.setMonth(viewDate.getMonth() + n); render(); }
 
-// Initialize
 document.getElementById('entryDate').value = new Date().toISOString().split('T')[0];
 render();
 </script>
