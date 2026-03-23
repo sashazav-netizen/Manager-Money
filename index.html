@@ -10,6 +10,7 @@
     
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
 
     <style>
         :root {
@@ -57,8 +58,9 @@
 
         .status-bar { display: flex; align-items: center; gap: 8px; margin-top: 5px; }
         .version-badge { background: rgba(56,189,248,0.15); border: 1px solid rgba(56,189,248,0.3); color: var(--accent); font-size: 0.6rem; font-weight: 700; padding: 1px 7px; border-radius: 20px; }
-        .cloud-badge { display: flex; align-items: center; gap: 4px; color: var(--cloud); font-size: 0.65rem; font-weight: 700; }
-        .cloud-badge svg { width: 12px; height: 12px; fill: var(--cloud); }
+        .cloud-badge { display: flex; align-items: center; gap: 4px; color: var(--text-dim); font-size: 0.65rem; font-weight: 700; }
+        .cloud-badge.online { color: var(--cloud); }
+        .cloud-badge svg { width: 12px; height: 12px; fill: currentColor; }
 
         .user-avatar { width: 42px; height: 42px; border-radius: 50%; background: linear-gradient(135deg, rgba(56,189,248,0.2), rgba(30,41,59,0.8)); border: 1px solid var(--accent); display: flex; align-items: center; justify-content: center; box-shadow: 0 0 15px rgba(56,189,248,0.3); }
         .user-avatar svg { width: 22px; height: 22px; fill: var(--accent); }
@@ -113,8 +115,10 @@
         .modal-overlay.open { display: flex; }
         .modal { background: #1e293b; padding: 20px; border-radius: 20px; width: 85%; max-width: 300px; text-align: center; border: 1px solid var(--glass-border); }
 
-        .actions-bottom { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-top: 15px; }
-        .action-btn { background: var(--glass); border: 1px solid var(--glass-border); color: var(--text-dim); padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 0.75rem; }
+        /* כפתורי ניהול בתחתית */
+        .actions-bottom { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 20px; }
+        .action-btn { background: var(--glass); border: 1px solid var(--glass-border); color: var(--text-dim); padding: 8px 4px; border-radius: 10px; cursor: pointer; font-size: 0.7rem; font-weight: 600; text-align: center; }
+        .action-btn.active-cloud { border-color: var(--cloud); color: var(--cloud); }
 
         footer { text-align: center; padding: 20px; color: var(--text-dim); font-size: 0.65rem; }
     </style>
@@ -142,10 +146,10 @@
             <div>
                 <h1>Manager<span>Money</span></h1>
                 <div class="status-bar">
-                    <span class="version-badge">v1.8.20 Cloud</span>
-                    <div class="cloud-badge">
+                    <span class="version-badge">v1.9.0 Alex</span>
+                    <div class="cloud-badge" id="cloudIndicator">
                         <svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"/></svg>
-                        ענן מחובר
+                        <span id="cloudText">מתחבר...</span>
                     </div>
                 </div>
             </div>
@@ -201,13 +205,15 @@
     <div id="list"></div>
 
     <div class="actions-bottom">
-        <button class="action-btn" style="color:var(--accent); font-weight: 700;" onclick="pullFromCloud()">🔄 עדכון מהענן</button>
+        <button class="action-btn active-cloud" onclick="pullFromCloud()">🔄 עדכון מהענן</button>
         <button class="action-btn" onclick="syncToCloud()">☁️ סנכרון כפוי</button>
-        <button class="action-btn" onclick="exportJSON()">💾 גיבוי</button>
-        <button class="action-btn" onclick="exportCSV()">📊 אקסל</button>
+        <button class="action-btn" onclick="mergeData()">🧬 מיזוג נתונים</button>
+        <button class="action-btn" onclick="exportJSON()">💾 גיבוי JSON</button>
+        <button class="action-btn" onclick="exportCSV()">📊 אקסל CSV</button>
+        <button class="action-btn" style="color:var(--expense)" onclick="clearLocalOnly()">🗑 ניקוי מכשיר</button>
     </div>
 
-    <footer>Manager-Money v1.8.20 | אלכסנדר זבודיסקר 2026</footer>
+    <footer>Manager-Money v1.9.0 | אלכסנדר זבודיסקר 2026 ©</footer>
 </div>
 
 <script>
@@ -222,11 +228,16 @@ const firebaseConfig = {
   appId: "1:289678997235:web:0a58a5a7a36d38e1152986"
 };
 
-if (!firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
-}
+if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 const dbRef = db.ref('users/alex/entries');
+
+// חיבור אנונימי כדי לוודא גישה
+firebase.auth().signInAnonymously().then(() => {
+    document.getElementById('cloudIndicator').classList.add('online');
+    document.getElementById('cloudText').textContent = 'ענן מחובר';
+    pullFromCloud(true); // משיכה שקטה בהתחלה
+});
 
 // --- משתני אפליקציה ---
 const STORAGE_KEY = 'budget_alex_2026';
@@ -238,8 +249,6 @@ let myChart = null;
 let pendingDeleteId = null;
 const MONTHS = ['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
 
-// --- פונקציות ליבה ---
-
 function showToast(msg, type='success') {
     const t = document.getElementById('toast');
     t.textContent = msg;
@@ -250,73 +259,64 @@ function showToast(msg, type='success') {
 function openModal(id) { document.getElementById(id).classList.add('open'); }
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 
-// 1. סנכרון כפוי (שולח הכל לענן)
-function syncToCloud() {
-    if(entries.length === 0) { showToast('אין נתונים לסנכרון', 'warn'); return; }
-    showToast('מסנכרן לענן...', 'info');
-    
-    const dataObj = {};
-    entries.forEach(e => dataObj[e.id] = e);
-    
-    dbRef.set(dataObj)
-        .then(() => showToast('סונכרן בהצלחה!', 'success'))
-        .catch(err => showToast('שגיאה בסנכרון', 'warn'));
-}
-
-// 2. משיכה מהענן (מעדכן את המכשיר)
-function pullFromCloud() {
-    showToast('מושך נתונים...', 'info');
-    dbRef.once('value').then((snapshot) => {
-        const val = snapshot.val();
-        if(val) {
-            entries = Object.values(val);
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+// 1. עדכון מהענן (דריסת מקומי)
+function pullFromCloud(silent = false) {
+    if(!silent) showToast('מעדכן נתונים...', 'info');
+    dbRef.once('value').then(snap => {
+        if(snap.val()) {
+            entries = Object.values(snap.val());
+            saveToLocal();
             render();
-            showToast('נתונים עודכנו!', 'success');
-        } else {
-            showToast('לא נמצאו נתונים בענן', 'warn');
-        }
-    }).catch(() => showToast('שגיאת תקשורת', 'warn'));
-}
-
-// 3. טעינת קבועות (תיקון הלוגיקה)
-function importFixedEntries() {
-    const m = viewDate.getMonth(), y = viewDate.getFullYear();
-    const allFixed = entries.filter(e => e.type === 'fixed');
-    
-    // רשימת תיאורים שכבר קיימים בחודש הנבחר
-    const existDescs = entries.filter(e => {
-        const d = new Date(e.date);
-        return d.getMonth() === m && d.getFullYear() === y;
-    }).map(e => e.desc);
-
-    // סינון קבועות ייחודיות
-    const uniqueFixed = allFixed.filter((v, i, a) => a.findIndex(t => t.desc === v.desc) === i);
-    
-    let added = 0;
-    uniqueFixed.forEach(f => {
-        if(!existDescs.includes(f.desc)) {
-            const newId = Date.now() + Math.random();
-            const newE = { 
-                id: newId, 
-                desc: f.desc, 
-                amount: f.amount, 
-                type: 'fixed', 
-                date: new Date(y, m, 2).toISOString().split('T')[0] 
-            };
-            entries.push(newE);
-            db.ref('users/alex/entries/' + newId).set(newE);
-            added++;
+            if(!silent) showToast('עודכן בהצלחה');
         }
     });
+}
 
-    if(added > 0) {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+// 2. סנכרון כפוי (דריסת ענן)
+function syncToCloud() {
+    showToast('מעלה הכל לענן...', 'info');
+    const data = {};
+    entries.forEach(e => data[e.id] = e);
+    dbRef.set(data).then(() => showToast('הענן סונכרן!'));
+}
+
+// 3. מיזוג נתונים (ענן + מקומי)
+function mergeData() {
+    showToast('ממזג נתונים...', 'info');
+    dbRef.once('value').then(snap => {
+        const cloudData = snap.val() ? Object.values(snap.val()) : [];
+        const localIds = entries.map(e => e.id);
+        
+        let added = 0;
+        cloudData.forEach(ce => {
+            if(!localIds.includes(ce.id)) {
+                entries.push(ce);
+                added++;
+            }
+        });
+        
+        saveToLocal();
         render();
-        showToast(`נוספו ${added} פעולות`, 'success');
-    } else {
-        showToast('הקבועות כבר קיימות בחודש זה', 'info');
-    }
+        showToast(`מוזגו ${added} פעולות חדשות`);
+    });
+}
+
+// 4. ייצוא אקסל (CSV עם תמיכה בעברית)
+function exportCSV() {
+    let csv = '\uFEFFתאריך,תיאור,סוג,סכום\n';
+    entries.forEach(e => {
+        csv += `${e.date},${e.desc},${e.type},${e.amount}\n`;
+    });
+    const blob = new Blob([csv], {type: 'text/csv;charset=utf-8'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `money_report_alex_${new Date().toLocaleDateString()}.csv`;
+    a.click();
+}
+
+function saveToLocal() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
 }
 
 function render() {
@@ -397,25 +397,24 @@ function addEntry() {
           
     if(!d || !a || !dt) { showToast('מלא את כל השדות', 'warn'); return; }
 
-    let newE;
+    let entryObj;
     if(editId) {
         const i = entries.findIndex(e => e.id === editId);
         entries[i] = { ...entries[i], desc: d, amount: a, type: t, date: dt };
-        newE = entries[i];
+        entryObj = entries[i];
         cancelEdit();
     } else {
-        newE = { id: Date.now(), desc: d, amount: a, type: t, date: dt };
-        entries.push(newE);
+        entryObj = { id: Date.now(), desc: d, amount: a, type: t, date: dt };
+        entries.push(entryObj);
     }
 
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
-    db.ref('users/alex/entries/' + newE.id).set(newE)
-        .then(() => showToast('נשמר וסונכרן'))
-        .catch(() => showToast('נשמר מקומית בלבד', 'info'));
-
+    saveToLocal();
+    db.ref('users/alex/entries/' + entryObj.id).set(entryObj);
+    
     document.getElementById('desc').value = ''; 
     document.getElementById('amount').value = '';
     render();
+    showToast('נשמר בהצלחה');
 }
 
 function editEntry(id) {
@@ -423,7 +422,7 @@ function editEntry(id) {
     document.getElementById('desc').value = e.desc;
     document.getElementById('amount').value = e.amount;
     document.getElementById('type').value = e.type;
-    document.getElementById('entryDate').value = e.date.split('T')[0];
+    document.getElementById('entryDate').value = e.date;
     editId = id;
     document.getElementById('saveBtn').textContent = 'עדכן';
     document.getElementById('saveBtn').classList.add('editing');
@@ -446,10 +445,32 @@ function askDelete(id) { pendingDeleteId = id; openModal('deleteModal'); }
 function confirmDeleteAction() {
     db.ref('users/alex/entries/' + pendingDeleteId).remove();
     entries = entries.filter(e => e.id !== pendingDeleteId);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+    saveToLocal();
     closeModal('deleteModal');
     render();
-    showToast('נמחק', 'warn');
+    showToast('הפעולה נמחקה', 'warn');
+}
+
+function importFixedEntries() {
+    const m = viewDate.getMonth(), y = viewDate.getFullYear();
+    const allFixed = entries.filter(e => e.type === 'fixed');
+    const existDescs = entries.filter(e => {
+        const d = new Date(e.date);
+        return d.getMonth() === m && d.getFullYear() === y;
+    }).map(e => e.desc);
+
+    const uniqueFixed = allFixed.filter((v, i, a) => a.findIndex(t => t.desc === v.desc) === i);
+    let added = 0;
+    uniqueFixed.forEach(f => {
+        if(!existDescs.includes(f.desc)) {
+            const newId = Date.now() + Math.random();
+            const newE = { id: newId, desc: f.desc, amount: f.amount, type: 'fixed', date: new Date(y, m, 2).toISOString().split('T')[0] };
+            entries.push(newE);
+            db.ref('users/alex/entries/' + newId).set(newE);
+            added++;
+        }
+    });
+    if(added > 0) { saveToLocal(); render(); showToast(`נוספו ${added} קבועות`); }
 }
 
 function setFilter(type, btn) {
@@ -463,14 +484,16 @@ function changeMonth(n) { viewDate.setMonth(viewDate.getMonth() + n); render(); 
 
 function exportJSON() {
     const blob = new Blob([JSON.stringify(entries, null, 2)], {type:'application/json'});
-    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'budget_backup.json'; a.click();
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'money_backup.json'; a.click();
 }
 
-function exportCSV() {
-    let csv = '\uFEFFתאריך,תיאור,סוג,סכום\n';
-    entries.forEach(e => csv += `${e.date},${e.desc},${e.type},${e.amount}\n`);
-    const blob = new Blob([csv], {type:'text/csv;charset=utf-8'});
-    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'report.csv'; a.click();
+function clearLocalOnly() {
+    if(confirm('למחוק נתונים מהמכשיר בלבד? (לא יימחק מהענן)')) {
+        entries = [];
+        saveToLocal();
+        render();
+        showToast('המכשיר נוקה', 'warn');
+    }
 }
 
 document.getElementById('entryDate').value = new Date().toISOString().split('T')[0];
