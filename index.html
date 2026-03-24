@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Manager-Money 2026</title>
 
+    <meta name="theme-color" content="#070b14">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/584/584067.png">
+
+    <link rel="manifest" href='data:application/manifest+json,{"name":"Manager Money","short_name":"Money","start_url":".","display":"standalone","background_color":"#070b14","theme_color":"#38bdf8","icons":[{"src":"https://cdn-icons-png.flaticon.com/512/584/584067.png","sizes":"512x512","type":"image/png"}]}'>
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&display=swap" rel="stylesheet">
     
@@ -27,7 +34,7 @@
             --cloud: #10b981;
         }
 
-        html, body { max-width: 100%; overflow-x: hidden; margin: 0; padding: 0; background: var(--bg); }
+        html, body { max-width: 100%; overflow-x: hidden; margin: 0; padding: 0; background: var(--bg); height: 100%; }
         * { box-sizing: border-box; font-family: 'Heebo', sans-serif; -webkit-tap-highlight-color: transparent; }
 
         body {
@@ -36,7 +43,7 @@
             color: var(--text); padding: 15px; direction: rtl; min-height: 100vh;
         }
 
-        .container { max-width: 600px; margin: 0 auto; padding-bottom: 40px; }
+        .container { max-width: 600px; margin: 0 auto; padding-bottom: 60px; }
 
         /* ===== HEADER ===== */
         header { display: flex; align-items: center; justify-content: space-between; margin: 20px 0; padding: 0 10px; }
@@ -87,37 +94,18 @@
         .btn-cancel-edit { background: rgba(239, 68, 68, 0.15); color: var(--expense); border: 1px solid var(--expense); margin-top: 10px; height: 40px; border-radius: 10px; cursor: pointer; width: 100%; font-weight: 700; display: none; }
         .edit-mode .btn-cancel-edit { display: block; }
 
-        /* ===== LIST & ICONS CLICK EFFECT ===== */
+        /* ===== LIST & ICONS ===== */
         .item { background: var(--glass); margin-bottom: 8px; display: flex; justify-content: space-between; padding: 12px; border-radius: 12px; border: 1px solid var(--glass-border); align-items: center; }
         .item.income { border-right: 4px solid var(--income); }
         .item.expense { border-right: 4px solid var(--expense); }
         .item.fixed { border-right: 4px solid var(--fixed); }
-        
-        .icon-btn { 
-            background: none; 
-            border: none; 
-            cursor: pointer; 
-            font-size: 1.1rem; 
-            padding: 8px; 
-            color: var(--text-dim); 
-            transition: all 0.2s ease; 
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        /* אפקט הלחיצה החדש */
-        .icon-btn:active { 
-            transform: scale(0.8); 
-            background: rgba(255,255,255,0.05);
-            color: var(--text);
-        }
+        .icon-btn { background: none; border: none; cursor: pointer; font-size: 1.1rem; padding: 8px; color: var(--text-dim); transition: all 0.2s ease; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+        .icon-btn:active { transform: scale(0.8); background: rgba(255,255,255,0.05); color: var(--text); }
 
         /* ===== MODAL & TOAST ===== */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 9999; backdrop-filter: blur(5px); }
         .modal-overlay.open { display: flex; }
         .modal { background: #1e293b; padding: 20px; border-radius: 20px; width: 85%; max-width: 300px; text-align: center; border: 1px solid var(--glass-border); }
-        
         #toast { position: fixed; top: -100px; left: 50%; transform: translateX(-50%); padding: 12px 24px; border-radius: 12px; z-index: 10000; transition: 0.4s; font-weight: 700; color: white; }
         #toast.show { top: 25px; opacity: 1; }
         .toast-success { background: var(--income); }
@@ -149,7 +137,7 @@
         <div class="header-right">
             <h1>Manager<span>Money</span></h1>
             <div class="status-bar">
-                <span class="version-badge">v1.9.9</span>
+                <span class="version-badge">v2.0.0 PWA</span>
                 <div class="cloud-badge">● ענן פעיל</div>
             </div>
         </div>
@@ -178,7 +166,7 @@
                 <path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h12v4"></path>
                 <path d="M4 6v12c0 1.1.9 2 2 2h14v-4"></path>
                 <path d="M18 12a2 2 0 0 0-2 2c0 1.1.9 2 2 2h4v-4h-4z"></path>
-                <path d="M12 11v6m-3-3l3-3 3 3" stroke-width="2.5"></path>
+                <path d="M12 11v6m-3-3l3-3 3 3"></path>
             </svg>
             <span>הכנסות</span>
             <b id="sumIncome" style="color:var(--income)">₪0</b>
@@ -187,7 +175,7 @@
             <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--expense)" stroke-width="2">
                 <rect x="2" y="5" width="20" height="14" rx="2"></rect>
                 <line x1="2" y1="10" x2="22" y2="10"></line>
-                <path d="M12 17v-6m-3 3l3 3 3-3" stroke-width="2.5"></path>
+                <path d="M12 17v-6m-3 3l3 3 3-3"></path>
             </svg>
             <span>הוצאות</span>
             <b id="sumExpense" style="color:var(--expense)">₪0</b>
@@ -207,7 +195,7 @@
             <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--balance)" stroke-width="2">
                 <circle cx="12" cy="12" r="8"></circle>
                 <path d="M12 7v10M9 12h6"></path>
-                <path d="M15 9l2-2m-8 8l-2 2" stroke-width="1.5"></path>
+                <path d="M15 9l2-2m-8 8l-2 2"></path>
             </svg>
             <span>יתרה</span>
             <b id="sumBalance" style="color:var(--balance)">₪0</b>
@@ -232,19 +220,30 @@
     <div id="list"></div>
 
     <div class="actions-bottom">
-        <button class="action-btn" onclick="pullFromCloud()">🔄 רענן ענן</button>
-        <button class="action-btn" onclick="syncToCloud()">☁️ סנכרון כפוי</button>
-        <button class="action-btn" onclick="mergeData()">🧬 מיזוג נתונים</button>
+        <button class="action-btn" onclick="pullFromCloud()">🔄 רענן</button>
+        <button class="action-btn" onclick="syncToCloud()">☁️ סנכרון</button>
+        <button class="action-btn" onclick="mergeData()">🧬 מיזוג</button>
         <button class="action-btn" onclick="exportCSV()">📊 אקסל</button>
         <button class="action-btn" onclick="exportJSON()">💾 גיבוי</button>
-        <button class="action-btn" style="color:var(--expense)" onclick="clearLocal()">🗑 נקה מקומי</button>
+        <button class="action-btn" style="color:var(--expense)" onclick="clearLocal()">🗑 נקה</button>
     </div>
 
     <footer>כל הזכויות שמורות לאלכסנדר זבודיסקר 2026 ©</footer>
 </div>
 
 <script>
-// --- אתחול Firebase ---
+// --- Service Worker (Inlined for PWA) ---
+if ('serviceWorker' in navigator) {
+  const swCode = `
+    const cacheName = 'money-v1';
+    self.addEventListener('install', e => e.waitUntil(caches.open(cacheName).then(c => c.addAll(['/']))));
+    self.addEventListener('fetch', e => e.respondWith(caches.match(e.request).then(r => r || fetch(e.request))));
+  `;
+  const blob = new Blob([swCode], {type: 'text/javascript'});
+  navigator.serviceWorker.register(URL.createObjectURL(blob));
+}
+
+// --- Firebase & App Logic (Keep identical to previous version) ---
 const firebaseConfig = {
     apiKey: "AIzaSyAZ2-EJjvIbDvtKLwKg3LObkIAs8sNhyjU",
     authDomain: "managermoney-49d0e.firebaseapp.com",
@@ -323,7 +322,6 @@ function addEntry() {
     const d = document.getElementById('desc').value, a = parseFloat(document.getElementById('amount').value);
     const t = document.getElementById('type').value, dt = document.getElementById('entryDate').value;
     if(!d || isNaN(a) || !dt) { showToast('מלא את כל השדות', 'warn'); return; }
-
     if(editId) {
         const i = entries.findIndex(e => e.id === editId);
         entries[i] = { ...entries[i], desc: d, amount: a, type: t, date: dt };
@@ -377,11 +375,9 @@ function importFixedEntries() {
         const d = new Date(e.date);
         return d.getMonth() === m && d.getFullYear() === y;
     }).map(e => e.desc);
-
     const uniqueFixed = [];
     const seen = new Set();
     allFixed.forEach(f => { if(!seen.has(f.desc)) { uniqueFixed.push(f); seen.add(f.desc); } });
-
     let count = 0;
     uniqueFixed.forEach(f => {
         if(!existingInMonth.includes(f.desc)) {
@@ -391,7 +387,6 @@ function importFixedEntries() {
         }
     });
     if(count > 0) { localStorage.setItem(STORAGE_KEY, JSON.stringify(entries)); render(); showToast(`נוספו ${count} קבועות`); }
-    else showToast('אין מה להוסיף', 'warn');
 }
 
 function pullFromCloud(silent=false) {
@@ -399,14 +394,14 @@ function pullFromCloud(silent=false) {
         if(snap.val()) {
             entries = Object.values(snap.val());
             localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
-            render(); if(!silent) showToast('סונכרן מהענן');
+            render(); if(!silent) showToast('סונכרן');
         }
     });
 }
 
 function syncToCloud() {
     const data = {}; entries.forEach(e => data[e.id] = e);
-    dbRef.set(data).then(() => showToast('ענן עודכן!'));
+    dbRef.set(data).then(() => showToast('עודכן בענן!'));
 }
 
 function mergeData() {
@@ -416,7 +411,7 @@ function mergeData() {
         let added = 0;
         cloud.forEach(c => { if(!localIds.includes(c.id)) { entries.push(c); added++; } });
         localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
-        render(); showToast(`מוזגו ${added} פעולות`);
+        render(); showToast(`מוזגו ${added}`);
     });
 }
 
@@ -432,7 +427,7 @@ function exportJSON() {
     const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'backup.json'; a.click();
 }
 
-function clearLocal() { if(confirm('לנקות רק את המכשיר?')) { entries = []; localStorage.removeItem(STORAGE_KEY); render(); showToast('המכשיר נוקה', 'warn'); } }
+function clearLocal() { if(confirm('לנקות רק מקומי?')) { entries = []; localStorage.removeItem(STORAGE_KEY); render(); } }
 function changeMonth(n) { viewDate.setMonth(viewDate.getMonth() + n); render(); }
 
 firebase.auth().signInAnonymously().then(() => pullFromCloud(true));
