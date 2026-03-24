@@ -8,9 +8,10 @@
     <meta name="theme-color" content="#070b14">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/584/584067.png">
+    
+    <link rel="apple-touch-icon" href="https://i.postimg.cc/bNdQwqGt/icon.png">
 
-    <link rel="manifest" href='data:application/manifest+json,{"name":"Manager Money","short_name":"Money","start_url":".","display":"standalone","background_color":"#070b14","theme_color":"#38bdf8","icons":[{"src":"https://cdn-icons-png.flaticon.com/512/584/584067.png","sizes":"512x512","type":"image/png"}]}'>
+    <link rel="manifest" href='data:application/manifest+json,{"name":"Manager Money 2026","short_name":"Money2026","start_url":".","display":"standalone","background_color":"#070b14","theme_color":"#38bdf8","icons":[{"src":"https://i.postimg.cc/bNdQwqGt/icon.png","sizes":"512x512","type":"image/png"}]}'>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&display=swap" rel="stylesheet">
@@ -34,16 +35,16 @@
             --cloud: #10b981;
         }
 
-        html, body { max-width: 100%; overflow-x: hidden; margin: 0; padding: 0; background: var(--bg); height: 100%; }
+        html, body { max-width: 100%; overflow-x: hidden; margin: 0; padding: 0; background: var(--bg); min-height: 100vh; }
         * { box-sizing: border-box; font-family: 'Heebo', sans-serif; -webkit-tap-highlight-color: transparent; }
 
         body {
             background: radial-gradient(circle at top right, #1e293b, #070b14);
             background-attachment: fixed;
-            color: var(--text); padding: 15px; direction: rtl; min-height: 100vh;
+            color: var(--text); padding: 15px; direction: rtl;
         }
 
-        .container { max-width: 600px; margin: 0 auto; padding-bottom: 60px; }
+        .container { max-width: 600px; margin: 0 auto; padding-bottom: 40px; }
 
         /* ===== HEADER ===== */
         header { display: flex; align-items: center; justify-content: space-between; margin: 20px 0; padding: 0 10px; }
@@ -102,6 +103,11 @@
         .icon-btn { background: none; border: none; cursor: pointer; font-size: 1.1rem; padding: 8px; color: var(--text-dim); transition: all 0.2s ease; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
         .icon-btn:active { transform: scale(0.8); background: rgba(255,255,255,0.05); color: var(--text); }
 
+        /* ===== ACTIONS BOTTOM (FULL NAMES) ===== */
+        .actions-bottom { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 15px; }
+        .action-btn { background: var(--glass); border: 1px solid var(--glass-border); color: var(--text-dim); padding: 12px 4px; border-radius: 8px; cursor: pointer; font-size: 0.7rem; font-weight: 600; transition: 0.2s; }
+        .action-btn:active { transform: scale(0.95); background: rgba(255,255,255,0.05); }
+
         /* ===== MODAL & TOAST ===== */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 9999; backdrop-filter: blur(5px); }
         .modal-overlay.open { display: flex; }
@@ -110,10 +116,6 @@
         #toast.show { top: 25px; opacity: 1; }
         .toast-success { background: var(--income); }
         .toast-warn { background: var(--expense); }
-
-        .actions-bottom { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 15px; }
-        .action-btn { background: var(--glass); border: 1px solid var(--glass-border); color: var(--text-dim); padding: 12px 4px; border-radius: 8px; cursor: pointer; font-size: 0.7rem; font-weight: 600; transition: 0.2s; }
-        .action-btn:active { transform: scale(0.95); background: rgba(255,255,255,0.05); }
 
         footer { text-align: center; padding: 20px; color: var(--text-dim); font-size: 0.65rem; }
     </style>
@@ -137,7 +139,7 @@
         <div class="header-right">
             <h1>Manager<span>Money</span></h1>
             <div class="status-bar">
-                <span class="version-badge">v2.0.0 PWA</span>
+                <span class="version-badge">v2.0.2 PWA</span>
                 <div class="cloud-badge">● ענן פעיל</div>
             </div>
         </div>
@@ -162,41 +164,22 @@
 
     <div class="summary-mini">
         <div class="mini-card">
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--income)" stroke-width="2">
-                <path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h12v4"></path>
-                <path d="M4 6v12c0 1.1.9 2 2 2h14v-4"></path>
-                <path d="M18 12a2 2 0 0 0-2 2c0 1.1.9 2 2 2h4v-4h-4z"></path>
-                <path d="M12 11v6m-3-3l3-3 3 3"></path>
-            </svg>
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--income)" stroke-width="2"><path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h12v4M4 6v12c0 1.1.9 2 2 2h14v-4M18 12a2 2 0 0 0-2 2c0 1.1.9 2 2 2h4v-4h-4zM12 11v6m-3-3l3-3 3 3"></path></svg>
             <span>הכנסות</span>
             <b id="sumIncome" style="color:var(--income)">₪0</b>
         </div>
         <div class="mini-card">
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--expense)" stroke-width="2">
-                <rect x="2" y="5" width="20" height="14" rx="2"></rect>
-                <line x1="2" y1="10" x2="22" y2="10"></line>
-                <path d="M12 17v-6m-3 3l3 3 3-3"></path>
-            </svg>
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--expense)" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line><path d="M12 17v-6m-3 3l3 3 3-3"></path></svg>
             <span>הוצאות</span>
             <b id="sumExpense" style="color:var(--expense)">₪0</b>
         </div>
         <div class="mini-card">
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--fixed)" stroke-width="2">
-                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                <line x1="16" y1="2" x2="16" y2="6"></line>
-                <line x1="8" y1="2" x2="8" y2="6"></line>
-                <line x1="3" y1="10" x2="21" y2="10"></line>
-                <path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01"></path>
-            </svg>
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--fixed)" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01"></path></svg>
             <span>קבועות</span>
             <b id="sumFixed" style="color:var(--fixed)">₪0</b>
         </div>
         <div class="mini-card">
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--balance)" stroke-width="2">
-                <circle cx="12" cy="12" r="8"></circle>
-                <path d="M12 7v10M9 12h6"></path>
-                <path d="M15 9l2-2m-8 8l-2 2"></path>
-            </svg>
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--balance)" stroke-width="2"><circle cx="12" cy="12" r="8"></circle><path d="M12 7v10M9 12h6M15 9l2-2m-8 8l-2 2"></path></svg>
             <span>יתרה</span>
             <b id="sumBalance" style="color:var(--balance)">₪0</b>
         </div>
@@ -220,30 +203,26 @@
     <div id="list"></div>
 
     <div class="actions-bottom">
-        <button class="action-btn" onclick="pullFromCloud()">🔄 רענן</button>
-        <button class="action-btn" onclick="syncToCloud()">☁️ סנכרון</button>
-        <button class="action-btn" onclick="mergeData()">🧬 מיזוג</button>
+        <button class="action-btn" onclick="pullFromCloud()">🔄 רענן ענן</button>
+        <button class="action-btn" onclick="syncToCloud()">☁️ סנכרון כפוי</button>
+        <button class="action-btn" onclick="mergeData()">🧬 מיזוג נתונים</button>
         <button class="action-btn" onclick="exportCSV()">📊 אקסל</button>
         <button class="action-btn" onclick="exportJSON()">💾 גיבוי</button>
-        <button class="action-btn" style="color:var(--expense)" onclick="clearLocal()">🗑 נקה</button>
+        <button class="action-btn" style="color:var(--expense)" onclick="clearLocal()">🗑 נקה מקומי</button>
     </div>
 
     <footer>כל הזכויות שמורות לאלכסנדר זבודיסקר 2026 ©</footer>
 </div>
 
 <script>
-// --- Service Worker (Inlined for PWA) ---
+// --- Service Worker ---
 if ('serviceWorker' in navigator) {
-  const swCode = `
-    const cacheName = 'money-v1';
-    self.addEventListener('install', e => e.waitUntil(caches.open(cacheName).then(c => c.addAll(['/']))));
-    self.addEventListener('fetch', e => e.respondWith(caches.match(e.request).then(r => r || fetch(e.request))));
-  `;
+  const swCode = `const cacheName='m-v2.0.2';self.addEventListener('install',e=>e.waitUntil(caches.open(cacheName).then(c=>c.addAll(['/']))));self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request))));`;
   const blob = new Blob([swCode], {type: 'text/javascript'});
   navigator.serviceWorker.register(URL.createObjectURL(blob));
 }
 
-// --- Firebase & App Logic (Keep identical to previous version) ---
+// --- Firebase & App Logic ---
 const firebaseConfig = {
     apiKey: "AIzaSyAZ2-EJjvIbDvtKLwKg3LObkIAs8sNhyjU",
     authDomain: "managermoney-49d0e.firebaseapp.com",
@@ -322,6 +301,7 @@ function addEntry() {
     const d = document.getElementById('desc').value, a = parseFloat(document.getElementById('amount').value);
     const t = document.getElementById('type').value, dt = document.getElementById('entryDate').value;
     if(!d || isNaN(a) || !dt) { showToast('מלא את כל השדות', 'warn'); return; }
+
     if(editId) {
         const i = entries.findIndex(e => e.id === editId);
         entries[i] = { ...entries[i], desc: d, amount: a, type: t, date: dt };
@@ -394,14 +374,14 @@ function pullFromCloud(silent=false) {
         if(snap.val()) {
             entries = Object.values(snap.val());
             localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
-            render(); if(!silent) showToast('סונכרן');
+            render(); if(!silent) showToast('סונכרן מהענן');
         }
     });
 }
 
 function syncToCloud() {
     const data = {}; entries.forEach(e => data[e.id] = e);
-    dbRef.set(data).then(() => showToast('עודכן בענן!'));
+    dbRef.set(data).then(() => showToast('ענן עודכן!'));
 }
 
 function mergeData() {
@@ -411,7 +391,7 @@ function mergeData() {
         let added = 0;
         cloud.forEach(c => { if(!localIds.includes(c.id)) { entries.push(c); added++; } });
         localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
-        render(); showToast(`מוזגו ${added}`);
+        render(); showToast(`מוזגו ${added} פעולות`);
     });
 }
 
@@ -427,7 +407,7 @@ function exportJSON() {
     const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'backup.json'; a.click();
 }
 
-function clearLocal() { if(confirm('לנקות רק מקומי?')) { entries = []; localStorage.removeItem(STORAGE_KEY); render(); } }
+function clearLocal() { if(confirm('לנקות רק את המכשיר?')) { entries = []; localStorage.removeItem(STORAGE_KEY); render(); showToast('המכשיר נוקה', 'warn'); } }
 function changeMonth(n) { viewDate.setMonth(viewDate.getMonth() + n); render(); }
 
 firebase.auth().signInAnonymously().then(() => pullFromCloud(true));
