@@ -73,10 +73,19 @@
         .mini-card span { display: block; font-size: 0.65rem; color: var(--text-dim); margin-bottom: 2px; }
         .mini-card b { font-size: 0.8rem; white-space: nowrap; font-weight: 900; }
 
-        .month-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; background: var(--glass); padding: 8px 15px; border-radius: 50px; border: 1px solid var(--glass-border); }
+        /* ניווט וסינון */
+        .month-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; background: var(--glass); padding: 8px 15px; border-radius: 50px; border: 1px solid var(--glass-border); }
         .nav-btn { background: var(--accent); color: var(--bg); border: none; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-weight: bold; transition: 0.2s; }
         .nav-btn:active { transform: scale(0.9); opacity: 0.8; }
-        .load-fixed-btn { background: rgba(245,158,11,0.15); color: var(--fixed); border: 1px solid var(--fixed); padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; cursor: pointer; font-weight: 700; margin-top: 2px; }
+        
+        .filter-bar { display: flex; justify-content: center; margin-bottom: 15px; }
+        .filter-toggle { 
+            display: flex; background: var(--glass); border-radius: 30px; padding: 4px; border: 1px solid var(--glass-border); gap: 4px;
+        }
+        .filter-opt { 
+            padding: 6px 14px; border-radius: 25px; font-size: 0.75rem; font-weight: 700; cursor: pointer; color: var(--text-dim); transition: 0.3s;
+        }
+        .filter-opt.active { background: var(--accent); color: var(--bg); }
 
         .chart-section { background: var(--glass); padding: 12px; border-radius: 18px; margin-bottom: 20px; border: 1px solid var(--glass-border); display: flex; flex-direction: column; align-items: center; }
         .chart-container { height: 120px; width: 120px; position: relative; flex-shrink: 0; }
@@ -147,7 +156,7 @@
         <div class="header-right">
             <h1>Manager<span>Money</span></h1>
             <div class="status-bar">
-                <span class="version-badge">v2.0.7</span>
+                <span class="version-badge">v2.0.8</span>
                 <div class="cloud-badge">● ענן פעיל</div>
             </div>
         </div>
@@ -170,9 +179,16 @@
         <button class="nav-btn" onclick="changeMonth(-1)">&#9664;</button>
         <div style="text-align:center;">
             <h3 id="monthLabel" style="margin:0; font-size:1.1rem;"></h3>
-            <button class="load-fixed-btn" onclick="importFixedEntries()">📅 טען קבועות</button>
+            <button style="background:rgba(245,158,11,0.1); border:none; color:var(--fixed); font-size:0.65rem; font-weight:700; padding:2px 8px; border-radius:10px; cursor:pointer;" onclick="importFixedEntries()">📅 טען קבועות</button>
         </div>
         <button class="nav-btn" onclick="changeMonth(1)">&#9654;</button>
+    </div>
+
+    <div class="filter-bar">
+        <div class="filter-toggle">
+            <div class="filter-opt active" id="f-all" onclick="setFilter('all')">הכל</div>
+            <div class="filter-opt" id="f-open" onclick="setFilter('open')">טרם שולם</div>
+        </div>
     </div>
 
     <div class="summary-mini">
@@ -230,12 +246,12 @@
 <script>
 // --- Service Worker ---
 if ('serviceWorker' in navigator) {
-  const swCode = `const cacheName='m-v2.0.7';self.addEventListener('install',e=>e.waitUntil(caches.open(cacheName).then(c=>c.addAll(['/']))));self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request))));`;
+  const swCode = `const cacheName='m-v2.0.8';self.addEventListener('install',e=>e.waitUntil(caches.open(cacheName).then(c=>c.addAll(['/']))));self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request))));`;
   const blob = new Blob([swCode], {type: 'text/javascript'});
   navigator.serviceWorker.register(URL.createObjectURL(blob));
 }
 
-// --- Firebase Configuration ---
+// --- Firebase ---
 const firebaseConfig = {
     apiKey: "AIzaSyAZ2-EJjvIbDvtKLwKg3LObkIAs8sNhyjU",
     authDomain: "managermoney-49d0e.firebaseapp.com",
@@ -246,14 +262,13 @@ const firebaseConfig = {
     appId: "1:289678997235:web:0a58a5a7a36d38e1152986"
 };
 firebase.initializeApp(firebaseConfig);
-
-// ✅ שינוי שלב 3 — dbRef מוגדר כריק, ימולא אחרי ההתחברות
 let dbRef;
 
 const STORAGE_KEY = 'budget_alex_2026';
 let entries = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
 let viewDate = new Date();
 let editId = null, pendingDeleteId = null, myChart = null;
+let currentFilter = 'all'; // 'all' or 'open'
 const MONTHS = ['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
 
 function showToast(msg, type='success') {
@@ -265,34 +280,42 @@ function showToast(msg, type='success') {
 function openModal(id) { document.getElementById(id).classList.add('open'); }
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 
+function setFilter(type) {
+    currentFilter = type;
+    document.getElementById('f-all').classList.toggle('active', type === 'all');
+    document.getElementById('f-open').classList.toggle('active', type === 'open');
+    render();
+}
+
 function render() {
     const m = viewDate.getMonth(), y = viewDate.getFullYear();
     document.getElementById('monthLabel').textContent = MONTHS[m] + ' ' + y;
-    const currentEntries = entries.filter(e => {
+    
+    // סינון לפי חודש
+    let filtered = entries.filter(e => {
         const d = new Date(e.date);
         return d.getMonth() === m && d.getFullYear() === y;
     });
 
+    // חישובי סיכומים (תמיד על כל החודש, בלי קשר לפילטר התצוגה)
     let inc = 0, exp = 0, fix = 0, realPaid = 0, realIncome = 0;
+    filtered.forEach(e => {
+        if(e.type === 'income') { inc += e.amount; if(e.done) realIncome += e.amount; }
+        else if(e.type === 'expense') { exp += e.amount; if(e.done) realPaid += e.amount; }
+        else { fix += e.amount; if(e.done) realPaid += e.amount; }
+    });
+
+    // יישום פילטר תצוגה
+    if(currentFilter === 'open') {
+        filtered = filtered.filter(e => !e.done);
+    }
+
     const listEl = document.getElementById('list');
     listEl.innerHTML = '';
 
-    currentEntries.sort((a,b) => new Date(b.date) - new Date(a.date)).forEach(e => {
-        if(e.type === 'income') {
-            inc += e.amount;
-            if(e.done) realIncome += e.amount;
-        } else if(e.type === 'expense') {
-            exp += e.amount;
-            if(e.done) realPaid += e.amount;
-        } else {
-            fix += e.amount;
-            if(e.done) realPaid += e.amount;
-        }
-
+    filtered.sort((a,b) => new Date(b.date) - new Date(a.date)).forEach(e => {
         const isDoneClass = e.done ? 'is-done' : '';
         const checkActiveClass = e.done ? 'checked' : '';
-
-        // ✅ תיאור מאובטח מפני XSS
         const safeDesc = e.desc.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
         listEl.innerHTML += `
@@ -305,43 +328,43 @@ function render() {
                     </div>
                 </div>
                 <div style="display:flex; align-items:center; gap:4px;">
-                    <b style="color:var(--${e.type}); margin-left:8px;">₪${e.amount.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 2})}</b>
+                    <b style="color:var(--${e.type}); margin-left:8px;">₪${e.amount.toLocaleString(undefined, {minimumFractionDigits: 0})}</b>
                     <button class="icon-btn" onclick="editEntry(${e.id})">✎</button>
                     <button class="icon-btn" onclick="askDelete(${e.id})">🗑</button>
                 </div>
             </div>`;
     });
 
-    document.getElementById('sumIncome').textContent = '₪' + inc.toLocaleString(undefined, {maximumFractionDigits: 0});
-    document.getElementById('sumExpense').textContent = '₪' + exp.toLocaleString(undefined, {maximumFractionDigits: 0});
-    document.getElementById('sumFixed').textContent = '₪' + fix.toLocaleString(undefined, {maximumFractionDigits: 0});
+    // עדכון כרטיסי סיכום
+    document.getElementById('sumIncome').textContent = '₪' + inc.toLocaleString();
+    document.getElementById('sumExpense').textContent = '₪' + exp.toLocaleString();
+    document.getElementById('sumFixed').textContent = '₪' + fix.toLocaleString();
     
     const bal = inc - (exp + fix);
     const balEl = document.getElementById('sumBalance');
-    balEl.textContent = '₪' + Math.abs(bal).toLocaleString(undefined, {maximumFractionDigits: 0});
+    balEl.textContent = '₪' + Math.abs(bal).toLocaleString();
     balEl.style.color = bal >= 0 ? 'var(--balance)' : 'var(--expense)';
 
     const currentBank = realIncome - realPaid;
     const bankEl = document.getElementById('bankBalance');
-    bankEl.textContent = (currentBank >= 0 ? '' : '-') + '₪' + Math.abs(currentBank).toLocaleString(undefined, {maximumFractionDigits: 0});
+    bankEl.textContent = (currentBank >= 0 ? '' : '-') + '₪' + Math.abs(currentBank).toLocaleString();
     bankEl.style.color = currentBank >= 0 ? 'var(--income)' : 'var(--expense)';
 
     if(myChart) myChart.destroy();
-    // ✅ תיקון גרף קטן — מחליפים canvas חדש בכל render
     const chartWrap = document.querySelector('.chart-container');
     chartWrap.innerHTML = '<canvas id="budgetChart"></canvas>';
     myChart = new Chart(document.getElementById('budgetChart'), {
         type: 'doughnut',
         data: { datasets: [{ data: (inc||exp||fix) ? [inc, exp, fix] : [1], backgroundColor: ['#22c55e', '#ef4444', '#f59e0b'], borderWidth: 0 }] },
-        options: { responsive: true, maintainAspectRatio: true, cutout: '78%', plugins: { legend: { display: false } } }
+        options: { cutout: '78%', plugins: { legend: { display: false } } }
     });
 }
 
 function addEntry() {
-    if(!dbRef) { showToast('מתחבר לענן, נסה שוב', 'warn'); return; }
+    if(!dbRef) return;
     const d = document.getElementById('desc').value, a = parseFloat(document.getElementById('amount').value);
     const t = document.getElementById('type').value, dt = document.getElementById('entryDate').value;
-    if(!d || isNaN(a) || !dt) { showToast('מלא את כל השדות', 'warn'); return; }
+    if(!d || isNaN(a) || !dt) { showToast('מלא שדות', 'warn'); return; }
 
     if(editId) {
         const i = entries.findIndex(e => e.id === editId);
@@ -349,12 +372,12 @@ function addEntry() {
         dbRef.child(editId).set(entries[i]);
         cancelEdit();
     } else {
-        const newE = { id: Date.now(), desc: d, amount: a, type: t, date: dt, done: (t === 'income' ? true : false) };
+        const newE = { id: Date.now(), desc: d, amount: a, type: t, date: dt, done: (t === 'income') };
         entries.push(newE);
         dbRef.child(newE.id).set(newE);
     }
     localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
-    render(); showToast('נשמר בהצלחה');
+    render(); showToast('נשמר');
 }
 
 function toggleDone(id) {
@@ -376,9 +399,8 @@ function editEntry(id) {
     document.getElementById('entryDate').value = e.date;
     editId = id;
     document.getElementById('saveBtn').textContent = 'עדכן';
-    document.getElementById('saveBtn').classList.add('editing');
     document.getElementById('formCard').classList.add('edit-mode');
-    window.scrollTo({top: 0, behavior: 'smooth'});
+    window.scrollTo({top:0, behavior:'smooth'});
 }
 
 function cancelEdit() {
@@ -387,7 +409,6 @@ function cancelEdit() {
     document.getElementById('amount').value = '';
     document.getElementById('entryDate').value = new Date().toISOString().split('T')[0];
     document.getElementById('saveBtn').textContent = 'שמור';
-    document.getElementById('saveBtn').classList.remove('editing');
     document.getElementById('formCard').classList.remove('edit-mode');
 }
 
@@ -396,15 +417,12 @@ function confirmDeleteAction() {
     if(dbRef) dbRef.child(pendingDeleteId).remove();
     entries = entries.filter(e => e.id !== pendingDeleteId);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
-    closeModal('deleteModal'); render(); showToast('נמחק', 'warn');
+    closeModal('deleteModal'); render();
 }
 
 function importFixedEntries() {
-    if(!dbRef) { showToast('מתחבר לענן, נסה שוב', 'warn'); return; }
     const m = viewDate.getMonth(), y = viewDate.getFullYear();
     const allFixed = entries.filter(e => e.type === 'fixed');
-
-    // ✅ תיקון — בודק רק קבועות קיימות בחודש, לא כל הסוגים
     const existingInMonth = entries.filter(e => {
         const d = new Date(e.date);
         return d.getMonth() === m && d.getFullYear() === y && e.type === 'fixed';
@@ -414,14 +432,13 @@ function importFixedEntries() {
     const seen = new Set();
     allFixed.forEach(f => {
         if(!seen.has(f.desc) && !existingInMonth.includes(f.desc)) {
-            const newId = Date.now() + Math.floor(Math.random()*1000);
+            const newId = Date.now() + Math.floor(Math.random()*100);
             const newE = { id: newId, desc: f.desc, amount: f.amount, type: 'fixed', date: new Date(y, m, 2).toISOString().split('T')[0], done: false };
-            entries.push(newE); dbRef.child(newId).set(newE); count++;
-            seen.add(f.desc);
+            entries.push(newE); if(dbRef) dbRef.child(newId).set(newE);
+            count++; seen.add(f.desc);
         }
     });
-    if(count > 0) { localStorage.setItem(STORAGE_KEY, JSON.stringify(entries)); render(); showToast(`נוספו ${count} קבועות`); }
-    else { showToast('אין קבועות חדשות להוסיף'); }
+    if(count > 0) { localStorage.setItem(STORAGE_KEY, JSON.stringify(entries)); render(); showToast(`נוספו ${count}`); }
 }
 
 function pullFromCloud(silent=false) {
@@ -430,37 +447,25 @@ function pullFromCloud(silent=false) {
         if(snap.val()) {
             entries = Object.values(snap.val());
             localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
-            render(); if(!silent) showToast('סונכרן מהענן');
+            render(); if(!silent) showToast('עונכרן');
         }
     });
 }
 
 function syncToCloud() {
-    if(!dbRef) {
-        // ✅ אם dbRef עדיין לא מוכן — מחכים להתחברות ואז מסנכרנים
-        showToast('מתחבר...', 'warn');
-        firebase.auth().onAuthStateChanged(user => {
-            if(user) {
-                dbRef = firebase.database().ref(`users/${user.uid}/entries`);
-                const data = {}; entries.forEach(e => data[e.id] = e);
-                dbRef.set(data).then(() => showToast('ענן עודכן!'));
-            }
-        });
-        return;
-    }
+    if(!dbRef) return;
     const data = {}; entries.forEach(e => data[e.id] = e);
     dbRef.set(data).then(() => showToast('ענן עודכן!'));
 }
 
 function mergeData() {
-    if(!dbRef) { showToast('מתחבר לענן, נסה שוב', 'warn'); return; }
+    if(!dbRef) return;
     dbRef.once('value').then(snap => {
         const cloud = snap.val() ? Object.values(snap.val()) : [];
         const localIds = entries.map(e => e.id);
-        let added = 0;
-        cloud.forEach(c => { if(!localIds.includes(c.id)) { entries.push(c); added++; } });
+        cloud.forEach(c => { if(!localIds.includes(c.id)) entries.push(c); });
         localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
-        render(); showToast(`מוזגו ${added} פעולות`);
+        render(); showToast('מוזגו נתונים');
     });
 }
 
@@ -476,18 +481,11 @@ function exportJSON() {
     const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'backup.json'; a.click();
 }
 
-function clearLocal() { if(confirm('לנקות רק את המכשיר?')) { entries = []; localStorage.removeItem(STORAGE_KEY); render(); showToast('המכשיר נוקה', 'warn'); } }
+function clearLocal() { if(confirm('לנקות מקומי?')) { entries = []; localStorage.removeItem(STORAGE_KEY); render(); } }
+function changeMonth(n) { viewDate = new Date(viewDate.getFullYear(), viewDate.getMonth() + n, 1); render(); }
 
-// ✅ תיקון changeMonth — לא משנה יום בחודש
-function changeMonth(n) {
-    viewDate = new Date(viewDate.getFullYear(), viewDate.getMonth() + n, 1);
-    render();
-}
-
-// ✅ שלב 3 — dbRef מוגדר רק אחרי קבלת ה-UID מ-Firebase
-firebase.auth().signInAnonymously().then((userCredential) => {
-    const uid = userCredential.user.uid;
-    dbRef = firebase.database().ref(`users/${uid}/entries`);
+firebase.auth().signInAnonymously().then(cred => {
+    dbRef = firebase.database().ref(`users/${cred.user.uid}/entries`);
     pullFromCloud(true);
 });
 
