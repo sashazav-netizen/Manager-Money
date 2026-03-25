@@ -76,12 +76,10 @@
         .pill.active { background: var(--accent); color: var(--bg); }
         .summary-btn { background: none; border: none; color: var(--accent); padding: 6px 10px; font-size: 0.75rem; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 5px; opacity: 0.8; }
 
-        /* Modals Style */
         .chart-modal { position: fixed; inset: 0; background: rgba(7, 11, 20, 0.95); backdrop-filter: blur(12px); display: none; justify-content: center; align-items: center; z-index: 2500; padding: 20px; }
         .chart-modal.open { display: flex; }
         .chart-content { background: #1e293b; border: 1px solid var(--glass-border); border-radius: 28px; padding: 25px; width: 100%; max-width: 380px; text-align: center; max-height: 90vh; overflow-y: auto; }
         
-        /* Info Modal Text Style */
         .info-text { text-align: right; color: var(--text-dim); font-size: 0.85rem; line-height: 1.6; }
         .info-text h2 { color: var(--accent); font-size: 1.1rem; margin-top: 20px; border-bottom: 1px solid var(--glass-border); padding-bottom: 5px; font-weight: 800; }
         .info-text ul { padding-right: 20px; margin: 10px 0; }
@@ -114,6 +112,7 @@
 
         input, select { width: 100%; background: rgba(255,255,255,0.04); border: 1px solid var(--glass-border); border-radius: 14px; padding: 15px; color: white; margin-bottom: 15px; outline: none; }
         .btn-save { width: 100%; padding: 18px; border-radius: 14px; border: none; background: var(--accent); color: var(--bg); font-weight: 900; font-size: 1.2rem; cursor: pointer; }
+        .btn-cancel { width: 100%; padding: 12px; border-radius: 14px; border: 1px solid var(--glass-border); background: transparent; color: var(--text-dim); font-weight: 600; margin-top: 10px; cursor: pointer; }
 
         .bottom-actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 25px; }
         .act-btn { background: var(--glass); border: 1px solid var(--glass-border); padding: 12px 5px; border-radius: 12px; font-size: 0.7rem; color: var(--text-dim); text-align: center; cursor: pointer; }
@@ -212,6 +211,7 @@
     </div>
     <input type="date" id="date">
     <button class="btn-save" onclick="saveEntry()">שמור נתונים</button>
+    <button class="btn-cancel" onclick="closeSheet()">ביטול</button>
 </div>
 
 <div class="container">
@@ -302,7 +302,6 @@ const MONTHS = ['ינואר','פברואר','מרץ','אפריל','מאי','יו
 
 function showToast(m) { const t = document.getElementById('toast'); t.textContent = m; t.className = 'show'; setTimeout(()=>t.className='', 2000); }
 
-// Info Modal Functions
 function openInfo() { document.getElementById('infoModal').classList.add('open'); }
 function closeInfo() { document.getElementById('infoModal').classList.remove('open'); }
 
