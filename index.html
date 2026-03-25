@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Manager-Money 2026 Pro v3.1.4.7</title>
+    <title>Manager-Money 2026 Pro v3.1.5</title>
 
     <meta name="theme-color" content="#070b14">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -70,10 +70,48 @@
         .stat-label { font-size: 0.75rem; color: var(--text-dim); margin-bottom: 3px; display: block; }
         .stat-val { font-size: 1rem; font-weight: 800; }
         
-        .controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; background: var(--glass); padding: 8px 15px; border-radius: 30px; border: 1px solid var(--glass-border); }
-        .pill-box { display: flex; background: rgba(0,0,0,0.2); padding: 3px; border-radius: 20px; gap: 2px; }
-        .pill { padding: 6px 14px; border-radius: 15px; font-size: 0.75rem; font-weight: 700; cursor: pointer; color: var(--text-dim); }
-        .pill.active { background: var(--accent); color: var(--bg); }
+        .controls { 
+            display: flex; 
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 15px; 
+            background: var(--glass); 
+            padding: 12px; 
+            border-radius: 20px; 
+            border: 1px solid var(--glass-border); 
+        }
+        .controls-top { display: flex; justify-content: space-between; align-items: center; }
+
+        .pill-box { 
+            display: flex; 
+            background: rgba(0,0,0,0.2); 
+            padding: 3px; 
+            border-radius: 15px; 
+            gap: 3px; 
+            overflow-x: auto; 
+            scrollbar-width: none;
+            position: relative;
+            z-index: 5;
+        }
+        .pill-box::-webkit-scrollbar { display: none; }
+
+        .pill { 
+            padding: 7px 14px; 
+            border-radius: 12px; 
+            font-size: 0.7rem; 
+            font-weight: 800; 
+            cursor: pointer; 
+            color: var(--text-dim); 
+            white-space: nowrap;
+            transition: 0.2s;
+        }
+        
+        .pill.active#f-all { background: var(--text); color: var(--bg); }
+        .pill.active#f-expense { background: var(--expense); color: white; }
+        .pill.active#f-income { background: var(--income); color: white; }
+        .pill.active#f-fixed { background: var(--fixed); color: white; }
+        .pill.active#f-open { background: var(--accent); color: var(--bg); }
+
         .summary-btn { background: none; border: none; color: var(--accent); padding: 6px 10px; font-size: 0.75rem; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 5px; opacity: 0.8; }
 
         .chart-modal { position: fixed; inset: 0; background: rgba(7, 11, 20, 0.95); backdrop-filter: blur(12px); display: none; justify-content: center; align-items: center; z-index: 2500; padding: 20px; }
@@ -140,6 +178,7 @@
                 <li>סנכרון ענן (Firebase) בזמן אמת לגיבוי מכל מקום.</li>
                 <li>מצב פרטיות (Privacy) לטשטוש סכומים רגישים.</li>
                 <li>ייצוא לאקסל (CSV) וגיבוי מלא לקובץ JSON.</li>
+                <li>סינון מהיר לפי קטגוריות וצבעים.</li>
             </ul>
 
             <h2>🛠 טכנולוגיות</h2>
@@ -160,25 +199,11 @@
             <canvas id="myChart"></canvas>
         </div>
         <div class="modal-stats-grid">
-            <div class="modal-stat-item">
-                <span>הכנסות</span>
-                <b id="modalInc" style="color:var(--income);">₪0</b>
-            </div>
-            <div class="modal-stat-item">
-                <span>הוצאות</span>
-                <b id="modalExp" style="color:var(--expense);">₪0</b>
-            </div>
-            <div class="modal-stat-item">
-                <span>קבועות</span>
-                <b id="modalFix" style="color:var(--fixed);">₪0</b>
-            </div>
+            <div class="modal-stat-item"><span>הכנסות</span><b id="modalInc" style="color:var(--income);">₪0</b></div>
+            <div class="modal-stat-item"><span>הוצאות</span><b id="modalExp" style="color:var(--expense);">₪0</b></div>
+            <div class="modal-stat-item"><span>קבועות</span><b id="modalFix" style="color:var(--fixed);">₪0</b></div>
         </div>
-        
-        <div class="modal-net-row">
-            <span>יתרה פנויה:</span>
-            <b id="modalNet">₪0</b>
-        </div>
-
+        <div class="modal-net-row"><span>יתרה פנויה:</span><b id="modalNet">₪0</b></div>
         <button class="btn-save" style="margin-top:20px; background:rgba(255,255,255,0.05); color:white; border:1px solid var(--glass-border); font-size: 1rem;" onclick="closeChart()">חזרה לרשימה</button>
     </div>
 </div>
@@ -218,7 +243,7 @@
     <header>
         <div class="brand">
             <h1>Manager<span>Money</span></h1>
-            <div class="version-tag">v3.1.4.7 PRO</div>
+            <div class="version-tag">v3.1.5 PRO</div>
             <div class="cloud-status"><div class="status-dot" id="cloudDot"></div><span id="cloudText">טוען ענן...</span></div>
         </div>
         <div class="header-left">
@@ -252,17 +277,21 @@
     </div>
 
     <div class="controls">
-        <div style="display:flex; align-items:center; gap:8px;">
-            <span onclick="changeMonth(-1)" style="cursor:pointer; font-size:1.1rem;">◀</span>
-            <b id="monthLabel" style="font-size:0.9rem; min-width:85px; text-align:center;"></b>
-            <span onclick="changeMonth(1)" style="cursor:pointer; font-size:1.1rem;">▶</span>
-        </div>
-        <div style="display:flex; align-items:center; gap:5px;">
-            <button class="summary-btn" onclick="openChart()">📊 גרף</button>
-            <div class="pill-box">
-                <div class="pill active" id="f-all" onclick="setFilter('all')">הכל</div>
-                <div class="pill" id="f-open" onclick="setFilter('open')">פתוח</div>
+        <div class="controls-top">
+            <div style="display:flex; align-items:center; gap:8px;">
+                <span onclick="changeMonth(-1)" style="cursor:pointer; font-size:1.1rem;">◀</span>
+                <b id="monthLabel" style="font-size:0.9rem; min-width:85px; text-align:center;"></b>
+                <span onclick="changeMonth(1)" style="cursor:pointer; font-size:1.1rem;">▶</span>
             </div>
+            <button class="summary-btn" onclick="openChart()">📊 גרף חודשי</button>
+        </div>
+        
+        <div class="pill-box">
+            <div class="pill active" id="f-all" onclick="setFilter('all')">הכל</div>
+            <div class="pill" id="f-expense" onclick="setFilter('expense')">הוצאות</div>
+            <div class="pill" id="f-income" onclick="setFilter('income')">הכנסות</div>
+            <div class="pill" id="f-fixed" onclick="setFilter('fixed')">קבועות</div>
+            <div class="pill" id="f-open" onclick="setFilter('open')">פתוח</div>
         </div>
     </div>
 
@@ -277,11 +306,11 @@
         <div class="act-btn" style="color:var(--expense)" onclick="clearLocal()">🗑 נקה</div>
     </div>
 
-    <footer>All rights reserved to Alexander Zavodisker 2026 ©</footer>
+    <footer>All rights reserved to Alexander Zabodiskar 2026 ©</footer>
 </div>
 
 <script>
-// --- Firebase Config ---
+// --- Configuration & State ---
 const firebaseConfig = {
     apiKey: "AIzaSyAZ2-EJjvIbDvtKLwKg3LObkIAs8sNhyjU",
     authDomain: "managermoney-49d0e.firebaseapp.com",
@@ -300,92 +329,27 @@ let viewDate = new Date();
 let currentFilter = 'all', editId = null, privacy = false, pendingDel = null, myChart = null;
 const MONTHS = ['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
 
+// --- UI Utilities ---
 function showToast(m) { const t = document.getElementById('toast'); t.textContent = m; t.className = 'show'; setTimeout(()=>t.className='', 2000); }
-
 function openInfo() { document.getElementById('infoModal').classList.add('open'); }
 function closeInfo() { document.getElementById('infoModal').classList.remove('open'); }
-
-function openChart() { 
-    document.getElementById('chartModal').classList.add('open'); 
-    if(!myChart) initChart();
-    renderChartData();
-}
+function openChart() { document.getElementById('chartModal').classList.add('open'); if(!myChart) initChart(); renderChartData(); }
 function closeChart() { document.getElementById('chartModal').classList.remove('open'); }
-
-function initChart() {
-    const ctx = document.getElementById('myChart').getContext('2d');
-    myChart = new Chart(ctx, {
-        type: 'doughnut',
-        data: { 
-            labels: ['הכנסות', 'הוצאות', 'קבועות'], 
-            datasets: [{ 
-                data: [0,0,0], 
-                backgroundColor: ['#10b981', '#f43f5e', '#f59e0b'], 
-                borderColor: '#1e293b', 
-                borderWidth: 4 
-            }] 
-        },
-        options: { cutout: '70%', plugins: { legend: { display: false } }, responsive: true, maintainAspectRatio: false }
-    });
-}
-
-function renderChartData() {
-    const m = viewDate.getMonth(), y = viewDate.getFullYear();
-    let inc = 0, exp = 0, fix = 0;
-    entries.filter(e => {
-        const d = new Date(e.date);
-        return d.getMonth() === m && d.getFullYear() === y;
-    }).forEach(e => {
-        if(e.type === 'income') inc += e.amount;
-        else if(e.type === 'expense') exp += e.amount;
-        else if(e.type === 'fixed') fix += e.amount;
-    });
-    
-    document.getElementById('modalInc').textContent = '₪' + inc.toLocaleString();
-    document.getElementById('modalExp').textContent = '₪' + exp.toLocaleString();
-    document.getElementById('modalFix').textContent = '₪' + fix.toLocaleString();
-    
-    const net = inc - (exp + fix);
-    const netEl = document.getElementById('modalNet');
-    netEl.textContent = (net < 0 ? '-' : '') + '₪' + Math.abs(net).toLocaleString();
-    netEl.style.color = net >= 0 ? 'var(--income)' : 'var(--expense)';
-    
-    if(myChart) { 
-        const hasData = inc > 0 || exp > 0 || fix > 0;
-        myChart.data.datasets[0].data = hasData ? [inc, exp, fix] : [1, 1, 1]; 
-        myChart.update(); 
-    }
-}
-
-function openSheet(id = null) {
-    if(id) {
-        const e = entries.find(x => x.id === id);
-        document.getElementById('desc').value = e.desc;
-        document.getElementById('amount').value = e.amount;
-        document.getElementById('type').value = e.type;
-        document.getElementById('date').value = e.date;
-        editId = id; document.getElementById('sheetTitle').textContent = "עריכה";
-    } else {
-        editId = null; document.getElementById('desc').value = ''; document.getElementById('amount').value = '';
-        document.getElementById('date').value = new Date().toISOString().split('T')[0];
-        document.getElementById('sheetTitle').textContent = "פעולה חדשה";
-    }
-    document.getElementById('sheet').classList.add('open'); document.getElementById('overlay').classList.add('open');
-}
-
-function closeSheet() { document.getElementById('sheet').classList.remove('open'); document.getElementById('overlay').classList.remove('open'); }
 function togglePrivacy() { privacy = !privacy; document.getElementById('root').classList.toggle('blur-mode', privacy); }
 
+// --- Filtering Logic ---
 function setFilter(f) { 
     currentFilter = f; 
-    document.getElementById('f-all').className = f==='all'?'pill active':'pill';
-    document.getElementById('f-open').className = f==='open'?'pill active':'pill';
+    document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+    document.getElementById('f-' + f).classList.add('active');
     render(); 
 }
 
+// --- Core Functions ---
 function render() {
     const m = viewDate.getMonth(), y = viewDate.getFullYear();
     document.getElementById('monthLabel').textContent = MONTHS[m] + ' ' + y;
+    
     let filtered = entries.filter(e => {
         const d = new Date(e.date);
         return d.getMonth() === m && d.getFullYear() === y;
@@ -397,7 +361,12 @@ function render() {
         else { exp += e.amount; if(e.done) realPaid += e.amount; }
     });
 
-    if(currentFilter === 'open') filtered = filtered.filter(e => !e.done);
+    if (currentFilter === 'open') {
+        filtered = filtered.filter(e => !e.done);
+    } else if (currentFilter !== 'all') {
+        filtered = filtered.filter(e => e.type === currentFilter);
+    }
+
     const listEl = document.getElementById('list');
     listEl.innerHTML = '';
 
@@ -421,6 +390,24 @@ function render() {
     document.getElementById('bankBal').textContent = (bank < 0 ? '-' : '') + '₪' + Math.abs(bank).toLocaleString();
     document.getElementById('bankBal').style.color = bank >= 0 ? 'var(--income)' : 'var(--expense)';
 }
+
+function openSheet(id = null) {
+    if(id) {
+        const e = entries.find(x => x.id === id);
+        document.getElementById('desc').value = e.desc;
+        document.getElementById('amount').value = e.amount;
+        document.getElementById('type').value = e.type;
+        document.getElementById('date').value = e.date;
+        editId = id; document.getElementById('sheetTitle').textContent = "עריכה";
+    } else {
+        editId = null; document.getElementById('desc').value = ''; document.getElementById('amount').value = '';
+        document.getElementById('date').value = new Date().toISOString().split('T')[0];
+        document.getElementById('sheetTitle').textContent = "פעולה חדשה";
+    }
+    document.getElementById('sheet').classList.add('open'); document.getElementById('overlay').classList.add('open');
+}
+
+function closeSheet() { document.getElementById('sheet').classList.remove('open'); document.getElementById('overlay').classList.remove('open'); }
 
 function saveEntry() {
     const d = document.getElementById('desc').value, a = parseFloat(document.getElementById('amount').value);
@@ -460,6 +447,42 @@ function toggleDone(id) {
 
 function changeMonth(n) { viewDate = new Date(viewDate.getFullYear(), viewDate.getMonth() + n, 1); render(); }
 
+// --- Chart Logic ---
+function initChart() {
+    const ctx = document.getElementById('myChart').getContext('2d');
+    myChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: { labels: ['הכנסות', 'הוצאות', 'קבועות'], datasets: [{ data: [0,0,0], backgroundColor: ['#10b981', '#f43f5e', '#f59e0b'], borderColor: '#1e293b', borderWidth: 4 }] },
+        options: { cutout: '70%', plugins: { legend: { display: false } }, responsive: true, maintainAspectRatio: false }
+    });
+}
+
+function renderChartData() {
+    const m = viewDate.getMonth(), y = viewDate.getFullYear();
+    let inc = 0, exp = 0, fix = 0;
+    entries.filter(e => {
+        const d = new Date(e.date);
+        return d.getMonth() === m && d.getFullYear() === y;
+    }).forEach(e => {
+        if(e.type === 'income') inc += e.amount;
+        else if(e.type === 'expense') exp += e.amount;
+        else if(e.type === 'fixed') fix += e.amount;
+    });
+    document.getElementById('modalInc').textContent = '₪' + inc.toLocaleString();
+    document.getElementById('modalExp').textContent = '₪' + exp.toLocaleString();
+    document.getElementById('modalFix').textContent = '₪' + fix.toLocaleString();
+    const net = inc - (exp + fix);
+    const netEl = document.getElementById('modalNet');
+    netEl.textContent = (net < 0 ? '-' : '') + '₪' + Math.abs(net).toLocaleString();
+    netEl.style.color = net >= 0 ? 'var(--income)' : 'var(--expense)';
+    if(myChart) { 
+        const hasData = inc > 0 || exp > 0 || fix > 0;
+        myChart.data.datasets[0].data = hasData ? [inc, exp, fix] : [1, 1, 1]; 
+        myChart.update(); 
+    }
+}
+
+// --- Data Management (Bottom Buttons) ---
 function importFixedEntries() {
     const m = viewDate.getMonth(), y = viewDate.getFullYear();
     const allFixed = entries.filter(e => e.type === 'fixed');
@@ -467,7 +490,6 @@ function importFixedEntries() {
         const d = new Date(e.date);
         return d.getMonth() === m && d.getFullYear() === y && e.type === 'fixed';
     }).map(e => e.desc);
-    
     allFixed.forEach(f => {
         if(!existing.includes(f.desc)) {
             const newId = Date.now() + Math.random();
@@ -478,52 +500,19 @@ function importFixedEntries() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(entries)); render(); showToast("קבועות נטענו");
 }
 
-function syncToCloud() {
-    if(!dbRef) return;
-    const data = {}; entries.forEach(e => data[e.id] = e);
-    dbRef.set(data).then(() => showToast("סונכרן לענן"));
-}
-
-function mergeData() {
-    if(!dbRef) return;
-    dbRef.once('value').then(snap => {
-        const cloud = snap.val() ? Object.values(snap.val()) : [];
-        const localIds = entries.map(e => e.id);
-        cloud.forEach(c => { if(!localIds.includes(c.id)) entries.push(c); });
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
-        render(); showToast("מיזוג הושלם");
-    });
-}
-
-function exportCSV() {
-    let csv = '\uFEFFתאריך,תיאור,סוג,סכום,שולם\n';
-    entries.forEach(e => csv += `${e.date},${e.desc},${e.type},${e.amount},${e.done?'V':''}\n`);
-    const blob = new Blob([csv], {type: 'text/csv;charset=utf-8'});
-    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'report.csv'; a.click();
-}
-
-function exportJSON() {
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(new Blob([JSON.stringify(entries)], {type:'application/json'}));
-    a.download = 'backup.json'; a.click();
-}
-
+function syncToCloud() { if(!dbRef) return; const data = {}; entries.forEach(e => data[e.id] = e); dbRef.set(data).then(() => showToast("סונכרן לענן")); }
+function mergeData() { if(!dbRef) return; dbRef.once('value').then(snap => { const cloud = snap.val() ? Object.values(snap.val()) : []; const localIds = entries.map(e => e.id); cloud.forEach(c => { if(!localIds.includes(c.id)) entries.push(c); }); localStorage.setItem(STORAGE_KEY, JSON.stringify(entries)); render(); showToast("מיזוג הושלם"); }); }
+function exportCSV() { let csv = '\uFEFFתאריך,תיאור,סוג,סכום,שולם\n'; entries.forEach(e => csv += `${e.date},${e.desc},${e.type},${e.amount},${e.done?'V':''}\n`); const blob = new Blob([csv], {type: 'text/csv;charset=utf-8'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'report.csv'; a.click(); }
+function exportJSON() { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(entries)], {type:'application/json'})); a.download = 'backup.json'; a.click(); }
 function clearLocal() { if(confirm('לנקות הכל?')) { entries = []; localStorage.removeItem(STORAGE_KEY); render(); } }
 
+// --- Initialization ---
 firebase.auth().signInAnonymously().then(cred => {
     dbRef = firebase.database().ref(`users/${cred.user.uid}/entries`);
     document.getElementById('cloudDot').className = 'status-dot online';
     document.getElementById('cloudText').textContent = 'ענן מחובר';
-    dbRef.once('value').then(snap => {
-        if(snap.val()) {
-            entries = Object.values(snap.val());
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
-            render();
-        }
-    });
-}).catch(() => {
-    document.getElementById('cloudText').textContent = 'מצב לא מקוון';
-});
+    dbRef.once('value').then(snap => { if(snap.val()) { entries = Object.values(snap.val()); localStorage.setItem(STORAGE_KEY, JSON.stringify(entries)); render(); } });
+}).catch(() => { document.getElementById('cloudText').textContent = 'מצב לא מקוון'; });
 
 render();
 </script>
