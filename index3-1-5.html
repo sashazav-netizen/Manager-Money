@@ -10,7 +10,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&family=Assistant:wght@200;400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&family=Assistant:wght@200;400;600&display=swap" rel="stylesheet">
     
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
@@ -40,21 +40,21 @@
 
         .container { max-width: 500px; margin: 0 auto; padding-bottom: 120px; }
 
-        /* Header */
         header { display: flex; justify-content: space-between; align-items: center; margin: 10px 0 20px; }
         .brand { display: flex; flex-direction: column; }
         h1 { font-size: 1.6rem; font-weight: 900; margin: 0; line-height: 1; }
         h1 span { color: var(--accent); }
         .version-tag { font-size: 0.65rem; font-weight: 700; opacity: 0.6; margin-top: 4px; letter-spacing: 1px; }
-
-        /* Status Dot */
         .cloud-status { display: flex; align-items: center; gap: 5px; font-size: 0.6rem; margin-top: 2px; }
         .status-dot { width: 6px; height: 6px; border-radius: 50%; background: #64748b; }
         .status-dot.online { background: var(--income); box-shadow: 0 0 8px var(--income); }
 
+        .header-left { display: flex; align-items: center; gap: 10px; }
+        .info-btn { background: rgba(56,189,248,0.1); border: 1px solid var(--glass-border); color: var(--accent); padding: 5px 12px; border-radius: 8px; font-size: 0.75rem; font-weight: 800; cursor: pointer; transition: 0.3s; }
+        .info-btn:active { transform: scale(0.95); background: var(--accent); color: var(--bg); }
+
         .logo-container { width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; background: rgba(56,189,248,0.05); border-radius: 14px; border: 1px solid var(--glass-border); }
 
-        /* Bank Card */
         .bank-card {
             background: linear-gradient(135deg, rgba(56,189,248,0.15), rgba(16,185,129,0.1));
             border: 1px solid var(--glass-border); border-radius: 22px;
@@ -63,35 +63,75 @@
         }
         .bank-card b { font-size: 2rem; display: block; margin-top: 5px; }
         .privacy-toggle { position: absolute; top: 12px; left: 12px; background: none; border: none; color: var(--text-dim); font-size: 1.2rem; cursor: pointer; }
-        .blur-mode b, .blur-mode .item-price, .blur-mode #chartModal { filter: blur(10px); }
+        .blur-mode b, .blur-mode .item-price, .blur-mode #chartModal, .blur-mode #infoModal { filter: blur(10px); }
 
-        /* Main Stats */
         .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
         .stat-box { background: var(--glass); border: 1px solid var(--glass-border); padding: 12px; border-radius: 16px; display: flex; align-items: center; gap: 10px; }
         .stat-label { font-size: 0.75rem; color: var(--text-dim); margin-bottom: 3px; display: block; }
         .stat-val { font-size: 1rem; font-weight: 800; }
         
-        /* Controls */
-        .controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; background: var(--glass); padding: 8px 15px; border-radius: 30px; border: 1px solid var(--glass-border); }
-        .pill-box { display: flex; background: rgba(0,0,0,0.2); padding: 3px; border-radius: 20px; gap: 2px; }
-        .pill { padding: 6px 14px; border-radius: 15px; font-size: 0.75rem; font-weight: 700; cursor: pointer; color: var(--text-dim); }
-        .pill.active { background: var(--accent); color: var(--bg); }
+        .controls { 
+            display: flex; 
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 15px; 
+            background: var(--glass); 
+            padding: 12px; 
+            border-radius: 20px; 
+            border: 1px solid var(--glass-border); 
+        }
+        .controls-top { display: flex; justify-content: space-between; align-items: center; }
+
+        .pill-box { 
+            display: flex; 
+            background: rgba(0,0,0,0.2); 
+            padding: 3px; 
+            border-radius: 15px; 
+            gap: 3px; 
+            overflow-x: auto; 
+            scrollbar-width: none;
+            position: relative;
+            z-index: 5;
+        }
+        .pill-box::-webkit-scrollbar { display: none; }
+
+        .pill { 
+            padding: 7px 14px; 
+            border-radius: 12px; 
+            font-size: 0.7rem; 
+            font-weight: 800; 
+            cursor: pointer; 
+            color: var(--text-dim); 
+            white-space: nowrap;
+            transition: 0.2s;
+        }
+        
+        .pill.active#f-all { background: var(--text); color: var(--bg); }
+        .pill.active#f-expense { background: var(--expense); color: white; }
+        .pill.active#f-income { background: var(--income); color: white; }
+        .pill.active#f-fixed { background: var(--fixed); color: white; }
+        .pill.active#f-open { background: var(--accent); color: var(--bg); }
+
         .summary-btn { background: none; border: none; color: var(--accent); padding: 6px 10px; font-size: 0.75rem; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 5px; opacity: 0.8; }
 
-        /* Chart Modal Refined */
-        .chart-modal { position: fixed; inset: 0; background: rgba(7, 11, 20, 0.96); backdrop-filter: blur(12px); display: none; justify-content: center; align-items: center; z-index: 2500; padding: 20px; }
+        .chart-modal { position: fixed; inset: 0; background: rgba(7, 11, 20, 0.95); backdrop-filter: blur(12px); display: none; justify-content: center; align-items: center; z-index: 2500; padding: 20px; }
         .chart-modal.open { display: flex; }
-        .chart-content { background: #1e293b; border: 1px solid var(--glass-border); border-radius: 32px; padding: 25px; width: 100%; max-width: 400px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
-        .chart-wrap { height: 180px; margin: 15px 0; position: relative; }
+        .chart-content { background: #1e293b; border: 1px solid var(--glass-border); border-radius: 28px; padding: 25px; width: 100%; max-width: 380px; text-align: center; max-height: 90vh; overflow-y: auto; }
         
-        .modal-stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; border-top: 1px solid var(--glass-border); padding-top: 15px; }
+        .info-text { text-align: right; color: var(--text-dim); font-size: 0.85rem; line-height: 1.6; }
+        .info-text h2 { color: var(--accent); font-size: 1.1rem; margin-top: 20px; border-bottom: 1px solid var(--glass-border); padding-bottom: 5px; font-weight: 800; }
+        .info-text ul { padding-right: 20px; margin: 10px 0; }
+        .info-text li { margin-bottom: 6px; }
+
+        .chart-wrap { height: 180px; margin: 15px 0; }
+        .modal-stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; border-top: 1px solid var(--glass-border); padding-top: 20px; }
         .modal-stat-item { text-align: center; }
         .modal-stat-item span { color: var(--text-dim); font-size: 0.65rem; display: block; margin-bottom: 4px; }
-        .modal-stat-item b { font-size: 0.85rem; }
-        
-        .net-summary { background: rgba(255,255,255,0.05); margin-top: 15px; padding: 12px; border-radius: 14px; display: flex; justify-content: space-between; align-items: center; }
+        .modal-stat-item b { font-size: 0.9rem; }
+        .modal-net-row { margin-top: 20px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center; }
+        .modal-net-row span { font-size: 0.8rem; font-weight: 700; color: var(--text-dim); }
+        .modal-net-row b { font-size: 1.1rem; font-weight: 900; }
 
-        /* Items */
         .item { background: var(--glass); border: 1px solid var(--glass-border); border-radius: 18px; padding: 14px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border-right: 5px solid transparent; }
         .item.income { border-right-color: var(--income); }
         .item.expense { border-right-color: var(--expense); }
@@ -100,15 +140,17 @@
         
         .check { width: 28px; height: 28px; border-radius: 8px; border: 2px solid var(--accent); display: flex; align-items: center; justify-content: center; cursor: pointer; }
         .check.checked { background: var(--accent); color: var(--bg); font-weight: 900; }
+        .btn-del { background: none; border: none; color: var(--expense); opacity: 0.4; cursor: pointer; font-size: 1.2rem; }
 
-        /* Bottom Menu */
         .fab { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); width: 65px; height: 65px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 25px rgba(56,189,248,0.4); border: none; color: var(--bg); font-size: 2.2rem; z-index: 100; cursor: pointer; }
         .sheet { position: fixed; bottom: -100%; left: 0; width: 100%; background: #1e293b; border-radius: 30px 30px 0 0; z-index: 1000; padding: 30px 20px; transition: 0.5s; }
         .sheet.open { bottom: 0; }
         .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); display: none; z-index: 999; backdrop-filter: blur(5px); }
         .overlay.open { display: block; }
 
+        input, select { width: 100%; background: rgba(255,255,255,0.04); border: 1px solid var(--glass-border); border-radius: 14px; padding: 15px; color: white; margin-bottom: 15px; outline: none; }
         .btn-save { width: 100%; padding: 18px; border-radius: 14px; border: none; background: var(--accent); color: var(--bg); font-weight: 900; font-size: 1.2rem; cursor: pointer; }
+        .btn-cancel { width: 100%; padding: 12px; border-radius: 14px; border: 1px solid var(--glass-border); background: transparent; color: var(--text-dim); font-weight: 600; margin-top: 10px; cursor: pointer; }
 
         .bottom-actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 25px; }
         .act-btn { background: var(--glass); border: 1px solid var(--glass-border); padding: 12px 5px; border-radius: 12px; font-size: 0.7rem; color: var(--text-dim); text-align: center; cursor: pointer; }
@@ -122,33 +164,43 @@
 
 <div id="toast"></div>
 
+<div class="chart-modal" id="infoModal">
+    <div class="chart-content" style="max-width:450px;">
+        <h3 style="margin:0; font-weight:900; color:var(--accent);">Manager-Money 2026 Pro</h3>
+        <div class="info-text">
+            <h2>📜 אודות המערכת</h2>
+            <p>אפליקציית ווב מתקדמת לניהול תקציב אישי, שנועדה לספק שליטה מלאה על הכנסות והוצאות בממשק מודרני, מהיר וחכם.</p>
+            
+            <h2>✨ תכונות עיקריות</h2>
+            <ul>
+                <li>ניהול תזרים מזומנים מפורט (הכנסה/הוצאה/קבוע).</li>
+                <li>ניתוח גרפי חכם הכולל חישוב יתרה פנויה חודשית.</li>
+                <li>סנכרון ענן (Firebase) בזמן אמת לגיבוי מכל מקום.</li>
+                <li>מצב פרטיות (Privacy) לטשטוש סכומים רגישים.</li>
+                <li>ייצוא לאקסל (CSV) וגיבוי מלא לקובץ JSON.</li>
+                <li>סינון מהיר לפי קטגוריות וצבעים.</li>
+            </ul>
+
+            <h2 style="text-align: center;">✍️ המפתח</h2>
+            <p style="text-align: center; font-weight: 600; font-size: 1.1rem; color: white; margin-bottom: 0;">Alexander Zavodisker</p>
+            <p style="text-align: center; font-size: 0.7rem; color: var(--text-dim); margin-top: 5px;">All rights reserved 2026 ©</p>
+        </div>
+        <button class="btn-save" style="margin-top:20px; background:rgba(255,255,255,0.05); color:white; border:1px solid var(--glass-border); font-size: 1rem;" onclick="closeInfo()">סגור מידע</button>
+    </div>
+</div>
+
 <div class="chart-modal" id="chartModal">
     <div class="chart-content">
-        <h3 style="margin:0; font-weight:900;">ניתוח פיננסי חודשי</h3>
+        <h3 style="margin:0; font-weight:900;">ניתוח תקציב חודשי</h3>
         <div class="chart-wrap">
             <canvas id="myChart"></canvas>
         </div>
-        
         <div class="modal-stats-grid">
-            <div class="modal-stat-item">
-                <span>הכנסות</span>
-                <b id="modalInc" style="color:var(--income);">₪0</b>
-            </div>
-            <div class="modal-stat-item">
-                <span>הוצאות</span>
-                <b id="modalExp" style="color:var(--expense);">₪0</b>
-            </div>
-            <div class="modal-stat-item">
-                <span>קבועות</span>
-                <b id="modalFix" style="color:var(--fixed);">₪0</b>
-            </div>
+            <div class="modal-stat-item"><span>הכנסות</span><b id="modalInc" style="color:var(--income);">₪0</b></div>
+            <div class="modal-stat-item"><span>הוצאות</span><b id="modalExp" style="color:var(--expense);">₪0</b></div>
+            <div class="modal-stat-item"><span>קבועות</span><b id="modalFix" style="color:var(--fixed);">₪0</b></div>
         </div>
-
-        <div class="net-summary">
-            <span style="font-size:0.8rem; font-weight:700;">יתרה פנויה לשימוש:</span>
-            <b id="modalNet" style="font-size:1.1rem;">₪0</b>
-        </div>
-
+        <div class="modal-net-row"><span>יתרה פנויה:</span><b id="modalNet">₪0</b></div>
         <button class="btn-save" style="margin-top:20px; background:rgba(255,255,255,0.05); color:white; border:1px solid var(--glass-border); font-size: 1rem;" onclick="closeChart()">חזרה לרשימה</button>
     </div>
 </div>
@@ -181,6 +233,7 @@
     </div>
     <input type="date" id="date">
     <button class="btn-save" onclick="saveEntry()">שמור נתונים</button>
+    <button class="btn-cancel" onclick="closeSheet()">ביטול</button>
 </div>
 
 <div class="container">
@@ -190,13 +243,16 @@
             <div class="version-tag">v3.1.5 PRO</div>
             <div class="cloud-status"><div class="status-dot" id="cloudDot"></div><span id="cloudText">טוען ענן...</span></div>
         </div>
-        <div class="logo-container">
-            <svg viewBox="0 0 24 24" width="30" height="30">
-                <path d="M12 2L4 5v6.09c0 5.05 3.41 9.76 8 10.91 4.59-1.15 8-5.86 8-10.91V5l-8-3z" fill="rgba(56,189,248,0.1)" stroke="var(--accent)" stroke-width="2"/>
-                <rect x="7" y="14" width="2" height="4" rx="1" fill="var(--income)"/>
-                <rect x="11" y="11" width="2" height="7" rx="1" fill="var(--income)" style="opacity:0.7"/>
-                <rect x="15" y="8" width="2" height="10" rx="1" fill="var(--income)" style="opacity:0.4"/>
-            </svg>
+        <div class="header-left">
+            <button class="info-btn" onclick="openInfo()">קראו עלי</button>
+            <div class="logo-container">
+                <svg viewBox="0 0 24 24" width="28" height="28">
+                    <path d="M12 2L4 5v6.09c0 5.05 3.41 9.76 8 10.91 4.59-1.15 8-5.86 8-10.91V5l-8-3z" fill="rgba(56,189,248,0.1)" stroke="var(--accent)" stroke-width="2"/>
+                    <rect x="7" y="14" width="2" height="4" rx="1" fill="var(--income)"/>
+                    <rect x="11" y="11" width="2" height="7" rx="1" fill="var(--income)" style="opacity:0.7"/>
+                    <rect x="15" y="8" width="2" height="10" rx="1" fill="var(--income)" style="opacity:0.4"/>
+                </svg>
+            </div>
         </div>
     </header>
 
@@ -218,17 +274,21 @@
     </div>
 
     <div class="controls">
-        <div style="display:flex; align-items:center; gap:8px;">
-            <span onclick="changeMonth(-1)" style="cursor:pointer; font-size:1.1rem;">◀</span>
-            <b id="monthLabel" style="font-size:0.9rem; min-width:85px; text-align:center;"></b>
-            <span onclick="changeMonth(1)" style="cursor:pointer; font-size:1.1rem;">▶</span>
-        </div>
-        <div style="display:flex; align-items:center; gap:5px;">
-            <button class="summary-btn" onclick="openChart()">📊 גרף</button>
-            <div class="pill-box">
-                <div class="pill active" id="f-all" onclick="setFilter('all')">הכל</div>
-                <div class="pill" id="f-open" onclick="setFilter('open')">פתוח</div>
+        <div class="controls-top">
+            <div style="display:flex; align-items:center; gap:8px;">
+                <span onclick="changeMonth(-1)" style="cursor:pointer; font-size:1.1rem;">◀</span>
+                <b id="monthLabel" style="font-size:0.9rem; min-width:85px; text-align:center;"></b>
+                <span onclick="changeMonth(1)" style="cursor:pointer; font-size:1.1rem;">▶</span>
             </div>
+            <button class="summary-btn" onclick="openChart()">📊 גרף חודשי</button>
+        </div>
+        
+        <div class="pill-box">
+            <div class="pill active" id="f-all" onclick="setFilter('all')">הכל</div>
+            <div class="pill" id="f-expense" onclick="setFilter('expense')">הוצאות</div>
+            <div class="pill" id="f-income" onclick="setFilter('income')">הכנסות</div>
+            <div class="pill" id="f-fixed" onclick="setFilter('fixed')">קבועות</div>
+            <div class="pill" id="f-open" onclick="setFilter('open')">פתוח</div>
         </div>
     </div>
 
@@ -247,7 +307,7 @@
 </div>
 
 <script>
-// --- Firebase Init ---
+// --- Configuration & State ---
 const firebaseConfig = {
     apiKey: "AIzaSyAZ2-EJjvIbDvtKLwKg3LObkIAs8sNhyjU",
     authDomain: "managermoney-49d0e.firebaseapp.com",
@@ -260,97 +320,33 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 let dbRef;
 
-const STORAGE_KEY = 'budget_pro_315';
+const STORAGE_KEY = 'budget_pro_314';
 let entries = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
 let viewDate = new Date();
 let currentFilter = 'all', editId = null, privacy = false, pendingDel = null, myChart = null;
 const MONTHS = ['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
 
+// --- UI Utilities ---
 function showToast(m) { const t = document.getElementById('toast'); t.textContent = m; t.className = 'show'; setTimeout(()=>t.className='', 2000); }
-
-// --- Chart Logic ---
-function openChart() { 
-    document.getElementById('chartModal').classList.add('open'); 
-    if(!myChart) initChart();
-    renderChartData();
-}
+function openInfo() { document.getElementById('infoModal').classList.add('open'); }
+function closeInfo() { document.getElementById('infoModal').classList.remove('open'); }
+function openChart() { document.getElementById('chartModal').classList.add('open'); if(!myChart) initChart(); renderChartData(); }
 function closeChart() { document.getElementById('chartModal').classList.remove('open'); }
-
-function initChart() {
-    const ctx = document.getElementById('myChart').getContext('2d');
-    myChart = new Chart(ctx, {
-        type: 'doughnut',
-        data: { 
-            labels: ['הכנסות', 'הוצאות', 'קבועות'], 
-            datasets: [{ 
-                data: [0,0,0], 
-                backgroundColor: ['#10b981', '#f43f5e', '#f59e0b'], 
-                borderColor: '#1e293b', 
-                borderWidth: 4 
-            }] 
-        },
-        options: { cutout: '72%', plugins: { legend: { display: false } }, responsive: true, maintainAspectRatio: false }
-    });
-}
-
-function renderChartData() {
-    const m = viewDate.getMonth(), y = viewDate.getFullYear();
-    let inc = 0, exp = 0, fix = 0;
-    entries.filter(e => {
-        const d = new Date(e.date);
-        return d.getMonth() === m && d.getFullYear() === y;
-    }).forEach(e => {
-        if(e.type === 'income') inc += e.amount;
-        else if(e.type === 'expense') exp += e.amount;
-        else if(e.type === 'fixed') fix += e.amount;
-    });
-    
-    document.getElementById('modalInc').textContent = '₪' + inc.toLocaleString();
-    document.getElementById('modalExp').textContent = '₪' + exp.toLocaleString();
-    document.getElementById('modalFix').textContent = '₪' + fix.toLocaleString();
-    
-    const net = inc - (exp + fix);
-    const netEl = document.getElementById('modalNet');
-    netEl.textContent = (net < 0 ? '-' : '') + '₪' + Math.abs(net).toLocaleString();
-    netEl.style.color = net >= 0 ? 'var(--income)' : 'var(--expense)';
-    
-    if(myChart) { 
-        const hasData = inc > 0 || exp > 0 || fix > 0;
-        myChart.data.datasets[0].data = hasData ? [inc, exp, fix] : [1, 1, 1]; 
-        myChart.update(); 
-    }
-}
-
-// --- CRUD & Core ---
-function openSheet(id = null) {
-    if(id) {
-        const e = entries.find(x => x.id === id);
-        document.getElementById('desc').value = e.desc;
-        document.getElementById('amount').value = e.amount;
-        document.getElementById('type').value = e.type;
-        document.getElementById('date').value = e.date;
-        editId = id; document.getElementById('sheetTitle').textContent = "עריכה";
-    } else {
-        editId = null; document.getElementById('desc').value = ''; document.getElementById('amount').value = '';
-        document.getElementById('date').value = new Date().toISOString().split('T')[0];
-        document.getElementById('sheetTitle').textContent = "פעולה חדשה";
-    }
-    document.getElementById('sheet').classList.add('open'); document.getElementById('overlay').classList.add('open');
-}
-
-function closeSheet() { document.getElementById('sheet').classList.remove('open'); document.getElementById('overlay').classList.remove('open'); }
 function togglePrivacy() { privacy = !privacy; document.getElementById('root').classList.toggle('blur-mode', privacy); }
 
+// --- Filtering Logic ---
 function setFilter(f) { 
     currentFilter = f; 
-    document.getElementById('f-all').className = f==='all'?'pill active':'pill';
-    document.getElementById('f-open').className = f==='open'?'pill active':'pill';
+    document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+    document.getElementById('f-' + f).classList.add('active');
     render(); 
 }
 
+// --- Core Functions ---
 function render() {
     const m = viewDate.getMonth(), y = viewDate.getFullYear();
     document.getElementById('monthLabel').textContent = MONTHS[m] + ' ' + y;
+    
     let filtered = entries.filter(e => {
         const d = new Date(e.date);
         return d.getMonth() === m && d.getFullYear() === y;
@@ -362,7 +358,12 @@ function render() {
         else { exp += e.amount; if(e.done) realPaid += e.amount; }
     });
 
-    if(currentFilter === 'open') filtered = filtered.filter(e => !e.done);
+    if (currentFilter === 'open') {
+        filtered = filtered.filter(e => !e.done);
+    } else if (currentFilter !== 'all') {
+        filtered = filtered.filter(e => e.type === currentFilter);
+    }
+
     const listEl = document.getElementById('list');
     listEl.innerHTML = '';
 
@@ -386,6 +387,24 @@ function render() {
     document.getElementById('bankBal').textContent = (bank < 0 ? '-' : '') + '₪' + Math.abs(bank).toLocaleString();
     document.getElementById('bankBal').style.color = bank >= 0 ? 'var(--income)' : 'var(--expense)';
 }
+
+function openSheet(id = null) {
+    if(id) {
+        const e = entries.find(x => x.id === id);
+        document.getElementById('desc').value = e.desc;
+        document.getElementById('amount').value = e.amount;
+        document.getElementById('type').value = e.type;
+        document.getElementById('date').value = e.date;
+        editId = id; document.getElementById('sheetTitle').textContent = "עריכה";
+    } else {
+        editId = null; document.getElementById('desc').value = ''; document.getElementById('amount').value = '';
+        document.getElementById('date').value = new Date().toISOString().split('T')[0];
+        document.getElementById('sheetTitle').textContent = "פעולה חדשה";
+    }
+    document.getElementById('sheet').classList.add('open'); document.getElementById('overlay').classList.add('open');
+}
+
+function closeSheet() { document.getElementById('sheet').classList.remove('open'); document.getElementById('overlay').classList.remove('open'); }
 
 function saveEntry() {
     const d = document.getElementById('desc').value, a = parseFloat(document.getElementById('amount').value);
@@ -425,6 +444,42 @@ function toggleDone(id) {
 
 function changeMonth(n) { viewDate = new Date(viewDate.getFullYear(), viewDate.getMonth() + n, 1); render(); }
 
+// --- Chart Logic ---
+function initChart() {
+    const ctx = document.getElementById('myChart').getContext('2d');
+    myChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: { labels: ['הכנסות', 'הוצאות', 'קבועות'], datasets: [{ data: [0,0,0], backgroundColor: ['#10b981', '#f43f5e', '#f59e0b'], borderColor: '#1e293b', borderWidth: 4 }] },
+        options: { cutout: '70%', plugins: { legend: { display: false } }, responsive: true, maintainAspectRatio: false }
+    });
+}
+
+function renderChartData() {
+    const m = viewDate.getMonth(), y = viewDate.getFullYear();
+    let inc = 0, exp = 0, fix = 0;
+    entries.filter(e => {
+        const d = new Date(e.date);
+        return d.getMonth() === m && d.getFullYear() === y;
+    }).forEach(e => {
+        if(e.type === 'income') inc += e.amount;
+        else if(e.type === 'expense') exp += e.amount;
+        else if(e.type === 'fixed') fix += e.amount;
+    });
+    document.getElementById('modalInc').textContent = '₪' + inc.toLocaleString();
+    document.getElementById('modalExp').textContent = '₪' + exp.toLocaleString();
+    document.getElementById('modalFix').textContent = '₪' + fix.toLocaleString();
+    const net = inc - (exp + fix);
+    const netEl = document.getElementById('modalNet');
+    netEl.textContent = (net < 0 ? '-' : '') + '₪' + Math.abs(net).toLocaleString();
+    netEl.style.color = net >= 0 ? 'var(--income)' : 'var(--expense)';
+    if(myChart) { 
+        const hasData = inc > 0 || exp > 0 || fix > 0;
+        myChart.data.datasets[0].data = hasData ? [inc, exp, fix] : [1, 1, 1]; 
+        myChart.update(); 
+    }
+}
+
+// --- Data Management (Bottom Buttons) ---
 function importFixedEntries() {
     const m = viewDate.getMonth(), y = viewDate.getFullYear();
     const allFixed = entries.filter(e => e.type === 'fixed');
@@ -432,7 +487,6 @@ function importFixedEntries() {
         const d = new Date(e.date);
         return d.getMonth() === m && d.getFullYear() === y && e.type === 'fixed';
     }).map(e => e.desc);
-    
     allFixed.forEach(f => {
         if(!existing.includes(f.desc)) {
             const newId = Date.now() + Math.random();
@@ -443,53 +497,19 @@ function importFixedEntries() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(entries)); render(); showToast("קבועות נטענו");
 }
 
-function syncToCloud() {
-    if(!dbRef) return;
-    const data = {}; entries.forEach(e => data[e.id] = e);
-    dbRef.set(data).then(() => showToast("סונכרן לענן"));
-}
-
-function mergeData() {
-    if(!dbRef) return;
-    dbRef.once('value').then(snap => {
-        const cloud = snap.val() ? Object.values(snap.val()) : [];
-        const localIds = entries.map(e => e.id);
-        cloud.forEach(c => { if(!localIds.includes(c.id)) entries.push(c); });
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
-        render(); showToast("מיזוג הושלם");
-    });
-}
-
-function exportCSV() {
-    let csv = '\uFEFFתאריך,תיאור,סוג,סכום,שולם\n';
-    entries.forEach(e => csv += `${e.date},${e.desc},${e.type},${e.amount},${e.done?'V':''}\n`);
-    const blob = new Blob([csv], {type: 'text/csv;charset=utf-8'});
-    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'report.csv'; a.click();
-}
-
-function exportJSON() {
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(new Blob([JSON.stringify(entries)], {type:'application/json'}));
-    a.download = 'backup.json'; a.click();
-}
-
+function syncToCloud() { if(!dbRef) return; const data = {}; entries.forEach(e => data[e.id] = e); dbRef.set(data).then(() => showToast("סונכרן לענן")); }
+function mergeData() { if(!dbRef) return; dbRef.once('value').then(snap => { const cloud = snap.val() ? Object.values(snap.val()) : []; const localIds = entries.map(e => e.id); cloud.forEach(c => { if(!localIds.includes(c.id)) entries.push(c); }); localStorage.setItem(STORAGE_KEY, JSON.stringify(entries)); render(); showToast("מיזוג הושלם"); }); }
+function exportCSV() { let csv = '\uFEFFתאריך,תיאור,סוג,סכום,שולם\n'; entries.forEach(e => csv += `${e.date},${e.desc},${e.type},${e.amount},${e.done?'V':''}\n`); const blob = new Blob([csv], {type: 'text/csv;charset=utf-8'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'report.csv'; a.click(); }
+function exportJSON() { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(entries)], {type:'application/json'})); a.download = 'backup.json'; a.click(); }
 function clearLocal() { if(confirm('לנקות הכל?')) { entries = []; localStorage.removeItem(STORAGE_KEY); render(); } }
 
-// --- Auth & Data Fetch ---
+// --- Initialization ---
 firebase.auth().signInAnonymously().then(cred => {
     dbRef = firebase.database().ref(`users/${cred.user.uid}/entries`);
     document.getElementById('cloudDot').className = 'status-dot online';
     document.getElementById('cloudText').textContent = 'ענן מחובר';
-    dbRef.once('value').then(snap => {
-        if(snap.val()) {
-            entries = Object.values(snap.val());
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
-            render();
-        }
-    });
-}).catch(() => {
-    document.getElementById('cloudText').textContent = 'מצב לא מקוון';
-});
+    dbRef.once('value').then(snap => { if(snap.val()) { entries = Object.values(snap.val()); localStorage.setItem(STORAGE_KEY, JSON.stringify(entries)); render(); } });
+}).catch(() => { document.getElementById('cloudText').textContent = 'מצב לא מקוון'; });
 
 render();
 </script>
