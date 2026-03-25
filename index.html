@@ -3,16 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Manager-Money 2026</title>
+    <title>Manager-Money 2026 Pro v3.0.2</title>
 
     <meta name="theme-color" content="#070b14">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="apple-touch-icon" href="https://i.postimg.cc/bNdQwqGt/icon.png">
-    <link rel="manifest" href='data:application/manifest+json,{"name":"Manager Money 2026","short_name":"Money2026","start_url":".","display":"standalone","background_color":"#070b14","theme_color":"#38bdf8","icons":[{"src":"https://i.postimg.cc/bNdQwqGt/icon.png","sizes":"512x512","type":"image/png"}]}'>
-
+    
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&family=Assistant:wght@200;400&display=swap" rel="stylesheet">
     
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
@@ -21,237 +19,212 @@
     <style>
         :root {
             --bg: #070b14;
-            --glass: rgba(30, 41, 59, 0.7);
-            --glass-border: rgba(255, 255, 255, 0.12);
+            --glass: rgba(30, 41, 59, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.1);
             --text: #f1f5f9;
             --text-dim: #94a3b8;
-            --income: #22c55e;
-            --expense: #ef4444;
+            --income: #10b981;
+            --expense: #f43f5e;
             --fixed: #f59e0b;
-            --balance: #38bdf8;
             --accent: #38bdf8;
-            --cloud: #10b981;
         }
 
-        html, body { max-width: 100%; overflow-x: hidden; margin: 0; padding: 0; background: var(--bg); min-height: 100vh; }
         * { box-sizing: border-box; font-family: 'Heebo', sans-serif; -webkit-tap-highlight-color: transparent; }
-
+        html, body { margin: 0; padding: 0; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
+        
         body {
-            background: radial-gradient(circle at top right, #1e293b, #070b14);
+            background: radial-gradient(circle at 50% 0%, #1e293b 0%, #070b14 100%);
             background-attachment: fixed;
-            color: var(--text); padding: 15px; direction: rtl;
+            padding: 15px;
         }
 
-        .container { max-width: 600px; margin: 0 auto; padding-bottom: 40px; }
+        .container { max-width: 500px; margin: 0 auto; padding-bottom: 120px; }
 
-        header { display: flex; align-items: center; justify-content: space-between; margin: 20px 0; padding: 0 10px; }
-        .header-right { display: flex; flex-direction: column; }
-        .logo-container {
-            width: 48px; height: 48px; display: flex; align-items: center; justify-content: center;
-            background: rgba(56,189,248,0.05); border-radius: 12px;
-            box-shadow: 0 0 16px rgba(56,189,248,0.3); border: 1px solid var(--glass-border);
-        }
-        .shield-base { fill: rgba(56,189,248,0.1); stroke: var(--accent); stroke-width: 1.5; animation: shieldPulse 3s infinite ease-in-out; transform-origin: center; }
-        .data-bar { fill: var(--income); animation: barFlow 2s infinite ease-in-out; transform-origin: center bottom; }
-        @keyframes shieldPulse { 0%,100% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.05); opacity: 1; } }
-        @keyframes barFlow { 0%,100% { transform: scaleY(0.7); opacity: 0.5; } 50% { transform: scaleY(1); opacity: 1; } }
-
-        h1 { font-size: 1.6rem; font-weight: 900; margin: 0; letter-spacing: -1px; line-height: 1; }
+        /* Header Fixes */
+        header { display: flex; justify-content: space-between; align-items: center; margin: 10px 0 25px; }
+        .brand { display: flex; flex-direction: column; }
+        h1 { font-size: 1.6rem; font-weight: 900; margin: 0; line-height: 1; }
         h1 span { color: var(--accent); }
-
-        .status-bar { display: flex; align-items: center; gap: 8px; margin-top: 5px; }
-        .version-badge { background: rgba(56,189,248,0.15); border: 1px solid rgba(56,189,248,0.3); color: var(--accent); font-size: 0.65rem; font-weight: 700; padding: 1px 8px; border-radius: 20px; }
-        .cloud-badge { display: flex; align-items: center; gap: 4px; color: var(--cloud); font-size: 0.7rem; font-weight: 700; }
-
-        .bank-summary { background: linear-gradient(135deg, rgba(56,189,248,0.1), rgba(16,185,129,0.05)); border: 1px solid var(--accent); border-radius: 15px; padding: 12px; margin-bottom: 15px; text-align: center; }
-        .bank-summary span { font-size: 0.8rem; color: var(--text-dim); }
-        .bank-summary b { font-size: 1.4rem; display: block; color: var(--text); font-weight: 900; }
-
-        .summary-mini { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 12px; }
-        .mini-card { background: var(--glass); backdrop-filter: blur(12px); padding: 10px 2px; border-radius: 12px; text-align: center; border: 1px solid var(--glass-border); display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 95px; }
-        .mini-card svg { margin-bottom: 6px; }
-        .mini-card span { display: block; font-size: 0.65rem; color: var(--text-dim); margin-bottom: 2px; }
-        .mini-card b { font-size: 0.8rem; white-space: nowrap; font-weight: 900; }
-
-        /* ניווט וסינון */
-        .month-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; background: var(--glass); padding: 8px 15px; border-radius: 50px; border: 1px solid var(--glass-border); }
-        .nav-btn { background: var(--accent); color: var(--bg); border: none; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-weight: bold; transition: 0.2s; }
-        .nav-btn:active { transform: scale(0.9); opacity: 0.8; }
+        .version-tag { font-size: 0.65rem; font-weight: 700; opacity: 0.6; margin-top: 4px; letter-spacing: 1px; }
         
-        .filter-bar { display: flex; justify-content: center; margin-bottom: 15px; }
-        .filter-toggle { 
-            display: flex; background: var(--glass); border-radius: 30px; padding: 4px; border: 1px solid var(--glass-border); gap: 4px;
+        .cloud-status { display: flex; align-items: center; gap: 5px; font-size: 0.6rem; margin-top: 2px; }
+        .status-dot { width: 6px; height: 6px; border-radius: 50%; background: #64748b; }
+        .status-dot.online { background: var(--income); box-shadow: 0 0 8px var(--income); }
+
+        .logo-container { width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; background: rgba(56,189,248,0.05); border-radius: 14px; border: 1px solid var(--glass-border); }
+
+        /* Modern Alert Modal */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 2000; padding: 20px; }
+        .modal-overlay.open { display: flex; }
+        .alert-box { background: #1e293b; border: 1px solid var(--glass-border); border-radius: 24px; padding: 25px; width: 100%; max-width: 320px; text-align: center; transform: scale(0.9); transition: 0.3s; }
+        .modal-overlay.open .alert-box { transform: scale(1); }
+        .alert-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
+        .btn-alert { padding: 12px; border-radius: 12px; border: none; font-weight: 800; cursor: pointer; }
+        .btn-confirm { background: var(--expense); color: white; }
+        .btn-cancel { background: rgba(255,255,255,0.1); color: white; }
+
+        /* Input Error Shake */
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+        .error-shake { animation: shake 0.3s ease-in-out; border-color: var(--expense) !important; }
+
+        /* Bank Card */
+        .bank-card {
+            background: linear-gradient(135deg, rgba(56,189,248,0.15), rgba(16,185,129,0.1));
+            border: 1px solid var(--glass-border); border-radius: 22px;
+            padding: 22px; margin-bottom: 15px; text-align: center;
+            backdrop-filter: blur(12px); position: relative;
         }
-        .filter-opt { 
-            padding: 6px 14px; border-radius: 25px; font-size: 0.75rem; font-weight: 700; cursor: pointer; color: var(--text-dim); transition: 0.3s;
-        }
-        .filter-opt.active { background: var(--accent); color: var(--bg); }
+        .bank-card b { font-size: 2rem; display: block; margin-top: 5px; transition: 0.3s; }
+        .privacy-toggle { position: absolute; top: 12px; left: 12px; background: none; border: none; color: var(--text-dim); font-size: 1.2rem; cursor: pointer; }
+        .blur-mode b, .blur-mode .item-price { filter: blur(10px); }
 
-        .chart-section { background: var(--glass); padding: 12px; border-radius: 18px; margin-bottom: 20px; border: 1px solid var(--glass-border); display: flex; flex-direction: column; align-items: center; }
-        .chart-container { height: 120px; width: 120px; position: relative; flex-shrink: 0; }
+        /* Stats & Controls */
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        .stat-box { background: var(--glass); border: 1px solid var(--glass-border); padding: 12px; border-radius: 16px; display: flex; align-items: center; gap: 10px; }
+        
+        .controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; background: var(--glass); padding: 8px 15px; border-radius: 30px; border: 1px solid var(--glass-border); }
+        .pill-box { display: flex; background: rgba(0,0,0,0.2); padding: 3px; border-radius: 20px; gap: 2px; }
+        .pill { padding: 6px 14px; border-radius: 15px; font-size: 0.75rem; font-weight: 700; cursor: pointer; color: var(--text-dim); }
+        .pill.active { background: var(--accent); color: var(--bg); }
 
-        .form-card { background: var(--glass); padding: 16px; border-radius: 20px; margin-bottom: 20px; border: 1px solid var(--glass-border); transition: 0.3s; }
-        .form-card.edit-mode { border-color: var(--fixed); background: rgba(245,158,11,0.08); }
-        .input-row-top { display: grid; grid-template-columns: 1.2fr 1fr 1.2fr; gap: 10px; margin-bottom: 10px; }
-        .input-row-bottom { display: grid; grid-template-columns: 1fr 2fr; gap: 10px; }
-        
-        input, select, .btn-main { 
-            height: 55px; border-radius: 14px; border: 1px solid var(--glass-border); 
-            background: rgba(15,23,42,0.8); color: white; outline: none; 
-            text-align: center; width: 100%; font-size: 16px;
-        }
-        
-        .btn-main { background: var(--accent); color: var(--bg); font-weight: 900; cursor: pointer; border: none; font-size: 1.1rem; transition: 0.2s; }
-        .btn-main:active { transform: scale(0.98); opacity: 0.9; }
-        .btn-main.editing { background: var(--fixed); }
-        .btn-cancel-edit { background: rgba(239, 68, 68, 0.15); color: var(--expense); border: 1px solid var(--expense); margin-top: 10px; height: 40px; border-radius: 10px; cursor: pointer; width: 100%; font-weight: 700; display: none; }
-        .edit-mode .btn-cancel-edit { display: block; }
-
-        .item { background: var(--glass); margin-bottom: 8px; display: flex; justify-content: space-between; padding: 12px; border-radius: 12px; border: 1px solid var(--glass-border); align-items: center; transition: 0.3s; border-right-width: 4px; border-right-style: solid; }
-        .item.is-done { opacity: 0.45; filter: grayscale(0.6); background: rgba(15, 23, 42, 0.4); border-right-style: dotted; }
-        .item.is-done b, .item.is-done .item-desc { text-decoration: line-through; }
-        
+        /* List Items */
+        .item { background: var(--glass); border: 1px solid var(--glass-border); border-radius: 18px; padding: 14px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border-right: 5px solid transparent; }
         .item.income { border-right-color: var(--income); }
         .item.expense { border-right-color: var(--expense); }
         .item.fixed { border-right-color: var(--fixed); }
+        .item.is-done { opacity: 0.4; filter: grayscale(0.6); }
+        .check { width: 28px; height: 28px; border-radius: 8px; border: 2px solid var(--accent); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        .check.checked { background: var(--accent); color: var(--bg); font-weight: 900; }
         
-        .item-right { display: flex; align-items: center; gap: 10px; overflow: hidden; }
-        .check-btn { width: 30px; height: 30px; border-radius: 8px; border: 1.5px solid var(--glass-border); background: rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; cursor: pointer; color: transparent; transition: 0.3s; flex-shrink: 0; font-weight: bold; }
-        .check-btn.checked { background: var(--cloud); border-color: var(--cloud); color: white; box-shadow: 0 0 8px rgba(16, 185, 129, 0.4); }
-        
-        .icon-btn { background: none; border: none; cursor: pointer; font-size: 1.1rem; padding: 8px; color: var(--text-dim); transition: all 0.2s ease; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
-        .icon-btn:active { transform: scale(0.8); background: rgba(255,255,255,0.05); color: var(--text); }
+        .item-price { font-weight: 900; font-size: 1rem; }
+        .btn-del { background: none; border: none; color: var(--expense); opacity: 0.4; cursor: pointer; font-size: 1.2rem; padding: 5px; }
 
-        .actions-bottom { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 15px; }
-        .action-btn { background: var(--glass); border: 1px solid var(--glass-border); color: var(--text-dim); padding: 12px 4px; border-radius: 8px; cursor: pointer; font-size: 0.7rem; font-weight: 600; transition: 0.2s; }
-        .action-btn:active { transform: scale(0.95); background: rgba(255,255,255,0.05); }
+        /* FAB & Sheet */
+        .fab { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); width: 65px; height: 65px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 25px rgba(56,189,248,0.4); border: none; color: var(--bg); font-size: 2.2rem; z-index: 100; cursor: pointer; }
+        .sheet { position: fixed; bottom: -100%; left: 0; width: 100%; background: #1e293b; border-radius: 30px 30px 0 0; z-index: 1000; padding: 30px 20px; transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+        .sheet.open { bottom: 0; }
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); display: none; z-index: 999; backdrop-filter: blur(5px); }
+        .overlay.open { display: block; }
 
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 9999; backdrop-filter: blur(5px); }
-        .modal-overlay.open { display: flex; }
-        .modal { background: #1e293b; padding: 20px; border-radius: 20px; width: 85%; max-width: 300px; text-align: center; border: 1px solid var(--glass-border); }
-        #toast { position: fixed; top: -100px; left: 50%; transform: translateX(-50%); padding: 12px 24px; border-radius: 12px; z-index: 10000; transition: 0.4s; font-weight: 700; color: white; }
-        #toast.show { top: 25px; opacity: 1; }
-        .toast-success { background: var(--income); }
-        .toast-warn { background: var(--expense); }
+        input, select { width: 100%; background: rgba(255,255,255,0.04); border: 1px solid var(--glass-border); border-radius: 14px; padding: 15px; color: white; margin-bottom: 15px; font-size: 1rem; outline: none; transition: 0.3s; }
+        input:focus { border-color: var(--accent); background: rgba(255,255,255,0.08); }
+        .btn-save { width: 100%; padding: 18px; border-radius: 14px; border: none; background: var(--accent); color: var(--bg); font-weight: 900; font-size: 1.2rem; cursor: pointer; }
 
-        footer { text-align: center; padding: 20px; color: var(--text-dim); font-size: 0.65rem; }
+        /* Footer & Actions */
+        .bottom-actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 25px; }
+        .act-btn { background: var(--glass); border: 1px solid var(--glass-border); padding: 12px 5px; border-radius: 12px; font-size: 0.7rem; color: var(--text-dim); text-align: center; cursor: pointer; }
+
+        footer { text-align: center; padding: 40px 20px 20px; color: var(--text-dim); font-size: 0.75rem; font-family: 'Assistant', sans-serif; letter-spacing: 0.5px; opacity: 0.7; }
+
+        #toast { position: fixed; top: -60px; left: 50%; transform: translateX(-50%); padding: 12px 25px; border-radius: 15px; background: var(--accent); color: var(--bg); font-weight: 800; z-index: 3000; transition: 0.5s; box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
+        #toast.show { top: 30px; }
+        #toast.error { background: var(--expense); color: white; }
     </style>
 </head>
-<body>
+<body id="root">
 
 <div id="toast"></div>
 
 <div class="modal-overlay" id="deleteModal">
-    <div class="modal">
-        <h3 style="margin-top:0;">למחוק פעולה זו?</h3>
-        <div style="display:flex; gap:10px; margin-top:15px;">
-            <button style="flex:1; padding:10px; border-radius:8px; background:var(--expense); color:white; border:none; font-weight:700;" onclick="confirmDeleteAction()">מחק</button>
-            <button style="flex:1; padding:10px; border-radius:8px; background:rgba(255,255,255,0.1); color:var(--text); border:none;" onclick="closeModal('deleteModal')">ביטול</button>
+    <div class="alert-box">
+        <div style="font-size: 2.5rem; margin-bottom: 10px;">⚠️</div>
+        <h3 style="margin:0; font-weight:900;">למחוק את הפעולה?</h3>
+        <p style="color:var(--text-dim); font-size:0.85rem;">לא ניתן יהיה לשחזר את הנתונים לאחר המחיקה.</p>
+        <div class="alert-btns">
+            <button class="btn-alert btn-confirm" onclick="confirmDelete()">כן, מחק</button>
+            <button class="btn-alert btn-cancel" onclick="closeDeleteModal()">ביטול</button>
         </div>
     </div>
+</div>
+
+<div class="overlay" id="overlay" onclick="closeSheet()"></div>
+
+<button class="fab" onclick="openSheet()">+</button>
+
+<div class="sheet" id="sheet">
+    <div style="width:45px; height:5px; background:rgba(255,255,255,0.1); margin: -15px auto 25px; border-radius:10px;"></div>
+    <h2 id="sheetTitle" style="margin-top:0; text-align:center; font-weight:900;">פעולה חדשה</h2>
+    <input type="text" id="desc" placeholder="תיאור הפעולה">
+    <div style="display:grid; grid-template-columns: 1fr 1.1fr; gap:12px;">
+        <input type="number" id="amount" placeholder="סכום" inputmode="decimal">
+        <select id="type">
+            <option value="expense">💸 הוצאה</option>
+            <option value="income">💰 הכנסה</option>
+            <option value="fixed">📅 קבוע</option>
+        </select>
+    </div>
+    <input type="date" id="date">
+    <button class="btn-save" onclick="saveEntry()">שמור נתונים</button>
+    <button onclick="closeSheet()" style="width:100%; background:none; border:none; color:var(--text-dim); margin-top:15px; font-weight:700;">סגור חלון</button>
 </div>
 
 <div class="container">
     <header>
-        <div class="header-right">
+        <div class="brand">
             <h1>Manager<span>Money</span></h1>
-            <div class="status-bar">
-                <span class="version-badge">v2.0.8</span>
-                <div class="cloud-badge">● ענן פעיל</div>
+            <div class="version-tag">v3.0.2 PRO</div>
+            <div class="cloud-status">
+                <div class="status-dot" id="cloudDot"></div>
+                <span id="cloudText">מערכת בענן</span>
             </div>
         </div>
         <div class="logo-container">
-            <svg viewBox="0 0 24 24" width="32" height="32">
-                <path class="shield-base" d="M12 2L4 5v6.09c0 5.05 3.41 9.76 8 10.91 4.59-1.15 8-5.86 8-10.91V5l-8-3z"/>
-                <rect class="data-bar" x="7" y="14" width="2.5" height="4" rx="1"/>
-                <rect class="data-bar" x="10.75" y="11" width="2.5" height="7" rx="1" style="animation-delay:0.2s"/>
-                <rect class="data-bar" x="14.5" y="8" width="2.5" height="10" rx="1" style="animation-delay:0.4s"/>
+            <svg viewBox="0 0 24 24" width="30" height="30">
+                <path class="shield-base" d="M12 2L4 5v6.09c0 5.05 3.41 9.76 8 10.91 4.59-1.15 8-5.86 8-10.91V5l-8-3z" fill="rgba(56,189,248,0.1)" stroke="var(--accent)" stroke-width="2"/>
+                <rect class="data-bar" x="7" y="14" width="2" height="4" rx="1" fill="var(--income)"/>
+                <rect class="data-bar" x="11" y="11" width="2" height="7" rx="1" fill="var(--income)" style="opacity:0.7"/>
+                <rect class="data-bar" x="15" y="8" width="2" height="10" rx="1" fill="var(--income)" style="opacity:0.4"/>
             </svg>
         </div>
     </header>
 
-    <div class="bank-summary">
-        <span>יתרה נוכחית בעו"ש (רק מה ששולם)</span>
-        <b id="bankBalance">₪0</b>
+    <div class="bank-card">
+        <button class="privacy-toggle" onclick="togglePrivacy()">👁️</button>
+        <span style="font-size:0.85rem; color:var(--text-dim)">יתרת עו"ש זמינה</span>
+        <b id="bankBal">₪0</b>
     </div>
 
-    <div class="month-nav">
-        <button class="nav-btn" onclick="changeMonth(-1)">&#9664;</button>
-        <div style="text-align:center;">
-            <h3 id="monthLabel" style="margin:0; font-size:1.1rem;"></h3>
-            <button style="background:rgba(245,158,11,0.1); border:none; color:var(--fixed); font-size:0.65rem; font-weight:700; padding:2px 8px; border-radius:10px; cursor:pointer;" onclick="importFixedEntries()">📅 טען קבועות</button>
+    <div class="stats-grid">
+        <div class="stat-box">
+            <div style="color:var(--income); font-weight:900;">↑</div>
+            <div><span>הכנסות</span><b id="statInc">₪0</b></div>
         </div>
-        <button class="nav-btn" onclick="changeMonth(1)">&#9654;</button>
-    </div>
-
-    <div class="filter-bar">
-        <div class="filter-toggle">
-            <div class="filter-opt active" id="f-all" onclick="setFilter('all')">הכל</div>
-            <div class="filter-opt" id="f-open" onclick="setFilter('open')">טרם שולם</div>
+        <div class="stat-box">
+            <div style="color:var(--expense); font-weight:900;">↓</div>
+            <div><span>הוצאות</span><b id="statExp">₪0</b></div>
         </div>
     </div>
 
-    <div class="summary-mini">
-        <div class="mini-card">
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--income)" stroke-width="2"><path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h12v4M4 6v12c0 1.1.9 2 2 2h14v-4M18 12a2 2 0 0 0-2 2c0 1.1.9 2 2 2h4v-4h-4zM12 11v6m-3-3l3-3 3 3"></path></svg>
-            <span>הכנסות</span>
-            <b id="sumIncome" style="color:var(--income)">₪0</b>
+    <div class="controls">
+        <div style="display:flex; align-items:center; gap:12px;">
+            <span onclick="changeMonth(-1)" style="cursor:pointer; font-size:1.2rem;">◀</span>
+            <b id="monthLabel" style="font-size:1rem; min-width:80px; text-align:center;"></b>
+            <span onclick="changeMonth(1)" style="cursor:pointer; font-size:1.2rem;">▶</span>
         </div>
-        <div class="mini-card">
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--expense)" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line><path d="M12 17v-6m-3 3l3 3 3-3"></path></svg>
-            <span>הוצאות</span>
-            <b id="sumExpense" style="color:var(--expense)">₪0</b>
+        <div class="pill-box">
+            <div class="pill active" id="f-all" onclick="setFilter('all')">הכל</div>
+            <div class="pill" id="f-open" onclick="setFilter('open')">פתוח</div>
         </div>
-        <div class="mini-card">
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--fixed)" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01"></path></svg>
-            <span>קבועות</span>
-            <b id="sumFixed" style="color:var(--fixed)">₪0</b>
-        </div>
-        <div class="mini-card">
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--balance)" stroke-width="2"><circle cx="12" cy="12" r="8"></circle><path d="M12 7v10M9 12h6M15 9l2-2m-8 8l-2 2"></path></svg>
-            <span>צפי יתרה</span>
-            <b id="sumBalance" style="color:var(--balance)">₪0</b>
-        </div>
-    </div>
-
-    <div class="chart-section"><div class="chart-container"><canvas id="budgetChart"></canvas></div></div>
-
-    <div class="form-card" id="formCard">
-        <div class="input-row-top">
-            <select id="type"><option value="income">💰 הכנסה</option><option value="expense">💸 הוצאה</option><option value="fixed">📅 קבוע</option></select>
-            <input type="number" id="amount" placeholder="סכום" inputmode="decimal" step="0.01">
-            <input type="text" id="desc" placeholder="תיאור">
-        </div>
-        <div class="input-row-bottom">
-            <button class="btn-main" id="saveBtn" onclick="addEntry()">שמור</button>
-            <input type="date" id="entryDate">
-        </div>
-        <button class="btn-cancel-edit" onclick="cancelEdit()">ביטול עריכה</button>
     </div>
 
     <div id="list"></div>
 
-    <div class="actions-bottom">
-        <button class="action-btn" onclick="pullFromCloud()">🔄 רענן ענן</button>
-        <button class="action-btn" onclick="syncToCloud()">☁️ סנכרון כפוי</button>
-        <button class="action-btn" onclick="mergeData()">🧬 מיזוג נתונים</button>
-        <button class="action-btn" onclick="exportCSV()">📊 אקסל</button>
-        <button class="action-btn" onclick="exportJSON()">💾 גיבוי</button>
-        <button class="action-btn" style="color:var(--expense)" onclick="clearLocal()">🗑 נקה מקומי</button>
+    <div class="bottom-actions">
+        <div class="act-btn" onclick="importFixedEntries()">📅 טען קבועות</div>
+        <div class="act-btn" onclick="syncToCloud()">☁️ סנכרון</div>
+        <div class="act-btn" onclick="mergeData()">🧬 מיזוג</div>
+        <div class="act-btn" onclick="exportCSV()">📊 אקסל</div>
+        <div class="act-btn" onclick="exportJSON()">💾 גיבוי</div>
+        <div class="act-btn" style="color:var(--expense)" onclick="clearLocal()">🗑 נקה</div>
     </div>
 
-    <footer>כל הזכויות שמורות לאלכסנדר זבודיסקר 2026 ©</footer>
+    <footer>
+        All rights reserved to Alexander Zabodiskar 2026 ©
+    </footer>
 </div>
 
 <script>
-// --- Service Worker ---
-if ('serviceWorker' in navigator) {
-  const swCode = `const cacheName='m-v2.0.8';self.addEventListener('install',e=>e.waitUntil(caches.open(cacheName).then(c=>c.addAll(['/']))));self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request))));`;
-  const blob = new Blob([swCode], {type: 'text/javascript'});
-  navigator.serviceWorker.register(URL.createObjectURL(blob));
-}
-
-// --- Firebase ---
+// --- Firebase Setup ---
 const firebaseConfig = {
     apiKey: "AIzaSyAZ2-EJjvIbDvtKLwKg3LObkIAs8sNhyjU",
     authDomain: "managermoney-49d0e.firebaseapp.com",
@@ -264,120 +237,136 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 let dbRef;
 
-const STORAGE_KEY = 'budget_alex_2026';
+const STORAGE_KEY = 'budget_pro_302';
 let entries = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
 let viewDate = new Date();
-let editId = null, pendingDeleteId = null, myChart = null;
-let currentFilter = 'all'; // 'all' or 'open'
+let currentFilter = 'all', editId = null, privacy = false, pendingDeleteId = null;
 const MONTHS = ['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
 
-function showToast(msg, type='success') {
-    const t = document.getElementById('toast');
-    t.textContent = msg; t.className = 'show toast-' + type;
-    setTimeout(() => t.classList.remove('show'), 3000);
+function showToast(msg, isError = false) { 
+    const t = document.getElementById('toast'); 
+    t.textContent = msg; 
+    t.className = isError ? 'show error' : 'show';
+    setTimeout(()=>t.classList.remove('show'), 3000); 
 }
 
-function openModal(id) { document.getElementById(id).classList.add('open'); }
-function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+function updateCloudStatus(isOnline) {
+    const dot = document.getElementById('cloudDot');
+    const txt = document.getElementById('cloudText');
+    if(isOnline) {
+        dot.classList.add('online');
+        txt.textContent = 'ענן מסונכרן';
+    } else {
+        dot.classList.remove('online');
+        txt.textContent = 'מצב לא מקוון';
+    }
+}
 
-function setFilter(type) {
-    currentFilter = type;
-    document.getElementById('f-all').classList.toggle('active', type === 'all');
-    document.getElementById('f-open').classList.toggle('active', type === 'open');
-    render();
+function openSheet(id = null) {
+    // Reset errors
+    document.querySelectorAll('.error-shake').forEach(el => el.classList.remove('error-shake'));
+    if(id) {
+        const e = entries.find(x => x.id === id);
+        document.getElementById('desc').value = e.desc;
+        document.getElementById('amount').value = e.amount;
+        document.getElementById('type').value = e.type;
+        document.getElementById('date').value = e.date;
+        editId = id; document.getElementById('sheetTitle').textContent = "עריכת פעולה";
+    } else {
+        editId = null;
+        document.getElementById('desc').value = '';
+        document.getElementById('amount').value = '';
+        document.getElementById('date').value = new Date().toISOString().split('T')[0];
+        document.getElementById('sheetTitle').textContent = "פעולה חדשה";
+    }
+    document.getElementById('sheet').classList.add('open');
+    document.getElementById('overlay').classList.add('open');
+}
+
+function closeSheet() { document.getElementById('sheet').classList.remove('open'); document.getElementById('overlay').classList.remove('open'); }
+function togglePrivacy() { privacy = !privacy; document.getElementById('root').classList.toggle('blur-mode', privacy); }
+
+function setFilter(f) { 
+    currentFilter = f; 
+    document.getElementById('f-all').classList.toggle('active', f==='all');
+    document.getElementById('f-open').classList.toggle('active', f==='open');
+    render(); 
 }
 
 function render() {
     const m = viewDate.getMonth(), y = viewDate.getFullYear();
     document.getElementById('monthLabel').textContent = MONTHS[m] + ' ' + y;
     
-    // סינון לפי חודש
     let filtered = entries.filter(e => {
         const d = new Date(e.date);
         return d.getMonth() === m && d.getFullYear() === y;
     });
 
-    // חישובי סיכומים (תמיד על כל החודש, בלי קשר לפילטר התצוגה)
-    let inc = 0, exp = 0, fix = 0, realPaid = 0, realIncome = 0;
+    let inc = 0, exp = 0, realPaid = 0, realInc = 0;
     filtered.forEach(e => {
-        if(e.type === 'income') { inc += e.amount; if(e.done) realIncome += e.amount; }
-        else if(e.type === 'expense') { exp += e.amount; if(e.done) realPaid += e.amount; }
-        else { fix += e.amount; if(e.done) realPaid += e.amount; }
+        if(e.type === 'income') { inc += e.amount; if(e.done) realInc += e.amount; }
+        else { exp += e.amount; if(e.done) realPaid += e.amount; }
     });
 
-    // יישום פילטר תצוגה
-    if(currentFilter === 'open') {
-        filtered = filtered.filter(e => !e.done);
-    }
-
+    if(currentFilter === 'open') filtered = filtered.filter(e => !e.done);
     const listEl = document.getElementById('list');
     listEl.innerHTML = '';
 
     filtered.sort((a,b) => new Date(b.date) - new Date(a.date)).forEach(e => {
-        const isDoneClass = e.done ? 'is-done' : '';
-        const checkActiveClass = e.done ? 'checked' : '';
-        const safeDesc = e.desc.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-
         listEl.innerHTML += `
-            <div class="item ${e.type} ${isDoneClass}">
-                <div class="item-right">
-                    <div class="check-btn ${checkActiveClass}" onclick="toggleDone(${e.id})">✓</div>
-                    <div>
-                        <div style="font-size:0.65rem; color:var(--text-dim)">${new Date(e.date).toLocaleDateString('he-IL')}</div>
-                        <div class="item-desc" style="font-weight:600">${safeDesc}</div>
+            <div class="item ${e.type} ${e.done?'is-done':''}">
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <div class="check ${e.done?'checked':''}" onclick="toggleDone(${e.id})">${e.done?'✓':''}</div>
+                    <div onclick="openSheet(${e.id})" style="cursor:pointer">
+                        <b style="font-size:0.95rem; display:block;">${e.desc}</b>
+                        <span style="font-size:0.65rem; color:var(--text-dim)">${new Date(e.date).toLocaleDateString('he-IL')}</span>
                     </div>
                 </div>
-                <div style="display:flex; align-items:center; gap:4px;">
-                    <b style="color:var(--${e.type}); margin-left:8px;">₪${e.amount.toLocaleString(undefined, {minimumFractionDigits: 0})}</b>
-                    <button class="icon-btn" onclick="editEntry(${e.id})">✎</button>
-                    <button class="icon-btn" onclick="askDelete(${e.id})">🗑</button>
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <b class="item-price" style="color:var(--${e.type})">₪${e.amount.toLocaleString()}</b>
+                    <button class="btn-del" onclick="askDelete(${e.id})">🗑</button>
                 </div>
             </div>`;
     });
 
-    // עדכון כרטיסי סיכום
-    document.getElementById('sumIncome').textContent = '₪' + inc.toLocaleString();
-    document.getElementById('sumExpense').textContent = '₪' + exp.toLocaleString();
-    document.getElementById('sumFixed').textContent = '₪' + fix.toLocaleString();
-    
-    const bal = inc - (exp + fix);
-    const balEl = document.getElementById('sumBalance');
-    balEl.textContent = '₪' + Math.abs(bal).toLocaleString();
-    balEl.style.color = bal >= 0 ? 'var(--balance)' : 'var(--expense)';
-
-    const currentBank = realIncome - realPaid;
-    const bankEl = document.getElementById('bankBalance');
-    bankEl.textContent = (currentBank >= 0 ? '' : '-') + '₪' + Math.abs(currentBank).toLocaleString();
-    bankEl.style.color = currentBank >= 0 ? 'var(--income)' : 'var(--expense)';
-
-    if(myChart) myChart.destroy();
-    const chartWrap = document.querySelector('.chart-container');
-    chartWrap.innerHTML = '<canvas id="budgetChart"></canvas>';
-    myChart = new Chart(document.getElementById('budgetChart'), {
-        type: 'doughnut',
-        data: { datasets: [{ data: (inc||exp||fix) ? [inc, exp, fix] : [1], backgroundColor: ['#22c55e', '#ef4444', '#f59e0b'], borderWidth: 0 }] },
-        options: { cutout: '78%', plugins: { legend: { display: false } } }
-    });
+    document.getElementById('statInc').textContent = '₪' + inc.toLocaleString();
+    document.getElementById('statExp').textContent = '₪' + exp.toLocaleString();
+    const bank = realInc - realPaid;
+    document.getElementById('bankBal').textContent = (bank < 0 ? '-' : '') + '₪' + Math.abs(bank).toLocaleString();
+    document.getElementById('bankBal').style.color = bank >= 0 ? 'var(--income)' : 'var(--expense)';
 }
 
-function addEntry() {
-    if(!dbRef) return;
-    const d = document.getElementById('desc').value, a = parseFloat(document.getElementById('amount').value);
-    const t = document.getElementById('type').value, dt = document.getElementById('entryDate').value;
-    if(!d || isNaN(a) || !dt) { showToast('מלא שדות', 'warn'); return; }
+function saveEntry() {
+    const descEl = document.getElementById('desc'), amtEl = document.getElementById('amount');
+    const d = descEl.value.trim(), a = parseFloat(amtEl.value);
+    const t = document.getElementById('type').value, dt = document.getElementById('date').value;
+
+    let hasError = false;
+    if(!d) { descEl.classList.add('error-shake'); hasError = true; }
+    if(isNaN(a) || a <= 0) { amtEl.classList.add('error-shake'); hasError = true; }
+    if(hasError) { showToast("חובה למלא תיאור וסכום", true); return; }
 
     if(editId) {
         const i = entries.findIndex(e => e.id === editId);
         entries[i] = { ...entries[i], desc: d, amount: a, type: t, date: dt };
-        dbRef.child(editId).set(entries[i]);
-        cancelEdit();
+        if(dbRef) dbRef.child(editId).set(entries[i]);
     } else {
-        const newE = { id: Date.now(), desc: d, amount: a, type: t, date: dt, done: (t === 'income') };
+        const newE = { id: Date.now(), desc: d, amount: a, type: t, date: dt, done: (t==='income') };
         entries.push(newE);
-        dbRef.child(newE.id).set(newE);
+        if(dbRef) dbRef.child(newE.id).set(newE);
     }
     localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
-    render(); showToast('נשמר');
+    render(); closeSheet(); showToast("נשמר בהצלחה ✨");
+}
+
+function askDelete(id) { pendingDeleteId = id; document.getElementById('deleteModal').classList.add('open'); }
+function closeDeleteModal() { document.getElementById('deleteModal').classList.remove('open'); pendingDeleteId = null; }
+function confirmDelete() {
+    if(!pendingDeleteId) return;
+    entries = entries.filter(e => e.id !== pendingDeleteId);
+    if(dbRef) dbRef.child(pendingDeleteId).remove();
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+    render(); closeDeleteModal(); showToast("הפעולה נמחקה");
 }
 
 function toggleDone(id) {
@@ -390,72 +379,32 @@ function toggleDone(id) {
     }
 }
 
-function editEntry(id) {
-    const e = entries.find(x => x.id === id);
-    if(!e) return;
-    document.getElementById('desc').value = e.desc;
-    document.getElementById('amount').value = e.amount;
-    document.getElementById('type').value = e.type;
-    document.getElementById('entryDate').value = e.date;
-    editId = id;
-    document.getElementById('saveBtn').textContent = 'עדכן';
-    document.getElementById('formCard').classList.add('edit-mode');
-    window.scrollTo({top:0, behavior:'smooth'});
-}
-
-function cancelEdit() {
-    editId = null;
-    document.getElementById('desc').value = '';
-    document.getElementById('amount').value = '';
-    document.getElementById('entryDate').value = new Date().toISOString().split('T')[0];
-    document.getElementById('saveBtn').textContent = 'שמור';
-    document.getElementById('formCard').classList.remove('edit-mode');
-}
-
-function askDelete(id) { pendingDeleteId = id; openModal('deleteModal'); }
-function confirmDeleteAction() {
-    if(dbRef) dbRef.child(pendingDeleteId).remove();
-    entries = entries.filter(e => e.id !== pendingDeleteId);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
-    closeModal('deleteModal'); render();
-}
+function changeMonth(n) { viewDate = new Date(viewDate.getFullYear(), viewDate.getMonth() + n, 1); render(); }
 
 function importFixedEntries() {
     const m = viewDate.getMonth(), y = viewDate.getFullYear();
     const allFixed = entries.filter(e => e.type === 'fixed');
-    const existingInMonth = entries.filter(e => {
+    const existing = entries.filter(e => {
         const d = new Date(e.date);
         return d.getMonth() === m && d.getFullYear() === y && e.type === 'fixed';
     }).map(e => e.desc);
     
     let count = 0;
-    const seen = new Set();
     allFixed.forEach(f => {
-        if(!seen.has(f.desc) && !existingInMonth.includes(f.desc)) {
+        if(!existing.includes(f.desc)) {
             const newId = Date.now() + Math.floor(Math.random()*100);
             const newE = { id: newId, desc: f.desc, amount: f.amount, type: 'fixed', date: new Date(y, m, 2).toISOString().split('T')[0], done: false };
             entries.push(newE); if(dbRef) dbRef.child(newId).set(newE);
-            count++; seen.add(f.desc);
+            count++;
         }
     });
-    if(count > 0) { localStorage.setItem(STORAGE_KEY, JSON.stringify(entries)); render(); showToast(`נוספו ${count}`); }
-}
-
-function pullFromCloud(silent=false) {
-    if(!dbRef) return;
-    dbRef.once('value').then(snap => {
-        if(snap.val()) {
-            entries = Object.values(snap.val());
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
-            render(); if(!silent) showToast('עונכרן');
-        }
-    });
+    if(count > 0) { localStorage.setItem(STORAGE_KEY, JSON.stringify(entries)); render(); showToast(`נוספו ${count} קבועות`); }
 }
 
 function syncToCloud() {
     if(!dbRef) return;
     const data = {}; entries.forEach(e => data[e.id] = e);
-    dbRef.set(data).then(() => showToast('ענן עודכן!'));
+    dbRef.set(data).then(() => { showToast("ענן עודכן בהצלחה"); updateCloudStatus(true); });
 }
 
 function mergeData() {
@@ -465,7 +414,7 @@ function mergeData() {
         const localIds = entries.map(e => e.id);
         cloud.forEach(c => { if(!localIds.includes(c.id)) entries.push(c); });
         localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
-        render(); showToast('מוזגו נתונים');
+        render(); showToast("נתונים מוזגו בהצלחה");
     });
 }
 
@@ -473,23 +422,28 @@ function exportCSV() {
     let csv = '\uFEFFתאריך,תיאור,סוג,סכום,שולם\n';
     entries.forEach(e => csv += `${e.date},${e.desc},${e.type},${e.amount},${e.done?'V':''}\n`);
     const blob = new Blob([csv], {type: 'text/csv;charset=utf-8'});
-    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'report.csv'; a.click();
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'money_report.csv'; a.click();
 }
 
 function exportJSON() {
     const blob = new Blob([JSON.stringify(entries)], {type:'application/json'});
-    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'backup.json'; a.click();
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'money_backup.json'; a.click();
 }
 
-function clearLocal() { if(confirm('לנקות מקומי?')) { entries = []; localStorage.removeItem(STORAGE_KEY); render(); } }
-function changeMonth(n) { viewDate = new Date(viewDate.getFullYear(), viewDate.getMonth() + n, 1); render(); }
+function clearLocal() { if(confirm('לנקות את כל הנתונים המקומיים?')) { entries = []; localStorage.removeItem(STORAGE_KEY); render(); } }
 
 firebase.auth().signInAnonymously().then(cred => {
     dbRef = firebase.database().ref(`users/${cred.user.uid}/entries`);
-    pullFromCloud(true);
-});
+    updateCloudStatus(true);
+    dbRef.once('value').then(snap => {
+        if(snap.val()) {
+            entries = Object.values(snap.val());
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+            render();
+        }
+    });
+}).catch(() => updateCloudStatus(false));
 
-document.getElementById('entryDate').value = new Date().toISOString().split('T')[0];
 render();
 </script>
 </body>
