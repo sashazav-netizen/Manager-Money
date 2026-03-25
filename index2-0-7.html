@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Manager-Money 2026</title>
+
+    <meta name="theme-color" content="#070b14">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="https://i.postimg.cc/bNdQwqGt/icon.png">
+    <link rel="manifest" href='data:application/manifest+json,{"name":"Manager Money 2026","short_name":"Money2026","start_url":".","display":"standalone","background_color":"#070b14","theme_color":"#38bdf8","icons":[{"src":"https://i.postimg.cc/bNdQwqGt/icon.png","sizes":"512x512","type":"image/png"}]}'>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&display=swap" rel="stylesheet">
+    
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+
+    <style>
+        :root {
+            --bg: #070b14;
+            --glass: rgba(30, 41, 59, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.12);
+            --text: #f1f5f9;
+            --text-dim: #94a3b8;
+            --income: #22c55e;
+            --expense: #ef4444;
+            --fixed: #f59e0b;
+            --balance: #38bdf8;
+            --accent: #38bdf8;
+            --cloud: #10b981;
+        }
+
+        html, body { max-width: 100%; overflow-x: hidden; margin: 0; padding: 0; background: var(--bg); min-height: 100vh; }
+        * { box-sizing: border-box; font-family: 'Heebo', sans-serif; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            background: radial-gradient(circle at top right, #1e293b, #070b14);
+            background-attachment: fixed;
+            color: var(--text); padding: 15px; direction: rtl;
+        }
+
+        .container { max-width: 600px; margin: 0 auto; padding-bottom: 40px; }
+
+        header { display: flex; align-items: center; justify-content: space-between; margin: 20px 0; padding: 0 10px; }
+        .header-right { display: flex; flex-direction: column; }
+        .logo-container {
+            width: 48px; height: 48px; display: flex; align-items: center; justify-content: center;
+            background: rgba(56,189,248,0.05); border-radius: 12px;
+            box-shadow: 0 0 16px rgba(56,189,248,0.3); border: 1px solid var(--glass-border);
+        }
+        .shield-base { fill: rgba(56,189,248,0.1); stroke: var(--accent); stroke-width: 1.5; animation: shieldPulse 3s infinite ease-in-out; transform-origin: center; }
+        .data-bar { fill: var(--income); animation: barFlow 2s infinite ease-in-out; transform-origin: center bottom; }
+        @keyframes shieldPulse { 0%,100% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.05); opacity: 1; } }
+        @keyframes barFlow { 0%,100% { transform: scaleY(0.7); opacity: 0.5; } 50% { transform: scaleY(1); opacity: 1; } }
+
+        h1 { font-size: 1.6rem; font-weight: 900; margin: 0; letter-spacing: -1px; line-height: 1; }
+        h1 span { color: var(--accent); }
+
+        .status-bar { display: flex; align-items: center; gap: 8px; margin-top: 5px; }
+        .version-badge { background: rgba(56,189,248,0.15); border: 1px solid rgba(56,189,248,0.3); color: var(--accent); font-size: 0.65rem; font-weight: 700; padding: 1px 8px; border-radius: 20px; }
+        .cloud-badge { display: flex; align-items: center; gap: 4px; color: var(--cloud); font-size: 0.7rem; font-weight: 700; }
+
+        .bank-summary { background: linear-gradient(135deg, rgba(56,189,248,0.1), rgba(16,185,129,0.05)); border: 1px solid var(--accent); border-radius: 15px; padding: 12px; margin-bottom: 15px; text-align: center; }
+        .bank-summary span { font-size: 0.8rem; color: var(--text-dim); }
+        .bank-summary b { font-size: 1.4rem; display: block; color: var(--text); font-weight: 900; }
+
+        .summary-mini { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 12px; }
+        .mini-card { background: var(--glass); backdrop-filter: blur(12px); padding: 10px 2px; border-radius: 12px; text-align: center; border: 1px solid var(--glass-border); display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 95px; }
+        .mini-card svg { margin-bottom: 6px; }
+        .mini-card span { display: block; font-size: 0.65rem; color: var(--text-dim); margin-bottom: 2px; }
+        .mini-card b { font-size: 0.8rem; white-space: nowrap; font-weight: 900; }
+
+        .month-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; background: var(--glass); padding: 8px 15px; border-radius: 50px; border: 1px solid var(--glass-border); }
+        .nav-btn { background: var(--accent); color: var(--bg); border: none; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .nav-btn:active { transform: scale(0.9); opacity: 0.8; }
+        .load-fixed-btn { background: rgba(245,158,11,0.15); color: var(--fixed); border: 1px solid var(--fixed); padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; cursor: pointer; font-weight: 700; margin-top: 2px; }
+
+        .chart-section { background: var(--glass); padding: 12px; border-radius: 18px; margin-bottom: 20px; border: 1px solid var(--glass-border); display: flex; flex-direction: column; align-items: center; }
+        .chart-container { height: 120px; width: 120px; position: relative; flex-shrink: 0; }
+
+        .form-card { background: var(--glass); padding: 16px; border-radius: 20px; margin-bottom: 20px; border: 1px solid var(--glass-border); transition: 0.3s; }
+        .form-card.edit-mode { border-color: var(--fixed); background: rgba(245,158,11,0.08); }
+        .input-row-top { display: grid; grid-template-columns: 1.2fr 1fr 1.2fr; gap: 10px; margin-bottom: 10px; }
+        .input-row-bottom { display: grid; grid-template-columns: 1fr 2fr; gap: 10px; }
+        
+        input, select, .btn-main { 
+            height: 55px; border-radius: 14px; border: 1px solid var(--glass-border); 
+            background: rgba(15,23,42,0.8); color: white; outline: none; 
+            text-align: center; width: 100%; font-size: 16px;
+        }
+        
+        .btn-main { background: var(--accent); color: var(--bg); font-weight: 900; cursor: pointer; border: none; font-size: 1.1rem; transition: 0.2s; }
+        .btn-main:active { transform: scale(0.98); opacity: 0.9; }
+        .btn-main.editing { background: var(--fixed); }
+        .btn-cancel-edit { background: rgba(239, 68, 68, 0.15); color: var(--expense); border: 1px solid var(--expense); margin-top: 10px; height: 40px; border-radius: 10px; cursor: pointer; width: 100%; font-weight: 700; display: none; }
+        .edit-mode .btn-cancel-edit { display: block; }
+
+        .item { background: var(--glass); margin-bottom: 8px; display: flex; justify-content: space-between; padding: 12px; border-radius: 12px; border: 1px solid var(--glass-border); align-items: center; transition: 0.3s; border-right-width: 4px; border-right-style: solid; }
+        .item.is-done { opacity: 0.45; filter: grayscale(0.6); background: rgba(15, 23, 42, 0.4); border-right-style: dotted; }
+        .item.is-done b, .item.is-done .item-desc { text-decoration: line-through; }
+        
+        .item.income { border-right-color: var(--income); }
+        .item.expense { border-right-color: var(--expense); }
+        .item.fixed { border-right-color: var(--fixed); }
+        
+        .item-right { display: flex; align-items: center; gap: 10px; overflow: hidden; }
+        .check-btn { width: 30px; height: 30px; border-radius: 8px; border: 1.5px solid var(--glass-border); background: rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; cursor: pointer; color: transparent; transition: 0.3s; flex-shrink: 0; font-weight: bold; }
+        .check-btn.checked { background: var(--cloud); border-color: var(--cloud); color: white; box-shadow: 0 0 8px rgba(16, 185, 129, 0.4); }
+        
+        .icon-btn { background: none; border: none; cursor: pointer; font-size: 1.1rem; padding: 8px; color: var(--text-dim); transition: all 0.2s ease; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+        .icon-btn:active { transform: scale(0.8); background: rgba(255,255,255,0.05); color: var(--text); }
+
+        .actions-bottom { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 15px; }
+        .action-btn { background: var(--glass); border: 1px solid var(--glass-border); color: var(--text-dim); padding: 12px 4px; border-radius: 8px; cursor: pointer; font-size: 0.7rem; font-weight: 600; transition: 0.2s; }
+        .action-btn:active { transform: scale(0.95); background: rgba(255,255,255,0.05); }
+
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 9999; backdrop-filter: blur(5px); }
+        .modal-overlay.open { display: flex; }
+        .modal { background: #1e293b; padding: 20px; border-radius: 20px; width: 85%; max-width: 300px; text-align: center; border: 1px solid var(--glass-border); }
+        #toast { position: fixed; top: -100px; left: 50%; transform: translateX(-50%); padding: 12px 24px; border-radius: 12px; z-index: 10000; transition: 0.4s; font-weight: 700; color: white; }
+        #toast.show { top: 25px; opacity: 1; }
+        .toast-success { background: var(--income); }
+        .toast-warn { background: var(--expense); }
+
+        footer { text-align: center; padding: 20px; color: var(--text-dim); font-size: 0.65rem; }
+    </style>
+</head>
+<body>
+
+<div id="toast"></div>
+
+<div class="modal-overlay" id="deleteModal">
+    <div class="modal">
+        <h3 style="margin-top:0;">למחוק פעולה זו?</h3>
+        <div style="display:flex; gap:10px; margin-top:15px;">
+            <button style="flex:1; padding:10px; border-radius:8px; background:var(--expense); color:white; border:none; font-weight:700;" onclick="confirmDeleteAction()">מחק</button>
+            <button style="flex:1; padding:10px; border-radius:8px; background:rgba(255,255,255,0.1); color:var(--text); border:none;" onclick="closeModal('deleteModal')">ביטול</button>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <header>
+        <div class="header-right">
+            <h1>Manager<span>Money</span></h1>
+            <div class="status-bar">
+                <span class="version-badge">v2.0.7</span>
+                <div class="cloud-badge">● ענן פעיל</div>
+            </div>
+        </div>
+        <div class="logo-container">
+            <svg viewBox="0 0 24 24" width="32" height="32">
+                <path class="shield-base" d="M12 2L4 5v6.09c0 5.05 3.41 9.76 8 10.91 4.59-1.15 8-5.86 8-10.91V5l-8-3z"/>
+                <rect class="data-bar" x="7" y="14" width="2.5" height="4" rx="1"/>
+                <rect class="data-bar" x="10.75" y="11" width="2.5" height="7" rx="1" style="animation-delay:0.2s"/>
+                <rect class="data-bar" x="14.5" y="8" width="2.5" height="10" rx="1" style="animation-delay:0.4s"/>
+            </svg>
+        </div>
+    </header>
+
+    <div class="bank-summary">
+        <span>יתרה נוכחית בעו"ש (רק מה ששולם)</span>
+        <b id="bankBalance">₪0</b>
+    </div>
+
+    <div class="month-nav">
+        <button class="nav-btn" onclick="changeMonth(-1)">&#9664;</button>
+        <div style="text-align:center;">
+            <h3 id="monthLabel" style="margin:0; font-size:1.1rem;"></h3>
+            <button class="load-fixed-btn" onclick="importFixedEntries()">📅 טען קבועות</button>
+        </div>
+        <button class="nav-btn" onclick="changeMonth(1)">&#9654;</button>
+    </div>
+
+    <div class="summary-mini">
+        <div class="mini-card">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--income)" stroke-width="2"><path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h12v4M4 6v12c0 1.1.9 2 2 2h14v-4M18 12a2 2 0 0 0-2 2c0 1.1.9 2 2 2h4v-4h-4zM12 11v6m-3-3l3-3 3 3"></path></svg>
+            <span>הכנסות</span>
+            <b id="sumIncome" style="color:var(--income)">₪0</b>
+        </div>
+        <div class="mini-card">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--expense)" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line><path d="M12 17v-6m-3 3l3 3 3-3"></path></svg>
+            <span>הוצאות</span>
+            <b id="sumExpense" style="color:var(--expense)">₪0</b>
+        </div>
+        <div class="mini-card">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--fixed)" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01"></path></svg>
+            <span>קבועות</span>
+            <b id="sumFixed" style="color:var(--fixed)">₪0</b>
+        </div>
+        <div class="mini-card">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--balance)" stroke-width="2"><circle cx="12" cy="12" r="8"></circle><path d="M12 7v10M9 12h6M15 9l2-2m-8 8l-2 2"></path></svg>
+            <span>צפי יתרה</span>
+            <b id="sumBalance" style="color:var(--balance)">₪0</b>
+        </div>
+    </div>
+
+    <div class="chart-section"><div class="chart-container"><canvas id="budgetChart"></canvas></div></div>
+
+    <div class="form-card" id="formCard">
+        <div class="input-row-top">
+            <select id="type"><option value="income">💰 הכנסה</option><option value="expense">💸 הוצאה</option><option value="fixed">📅 קבוע</option></select>
+            <input type="number" id="amount" placeholder="סכום" inputmode="decimal" step="0.01">
+            <input type="text" id="desc" placeholder="תיאור">
+        </div>
+        <div class="input-row-bottom">
+            <button class="btn-main" id="saveBtn" onclick="addEntry()">שמור</button>
+            <input type="date" id="entryDate">
+        </div>
+        <button class="btn-cancel-edit" onclick="cancelEdit()">ביטול עריכה</button>
+    </div>
+
+    <div id="list"></div>
+
+    <div class="actions-bottom">
+        <button class="action-btn" onclick="pullFromCloud()">🔄 רענן ענן</button>
+        <button class="action-btn" onclick="syncToCloud()">☁️ סנכרון כפוי</button>
+        <button class="action-btn" onclick="mergeData()">🧬 מיזוג נתונים</button>
+        <button class="action-btn" onclick="exportCSV()">📊 אקסל</button>
+        <button class="action-btn" onclick="exportJSON()">💾 גיבוי</button>
+        <button class="action-btn" style="color:var(--expense)" onclick="clearLocal()">🗑 נקה מקומי</button>
+    </div>
+
+    <footer>כל הזכויות שמורות לאלכסנדר זבודיסקר 2026 ©</footer>
+</div>
+
+<script>
+// --- Service Worker ---
+if ('serviceWorker' in navigator) {
+  const swCode = `const cacheName='m-v2.0.7';self.addEventListener('install',e=>e.waitUntil(caches.open(cacheName).then(c=>c.addAll(['/']))));self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request))));`;
+  const blob = new Blob([swCode], {type: 'text/javascript'});
+  navigator.serviceWorker.register(URL.createObjectURL(blob));
+}
+
+// --- Firebase Configuration ---
+const firebaseConfig = {
+    apiKey: "AIzaSyAZ2-EJjvIbDvtKLwKg3LObkIAs8sNhyjU",
+    authDomain: "managermoney-49d0e.firebaseapp.com",
+    projectId: "managermoney-49d0e",
+    databaseURL: "https://managermoney-49d0e-default-rtdb.europe-west1.firebasedatabase.app",
+    storageBucket: "managermoney-49d0e.firebasestorage.app",
+    messagingSenderId: "289678997235",
+    appId: "1:289678997235:web:0a58a5a7a36d38e1152986"
+};
+firebase.initializeApp(firebaseConfig);
+
+// ✅ שינוי שלב 3 — dbRef מוגדר כריק, ימולא אחרי ההתחברות
+let dbRef;
+
+const STORAGE_KEY = 'budget_alex_2026';
+let entries = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+let viewDate = new Date();
+let editId = null, pendingDeleteId = null, myChart = null;
+const MONTHS = ['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
+
+function showToast(msg, type='success') {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.className = 'show toast-' + type;
+    setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+function render() {
+    const m = viewDate.getMonth(), y = viewDate.getFullYear();
+    document.getElementById('monthLabel').textContent = MONTHS[m] + ' ' + y;
+    const currentEntries = entries.filter(e => {
+        const d = new Date(e.date);
+        return d.getMonth() === m && d.getFullYear() === y;
+    });
+
+    let inc = 0, exp = 0, fix = 0, realPaid = 0, realIncome = 0;
+    const listEl = document.getElementById('list');
+    listEl.innerHTML = '';
+
+    currentEntries.sort((a,b) => new Date(b.date) - new Date(a.date)).forEach(e => {
+        if(e.type === 'income') {
+            inc += e.amount;
+            if(e.done) realIncome += e.amount;
+        } else if(e.type === 'expense') {
+            exp += e.amount;
+            if(e.done) realPaid += e.amount;
+        } else {
+            fix += e.amount;
+            if(e.done) realPaid += e.amount;
+        }
+
+        const isDoneClass = e.done ? 'is-done' : '';
+        const checkActiveClass = e.done ? 'checked' : '';
+
+        // ✅ תיאור מאובטח מפני XSS
+        const safeDesc = e.desc.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+        listEl.innerHTML += `
+            <div class="item ${e.type} ${isDoneClass}">
+                <div class="item-right">
+                    <div class="check-btn ${checkActiveClass}" onclick="toggleDone(${e.id})">✓</div>
+                    <div>
+                        <div style="font-size:0.65rem; color:var(--text-dim)">${new Date(e.date).toLocaleDateString('he-IL')}</div>
+                        <div class="item-desc" style="font-weight:600">${safeDesc}</div>
+                    </div>
+                </div>
+                <div style="display:flex; align-items:center; gap:4px;">
+                    <b style="color:var(--${e.type}); margin-left:8px;">₪${e.amount.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 2})}</b>
+                    <button class="icon-btn" onclick="editEntry(${e.id})">✎</button>
+                    <button class="icon-btn" onclick="askDelete(${e.id})">🗑</button>
+                </div>
+            </div>`;
+    });
+
+    document.getElementById('sumIncome').textContent = '₪' + inc.toLocaleString(undefined, {maximumFractionDigits: 0});
+    document.getElementById('sumExpense').textContent = '₪' + exp.toLocaleString(undefined, {maximumFractionDigits: 0});
+    document.getElementById('sumFixed').textContent = '₪' + fix.toLocaleString(undefined, {maximumFractionDigits: 0});
+    
+    const bal = inc - (exp + fix);
+    const balEl = document.getElementById('sumBalance');
+    balEl.textContent = '₪' + Math.abs(bal).toLocaleString(undefined, {maximumFractionDigits: 0});
+    balEl.style.color = bal >= 0 ? 'var(--balance)' : 'var(--expense)';
+
+    const currentBank = realIncome - realPaid;
+    const bankEl = document.getElementById('bankBalance');
+    bankEl.textContent = (currentBank >= 0 ? '' : '-') + '₪' + Math.abs(currentBank).toLocaleString(undefined, {maximumFractionDigits: 0});
+    bankEl.style.color = currentBank >= 0 ? 'var(--income)' : 'var(--expense)';
+
+    if(myChart) myChart.destroy();
+    // ✅ תיקון גרף קטן — מחליפים canvas חדש בכל render
+    const chartWrap = document.querySelector('.chart-container');
+    chartWrap.innerHTML = '<canvas id="budgetChart"></canvas>';
+    myChart = new Chart(document.getElementById('budgetChart'), {
+        type: 'doughnut',
+        data: { datasets: [{ data: (inc||exp||fix) ? [inc, exp, fix] : [1], backgroundColor: ['#22c55e', '#ef4444', '#f59e0b'], borderWidth: 0 }] },
+        options: { responsive: true, maintainAspectRatio: true, cutout: '78%', plugins: { legend: { display: false } } }
+    });
+}
+
+function addEntry() {
+    if(!dbRef) { showToast('מתחבר לענן, נסה שוב', 'warn'); return; }
+    const d = document.getElementById('desc').value, a = parseFloat(document.getElementById('amount').value);
+    const t = document.getElementById('type').value, dt = document.getElementById('entryDate').value;
+    if(!d || isNaN(a) || !dt) { showToast('מלא את כל השדות', 'warn'); return; }
+
+    if(editId) {
+        const i = entries.findIndex(e => e.id === editId);
+        entries[i] = { ...entries[i], desc: d, amount: a, type: t, date: dt };
+        dbRef.child(editId).set(entries[i]);
+        cancelEdit();
+    } else {
+        const newE = { id: Date.now(), desc: d, amount: a, type: t, date: dt, done: (t === 'income' ? true : false) };
+        entries.push(newE);
+        dbRef.child(newE.id).set(newE);
+    }
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+    render(); showToast('נשמר בהצלחה');
+}
+
+function toggleDone(id) {
+    const i = entries.findIndex(e => e.id === id);
+    if(i > -1) {
+        entries[i].done = !entries[i].done;
+        if(dbRef) dbRef.child(id).update({ done: entries[i].done });
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+        render();
+    }
+}
+
+function editEntry(id) {
+    const e = entries.find(x => x.id === id);
+    if(!e) return;
+    document.getElementById('desc').value = e.desc;
+    document.getElementById('amount').value = e.amount;
+    document.getElementById('type').value = e.type;
+    document.getElementById('entryDate').value = e.date;
+    editId = id;
+    document.getElementById('saveBtn').textContent = 'עדכן';
+    document.getElementById('saveBtn').classList.add('editing');
+    document.getElementById('formCard').classList.add('edit-mode');
+    window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+function cancelEdit() {
+    editId = null;
+    document.getElementById('desc').value = '';
+    document.getElementById('amount').value = '';
+    document.getElementById('entryDate').value = new Date().toISOString().split('T')[0];
+    document.getElementById('saveBtn').textContent = 'שמור';
+    document.getElementById('saveBtn').classList.remove('editing');
+    document.getElementById('formCard').classList.remove('edit-mode');
+}
+
+function askDelete(id) { pendingDeleteId = id; openModal('deleteModal'); }
+function confirmDeleteAction() {
+    if(dbRef) dbRef.child(pendingDeleteId).remove();
+    entries = entries.filter(e => e.id !== pendingDeleteId);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+    closeModal('deleteModal'); render(); showToast('נמחק', 'warn');
+}
+
+function importFixedEntries() {
+    if(!dbRef) { showToast('מתחבר לענן, נסה שוב', 'warn'); return; }
+    const m = viewDate.getMonth(), y = viewDate.getFullYear();
+    const allFixed = entries.filter(e => e.type === 'fixed');
+
+    // ✅ תיקון — בודק רק קבועות קיימות בחודש, לא כל הסוגים
+    const existingInMonth = entries.filter(e => {
+        const d = new Date(e.date);
+        return d.getMonth() === m && d.getFullYear() === y && e.type === 'fixed';
+    }).map(e => e.desc);
+    
+    let count = 0;
+    const seen = new Set();
+    allFixed.forEach(f => {
+        if(!seen.has(f.desc) && !existingInMonth.includes(f.desc)) {
+            const newId = Date.now() + Math.floor(Math.random()*1000);
+            const newE = { id: newId, desc: f.desc, amount: f.amount, type: 'fixed', date: new Date(y, m, 2).toISOString().split('T')[0], done: false };
+            entries.push(newE); dbRef.child(newId).set(newE); count++;
+            seen.add(f.desc);
+        }
+    });
+    if(count > 0) { localStorage.setItem(STORAGE_KEY, JSON.stringify(entries)); render(); showToast(`נוספו ${count} קבועות`); }
+    else { showToast('אין קבועות חדשות להוסיף'); }
+}
+
+function pullFromCloud(silent=false) {
+    if(!dbRef) return;
+    dbRef.once('value').then(snap => {
+        if(snap.val()) {
+            entries = Object.values(snap.val());
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+            render(); if(!silent) showToast('סונכרן מהענן');
+        }
+    });
+}
+
+function syncToCloud() {
+    if(!dbRef) {
+        // ✅ אם dbRef עדיין לא מוכן — מחכים להתחברות ואז מסנכרנים
+        showToast('מתחבר...', 'warn');
+        firebase.auth().onAuthStateChanged(user => {
+            if(user) {
+                dbRef = firebase.database().ref(`users/${user.uid}/entries`);
+                const data = {}; entries.forEach(e => data[e.id] = e);
+                dbRef.set(data).then(() => showToast('ענן עודכן!'));
+            }
+        });
+        return;
+    }
+    const data = {}; entries.forEach(e => data[e.id] = e);
+    dbRef.set(data).then(() => showToast('ענן עודכן!'));
+}
+
+function mergeData() {
+    if(!dbRef) { showToast('מתחבר לענן, נסה שוב', 'warn'); return; }
+    dbRef.once('value').then(snap => {
+        const cloud = snap.val() ? Object.values(snap.val()) : [];
+        const localIds = entries.map(e => e.id);
+        let added = 0;
+        cloud.forEach(c => { if(!localIds.includes(c.id)) { entries.push(c); added++; } });
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+        render(); showToast(`מוזגו ${added} פעולות`);
+    });
+}
+
+function exportCSV() {
+    let csv = '\uFEFFתאריך,תיאור,סוג,סכום,שולם\n';
+    entries.forEach(e => csv += `${e.date},${e.desc},${e.type},${e.amount},${e.done?'V':''}\n`);
+    const blob = new Blob([csv], {type: 'text/csv;charset=utf-8'});
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'report.csv'; a.click();
+}
+
+function exportJSON() {
+    const blob = new Blob([JSON.stringify(entries)], {type:'application/json'});
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'backup.json'; a.click();
+}
+
+function clearLocal() { if(confirm('לנקות רק את המכשיר?')) { entries = []; localStorage.removeItem(STORAGE_KEY); render(); showToast('המכשיר נוקה', 'warn'); } }
+
+// ✅ תיקון changeMonth — לא משנה יום בחודש
+function changeMonth(n) {
+    viewDate = new Date(viewDate.getFullYear(), viewDate.getMonth() + n, 1);
+    render();
+}
+
+// ✅ שלב 3 — dbRef מוגדר רק אחרי קבלת ה-UID מ-Firebase
+firebase.auth().signInAnonymously().then((userCredential) => {
+    const uid = userCredential.user.uid;
+    dbRef = firebase.database().ref(`users/${uid}/entries`);
+    pullFromCloud(true);
+});
+
+document.getElementById('entryDate').value = new Date().toISOString().split('T')[0];
+render();
+</script>
+</body>
+</html>
