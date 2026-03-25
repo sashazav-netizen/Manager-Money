@@ -63,7 +63,6 @@
         .version-badge { background: rgba(56,189,248,0.15); border: 1px solid rgba(56,189,248,0.3); color: var(--accent); font-size: 0.65rem; font-weight: 700; padding: 1px 8px; border-radius: 20px; }
         .cloud-badge { display: flex; align-items: center; gap: 4px; color: var(--cloud); font-size: 0.7rem; font-weight: 700; }
 
-        /* Real Bank Balance Display */
         .bank-summary { background: linear-gradient(135deg, rgba(56,189,248,0.1), rgba(16,185,129,0.05)); border: 1px solid var(--accent); border-radius: 15px; padding: 12px; margin-bottom: 15px; text-align: center; }
         .bank-summary span { font-size: 0.8rem; color: var(--text-dim); }
         .bank-summary b { font-size: 1.4rem; display: block; color: var(--text); font-weight: 900; }
@@ -80,7 +79,7 @@
         .load-fixed-btn { background: rgba(245,158,11,0.15); color: var(--fixed); border: 1px solid var(--fixed); padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; cursor: pointer; font-weight: 700; margin-top: 2px; }
 
         .chart-section { background: var(--glass); padding: 12px; border-radius: 18px; margin-bottom: 20px; border: 1px solid var(--glass-border); display: flex; flex-direction: column; align-items: center; }
-        .chart-container { height: 100px; width: 100px; position: relative; }
+        .chart-container { height: 120px; width: 120px; position: relative; flex-shrink: 0; }
 
         .form-card { background: var(--glass); padding: 16px; border-radius: 20px; margin-bottom: 20px; border: 1px solid var(--glass-border); transition: 0.3s; }
         .form-card.edit-mode { border-color: var(--fixed); background: rgba(245,158,11,0.08); }
@@ -247,7 +246,9 @@ const firebaseConfig = {
     appId: "1:289678997235:web:0a58a5a7a36d38e1152986"
 };
 firebase.initializeApp(firebaseConfig);
-const dbRef = firebase.database().ref('users/alex/entries');
+
+// ✅ שינוי שלב 3 — dbRef מוגדר כריק, ימולא אחרי ההתחברות
+let dbRef;
 
 const STORAGE_KEY = 'budget_alex_2026';
 let entries = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
@@ -277,7 +278,6 @@ function render() {
     listEl.innerHTML = '';
 
     currentEntries.sort((a,b) => new Date(b.date) - new Date(a.date)).forEach(e => {
-        // Total stats
         if(e.type === 'income') {
             inc += e.amount;
             if(e.done) realIncome += e.amount;
@@ -292,13 +292,16 @@ function render() {
         const isDoneClass = e.done ? 'is-done' : '';
         const checkActiveClass = e.done ? 'checked' : '';
 
+        // ✅ תיאור מאובטח מפני XSS
+        const safeDesc = e.desc.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
         listEl.innerHTML += `
             <div class="item ${e.type} ${isDoneClass}">
                 <div class="item-right">
                     <div class="check-btn ${checkActiveClass}" onclick="toggleDone(${e.id})">✓</div>
                     <div>
                         <div style="font-size:0.65rem; color:var(--text-dim)">${new Date(e.date).toLocaleDateString('he-IL')}</div>
-                        <div class="item-desc" style="font-weight:600">${e.desc}</div>
+                        <div class="item-desc" style="font-weight:600">${safeDesc}</div>
                     </div>
                 </div>
                 <div style="display:flex; align-items:center; gap:4px;">
@@ -309,32 +312,33 @@ function render() {
             </div>`;
     });
 
-    // Summary Card Stats
     document.getElementById('sumIncome').textContent = '₪' + inc.toLocaleString(undefined, {maximumFractionDigits: 0});
     document.getElementById('sumExpense').textContent = '₪' + exp.toLocaleString(undefined, {maximumFractionDigits: 0});
     document.getElementById('sumFixed').textContent = '₪' + fix.toLocaleString(undefined, {maximumFractionDigits: 0});
     
-    // Prediction Balance (Total Expected)
     const bal = inc - (exp + fix);
     const balEl = document.getElementById('sumBalance');
     balEl.textContent = '₪' + Math.abs(bal).toLocaleString(undefined, {maximumFractionDigits: 0});
     balEl.style.color = bal >= 0 ? 'var(--balance)' : 'var(--expense)';
 
-    // REAL BANK BALANCE (Actual paid)
     const currentBank = realIncome - realPaid;
     const bankEl = document.getElementById('bankBalance');
     bankEl.textContent = (currentBank >= 0 ? '' : '-') + '₪' + Math.abs(currentBank).toLocaleString(undefined, {maximumFractionDigits: 0});
     bankEl.style.color = currentBank >= 0 ? 'var(--income)' : 'var(--expense)';
 
     if(myChart) myChart.destroy();
+    // ✅ תיקון גרף קטן — מחליפים canvas חדש בכל render
+    const chartWrap = document.querySelector('.chart-container');
+    chartWrap.innerHTML = '<canvas id="budgetChart"></canvas>';
     myChart = new Chart(document.getElementById('budgetChart'), {
         type: 'doughnut',
         data: { datasets: [{ data: (inc||exp||fix) ? [inc, exp, fix] : [1], backgroundColor: ['#22c55e', '#ef4444', '#f59e0b'], borderWidth: 0 }] },
-        options: { cutout: '78%', plugins: { legend: { display: false } } }
+        options: { responsive: true, maintainAspectRatio: true, cutout: '78%', plugins: { legend: { display: false } } }
     });
 }
 
 function addEntry() {
+    if(!dbRef) { showToast('מתחבר לענן, נסה שוב', 'warn'); return; }
     const d = document.getElementById('desc').value, a = parseFloat(document.getElementById('amount').value);
     const t = document.getElementById('type').value, dt = document.getElementById('entryDate').value;
     if(!d || isNaN(a) || !dt) { showToast('מלא את כל השדות', 'warn'); return; }
@@ -357,7 +361,7 @@ function toggleDone(id) {
     const i = entries.findIndex(e => e.id === id);
     if(i > -1) {
         entries[i].done = !entries[i].done;
-        dbRef.child(id).update({ done: entries[i].done });
+        if(dbRef) dbRef.child(id).update({ done: entries[i].done });
         localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
         render();
     }
@@ -389,18 +393,21 @@ function cancelEdit() {
 
 function askDelete(id) { pendingDeleteId = id; openModal('deleteModal'); }
 function confirmDeleteAction() {
-    dbRef.child(pendingDeleteId).remove();
+    if(dbRef) dbRef.child(pendingDeleteId).remove();
     entries = entries.filter(e => e.id !== pendingDeleteId);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
     closeModal('deleteModal'); render(); showToast('נמחק', 'warn');
 }
 
 function importFixedEntries() {
+    if(!dbRef) { showToast('מתחבר לענן, נסה שוב', 'warn'); return; }
     const m = viewDate.getMonth(), y = viewDate.getFullYear();
     const allFixed = entries.filter(e => e.type === 'fixed');
+
+    // ✅ תיקון — בודק רק קבועות קיימות בחודש, לא כל הסוגים
     const existingInMonth = entries.filter(e => {
         const d = new Date(e.date);
-        return d.getMonth() === m && d.getFullYear() === y;
+        return d.getMonth() === m && d.getFullYear() === y && e.type === 'fixed';
     }).map(e => e.desc);
     
     let count = 0;
@@ -414,9 +421,11 @@ function importFixedEntries() {
         }
     });
     if(count > 0) { localStorage.setItem(STORAGE_KEY, JSON.stringify(entries)); render(); showToast(`נוספו ${count} קבועות`); }
+    else { showToast('אין קבועות חדשות להוסיף'); }
 }
 
 function pullFromCloud(silent=false) {
+    if(!dbRef) return;
     dbRef.once('value').then(snap => {
         if(snap.val()) {
             entries = Object.values(snap.val());
@@ -427,11 +436,24 @@ function pullFromCloud(silent=false) {
 }
 
 function syncToCloud() {
+    if(!dbRef) {
+        // ✅ אם dbRef עדיין לא מוכן — מחכים להתחברות ואז מסנכרנים
+        showToast('מתחבר...', 'warn');
+        firebase.auth().onAuthStateChanged(user => {
+            if(user) {
+                dbRef = firebase.database().ref(`users/${user.uid}/entries`);
+                const data = {}; entries.forEach(e => data[e.id] = e);
+                dbRef.set(data).then(() => showToast('ענן עודכן!'));
+            }
+        });
+        return;
+    }
     const data = {}; entries.forEach(e => data[e.id] = e);
     dbRef.set(data).then(() => showToast('ענן עודכן!'));
 }
 
 function mergeData() {
+    if(!dbRef) { showToast('מתחבר לענן, נסה שוב', 'warn'); return; }
     dbRef.once('value').then(snap => {
         const cloud = snap.val() ? Object.values(snap.val()) : [];
         const localIds = entries.map(e => e.id);
@@ -455,9 +477,20 @@ function exportJSON() {
 }
 
 function clearLocal() { if(confirm('לנקות רק את המכשיר?')) { entries = []; localStorage.removeItem(STORAGE_KEY); render(); showToast('המכשיר נוקה', 'warn'); } }
-function changeMonth(n) { viewDate.setMonth(viewDate.getMonth() + n); render(); }
 
-firebase.auth().signInAnonymously().then(() => pullFromCloud(true));
+// ✅ תיקון changeMonth — לא משנה יום בחודש
+function changeMonth(n) {
+    viewDate = new Date(viewDate.getFullYear(), viewDate.getMonth() + n, 1);
+    render();
+}
+
+// ✅ שלב 3 — dbRef מוגדר רק אחרי קבלת ה-UID מ-Firebase
+firebase.auth().signInAnonymously().then((userCredential) => {
+    const uid = userCredential.user.uid;
+    dbRef = firebase.database().ref(`users/${uid}/entries`);
+    pullFromCloud(true);
+});
+
 document.getElementById('entryDate').value = new Date().toISOString().split('T')[0];
 render();
 </script>
