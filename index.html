@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Manager-Money 2026 Pro v3.1.4.6</title>
+    <title>Manager-Money 2026 Pro v3.1.4.7</title>
 
     <meta name="theme-color" content="#070b14">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&family=Assistant:wght@200;400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&family=Assistant:wght@200;400;600&display=swap" rel="stylesheet">
     
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
@@ -49,6 +49,10 @@
         .status-dot { width: 6px; height: 6px; border-radius: 50%; background: #64748b; }
         .status-dot.online { background: var(--income); box-shadow: 0 0 8px var(--income); }
 
+        .header-left { display: flex; align-items: center; gap: 10px; }
+        .info-btn { background: rgba(56,189,248,0.1); border: 1px solid var(--glass-border); color: var(--accent); padding: 5px 12px; border-radius: 8px; font-size: 0.75rem; font-weight: 800; cursor: pointer; transition: 0.3s; }
+        .info-btn:active { transform: scale(0.95); background: var(--accent); color: var(--bg); }
+
         .logo-container { width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; background: rgba(56,189,248,0.05); border-radius: 14px; border: 1px solid var(--glass-border); }
 
         .bank-card {
@@ -59,7 +63,7 @@
         }
         .bank-card b { font-size: 2rem; display: block; margin-top: 5px; }
         .privacy-toggle { position: absolute; top: 12px; left: 12px; background: none; border: none; color: var(--text-dim); font-size: 1.2rem; cursor: pointer; }
-        .blur-mode b, .blur-mode .item-price, .blur-mode #chartModal { filter: blur(10px); }
+        .blur-mode b, .blur-mode .item-price, .blur-mode #chartModal, .blur-mode #infoModal { filter: blur(10px); }
 
         .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
         .stat-box { background: var(--glass); border: 1px solid var(--glass-border); padding: 12px; border-radius: 16px; display: flex; align-items: center; gap: 10px; }
@@ -72,17 +76,22 @@
         .pill.active { background: var(--accent); color: var(--bg); }
         .summary-btn { background: none; border: none; color: var(--accent); padding: 6px 10px; font-size: 0.75rem; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 5px; opacity: 0.8; }
 
-        /* Chart Modal Style */
+        /* Modals Style */
         .chart-modal { position: fixed; inset: 0; background: rgba(7, 11, 20, 0.95); backdrop-filter: blur(12px); display: none; justify-content: center; align-items: center; z-index: 2500; padding: 20px; }
         .chart-modal.open { display: flex; }
-        .chart-content { background: #1e293b; border: 1px solid var(--glass-border); border-radius: 28px; padding: 25px; width: 100%; max-width: 380px; text-align: center; }
-        .chart-wrap { height: 180px; margin: 15px 0; }
+        .chart-content { background: #1e293b; border: 1px solid var(--glass-border); border-radius: 28px; padding: 25px; width: 100%; max-width: 380px; text-align: center; max-height: 90vh; overflow-y: auto; }
         
+        /* Info Modal Text Style */
+        .info-text { text-align: right; color: var(--text-dim); font-size: 0.85rem; line-height: 1.6; }
+        .info-text h2 { color: var(--accent); font-size: 1.1rem; margin-top: 20px; border-bottom: 1px solid var(--glass-border); padding-bottom: 5px; font-weight: 800; }
+        .info-text ul { padding-right: 20px; margin: 10px 0; }
+        .info-text li { margin-bottom: 6px; }
+
+        .chart-wrap { height: 180px; margin: 15px 0; }
         .modal-stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; border-top: 1px solid var(--glass-border); padding-top: 20px; }
         .modal-stat-item { text-align: center; }
         .modal-stat-item span { color: var(--text-dim); font-size: 0.65rem; display: block; margin-bottom: 4px; }
         .modal-stat-item b { font-size: 0.9rem; }
-
         .modal-net-row { margin-top: 20px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center; }
         .modal-net-row span { font-size: 0.8rem; font-weight: 700; color: var(--text-dim); }
         .modal-net-row b { font-size: 1.1rem; font-weight: 900; }
@@ -97,7 +106,6 @@
         .check.checked { background: var(--accent); color: var(--bg); font-weight: 900; }
         .btn-del { background: none; border: none; color: var(--expense); opacity: 0.4; cursor: pointer; font-size: 1.2rem; }
 
-        /* FAB & Sheet - Fixed to Your Favorite Style */
         .fab { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); width: 65px; height: 65px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 25px rgba(56,189,248,0.4); border: none; color: var(--bg); font-size: 2.2rem; z-index: 100; cursor: pointer; }
         .sheet { position: fixed; bottom: -100%; left: 0; width: 100%; background: #1e293b; border-radius: 30px 30px 0 0; z-index: 1000; padding: 30px 20px; transition: 0.5s; }
         .sheet.open { bottom: 0; }
@@ -118,6 +126,33 @@
 <body id="root">
 
 <div id="toast"></div>
+
+<div class="chart-modal" id="infoModal">
+    <div class="chart-content" style="max-width:450px;">
+        <h3 style="margin:0; font-weight:900; color:var(--accent);">Manager-Money 2026 Pro</h3>
+        <div class="info-text">
+            <h2>📜 אודות המערכת</h2>
+            <p>אפליקציית ווב מתקדמת לניהול תקציב אישי, שנועדה לספק שליטה מלאה על הכנסות והוצאות בממשק מודרני, מהיר וחכם.</p>
+            
+            <h2>✨ תכונות עיקריות</h2>
+            <ul>
+                <li>ניהול תזרים מזומנים מפורט (הכנסה/הוצאה/קבוע).</li>
+                <li>ניתוח גרפי חכם הכולל חישוב יתרה פנויה חודשית.</li>
+                <li>סנכרון ענן (Firebase) בזמן אמת לגיבוי מכל מקום.</li>
+                <li>מצב פרטיות (Privacy) לטשטוש סכומים רגישים.</li>
+                <li>ייצוא לאקסל (CSV) וגיבוי מלא לקובץ JSON.</li>
+            </ul>
+
+            <h2>🛠 טכנולוגיות</h2>
+            <p>HTML5, CSS3 (Glassmorphism), JavaScript ES6, Firebase Realtime DB, Chart.js.</p>
+
+            <h2 style="text-align: center;">✍️ המפתח</h2>
+            <p style="text-align: center; font-weight: 600; font-size: 1.1rem; color: white; margin-bottom: 0;">אלכסנדר זבודיסקר</p>
+            <p style="text-align: center; font-size: 0.7rem; color: var(--text-dim); margin-top: 5px;">All rights reserved 2026 ©</p>
+        </div>
+        <button class="btn-save" style="margin-top:20px; background:rgba(255,255,255,0.05); color:white; border:1px solid var(--glass-border); font-size: 1rem;" onclick="closeInfo()">סגור מידע</button>
+    </div>
+</div>
 
 <div class="chart-modal" id="chartModal">
     <div class="chart-content">
@@ -183,16 +218,19 @@
     <header>
         <div class="brand">
             <h1>Manager<span>Money</span></h1>
-            <div class="version-tag">v3.1.4.6 PRO</div>
+            <div class="version-tag">v3.1.4.7 PRO</div>
             <div class="cloud-status"><div class="status-dot" id="cloudDot"></div><span id="cloudText">טוען ענן...</span></div>
         </div>
-        <div class="logo-container">
-            <svg viewBox="0 0 24 24" width="30" height="30">
-                <path d="M12 2L4 5v6.09c0 5.05 3.41 9.76 8 10.91 4.59-1.15 8-5.86 8-10.91V5l-8-3z" fill="rgba(56,189,248,0.1)" stroke="var(--accent)" stroke-width="2"/>
-                <rect x="7" y="14" width="2" height="4" rx="1" fill="var(--income)"/>
-                <rect x="11" y="11" width="2" height="7" rx="1" fill="var(--income)" style="opacity:0.7"/>
-                <rect x="15" y="8" width="2" height="10" rx="1" fill="var(--income)" style="opacity:0.4"/>
-            </svg>
+        <div class="header-left">
+            <button class="info-btn" onclick="openInfo()">קראו עלי</button>
+            <div class="logo-container">
+                <svg viewBox="0 0 24 24" width="28" height="28">
+                    <path d="M12 2L4 5v6.09c0 5.05 3.41 9.76 8 10.91 4.59-1.15 8-5.86 8-10.91V5l-8-3z" fill="rgba(56,189,248,0.1)" stroke="var(--accent)" stroke-width="2"/>
+                    <rect x="7" y="14" width="2" height="4" rx="1" fill="var(--income)"/>
+                    <rect x="11" y="11" width="2" height="7" rx="1" fill="var(--income)" style="opacity:0.7"/>
+                    <rect x="15" y="8" width="2" height="10" rx="1" fill="var(--income)" style="opacity:0.4"/>
+                </svg>
+            </div>
         </div>
     </header>
 
@@ -263,6 +301,10 @@ let currentFilter = 'all', editId = null, privacy = false, pendingDel = null, my
 const MONTHS = ['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
 
 function showToast(m) { const t = document.getElementById('toast'); t.textContent = m; t.className = 'show'; setTimeout(()=>t.className='', 2000); }
+
+// Info Modal Functions
+function openInfo() { document.getElementById('infoModal').classList.add('open'); }
+function closeInfo() { document.getElementById('infoModal').classList.remove('open'); }
 
 function openChart() { 
     document.getElementById('chartModal').classList.add('open'); 
